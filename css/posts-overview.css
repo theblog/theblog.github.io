@@ -7,6 +7,13 @@
     margin-top: 20px;
 }
 
+@media only screen and (max-width: 940px) {
+    .gmap-container, .gmap-container-stub {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
 /* 2017-02-19 CHAR LM */
 .talk-box {
     width: calc(100% + 40px);
@@ -112,4 +119,14 @@
     font-size: 1rem;
     color: #eee;
     min-width: 100px;
+}
+
+@media only screen and (max-width: 670px),
+only screen and (min-width: 768px) and (max-width: 910px) {
+    .talk-box {
+        display: none;
+    }
+    .talk-box.mobile {
+        display: block;
+    }
 }
