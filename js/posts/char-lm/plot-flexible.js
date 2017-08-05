@@ -106,7 +106,7 @@ function getLogs(runGroup) {
     let data = {};
     return Promise.all(values.map(value => {
         // get the data and push the trainstates
-        return $.getJSON(`assets/posts/char-lm/data/${runGroup}/${value}/model.trainstate.json`)
+        return $.getJSON(`/assets/posts/char-lm/data/${runGroup}/${value}/model.trainstate.json`)
             .then(trainstate => {
                 data[value] = PostUtil.getPreprocessedLog(trainstate.log);
             });

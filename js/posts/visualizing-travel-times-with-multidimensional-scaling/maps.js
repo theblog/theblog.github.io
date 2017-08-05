@@ -2,7 +2,8 @@ var cityNames = [];
 var cityMarkers = [];
 var coordinateMarkers = [];
 
-window.onContentReadyCallbacks.push(function () {
+// MAIN Function
+$(function () {
     cityNames = ["San Francisco", "Sacramento", "Los Angeles", "Las Vegas"];
     cityMarkers = [];
     coordinateMarkers = [];

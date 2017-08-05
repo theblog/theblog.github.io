@@ -31,7 +31,7 @@ function onDatasetChanged() {
     $('#dataset-excerpt').html(EXCERPTS[datasetName]).scrollTop(0);
 
     // Plot the dataset
-    $.getJSON(`assets/posts/char-lm/data/${datasetName}/model.trainstate.json`)
+    $.getJSON(`/assets/posts/char-lm/data/${datasetName}/model.trainstate.json`)
         .then(trainstate => {
             plotDatasetLog(PostUtil.getPreprocessedLog(trainstate.log));
         })
