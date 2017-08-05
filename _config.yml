@@ -1,0 +1,3 @@
+excerpt_separator: <!--more-->
+include: ["_pages"]
+permalink: /:title/

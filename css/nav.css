@@ -1,0 +1,127 @@
+#navigation {
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+    font-family: 'Oswald', sans-serif;
+    box-shadow: #999 2px 0 10px;
+    background: #242745; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left, #212433, #232636); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #212433, #232636); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #212433, #232636); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #212433, #26293B); /* Standard syntax */
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    border: none;
+}
+
+.navbar-brand {
+    width: 120px;
+    padding: 10px 30px;
+}
+
+.navbar-brand #logo-title img {
+    width: 60px;
+}
+
+.navbar-brand #logo-subtitle {
+    display: none;
+}
+
+.navbar-header {
+    border-bottom: none;
+}
+
+.navbar-default .navbar-collapse {
+    border-color: transparent;
+}
+
+.navbar-nav > li {
+    font-size: 1.1rem;
+    float: none;
+    overflow: hidden;
+}
+
+.navbar-nav > li > a {
+    white-space: nowrap;
+    padding: 10px 0;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #cccccc;
+}
+
+.navbar-default .navbar-nav > li > a.active, .navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: #ffffff;
+}
+
+.nav a .fa {
+    margin-top: 0.2rem;
+    margin-right: 15px;
+    width: 16px;
+    color: inherit;
+    font-size: inherit;
+}
+
+.navbar-nav > li > a div {
+    vertical-align: top;
+    white-space: normal;
+    display: inline-block;
+    line-height: 1.3;
+}
+
+.navbar-default .navbar-toggle {
+    border: none;
+}
+
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+    background-color: transparent;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: #eeeeee;
+}
+
+.navbar-nav {
+    padding: 20px 0 20px 15px;
+    list-style: none;
+    margin: 0;
+}
+
+/* Transform the top navbar to a sidebar */
+@media only screen and (min-width: 768px) {
+    #navigation {
+        height: 100%;
+        width: 220px;
+        position: fixed;
+    }
+
+    .navbar-brand {
+        width: 220px;
+        padding: 20px 30px;
+        top: 0;
+        height: 130px;
+    }
+
+    .navbar-brand #logo-title img {
+        width: 130px;
+        margin-bottom: 5px;
+    }
+
+    .navbar-brand #logo-subtitle {
+        margin-top: 2px;
+        color: #eeeeee;
+        display: block;
+    }
+
+    .navbar-nav {
+        top: 130px;
+        padding: 40px 0 10px 15px;
+    }
+
+    .navbar-nav > li > a div {
+        max-width: 120px;
+        margin-left: -2px;
+    }
+}

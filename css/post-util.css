@@ -1,0 +1,128 @@
+.chart {
+    margin-bottom: 10px;
+}
+
+.chart-form-group {
+    padding-left: 10px;
+}
+
+.chart-form-group > div:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.chart-form-group label {
+    display: block;
+}
+
+.chart-form-group .irs {
+    margin: 0 2px;
+}
+
+.content-9 {
+    width: 75%;
+    float: left;
+}
+
+.content-6 {
+    width: 50%;
+    float: left;
+}
+
+.content-3 {
+    width: 25%;
+    float: left;
+}
+
+@media only screen and (max-width: 670px),
+       only screen and (min-width: 768px) and (max-width: 910px) {
+    .content-9, .content-6, .content-3 {
+        width: 100%;
+        float: none;
+    }
+
+    .chart-form-group {
+        padding-left: 0;
+        margin-bottom: 20px;
+    }
+}
+
+.lesson-learned {
+    padding: 15px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    border-radius: 4px;
+    color: #31708f;
+    background-color: #eef7fc;
+}
+
+.btn-group {
+    white-space: nowrap;
+}
+
+.btn-group .btn {
+    float: none !important;
+    display: inline-block;
+}
+
+.btn-group .btn:not(:last-child) {
+    margin-right: -3px;
+}
+
+.btn.round {
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+}
+
+.btn-icon {
+    font-size: 18px;
+}
+
+.btn-icon:hover, .btn-icon:focus {
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.btn-icon:active, .btn-icon:active:hover {
+    background-color: #eeeeee;
+}
+
+.btn-icon.round .glyphicon {
+    margin-left: -4px;
+}
+
+.btn-icon.round .fa {
+    margin-top: 2px;
+    margin-left: -3px;
+}
+
+.btn-default.dark, .btn-default.dark:hover, .btn-default.dark:focus,
+.open>.dropdown-toggle.btn-default.dark {
+    color: white;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.btn-default.dark.active, .btn-default.dark:hover, .open>.dropdown-toggle.btn-default.dark {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.btn-default.dark {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu.dark {
+    background-color: rgba(25, 25, 25, 0.9);
+}
+
+.dropdown-menu.dark>li>a {
+    color: white;
+}
+
+.dropdown-menu.dark>li>a:hover, .dropdown-menu.dark>li>a:focus {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.table-heading-columns {
+    text-align: center;
+    padding: 0;
+}

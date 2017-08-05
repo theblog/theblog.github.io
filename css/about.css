@@ -1,0 +1,98 @@
+.profile {
+    padding-bottom: 40px !important;
+}
+
+.profile img {
+    float: left;
+    margin-right: 30px;
+}
+
+h1, h2, h3 {
+    text-transform: none;
+    font-family: inherit;
+    letter-spacing: inherit;
+}
+
+h1 {
+    font-size: 1.7rem;
+}
+
+.panel-default > .panel-heading {
+    border-bottom: none;
+}
+
+.panel-default > .panel-body {
+    border-top: 1px solid #eee;
+}
+
+.panel-default>.profile h1 {
+    font-size: 2rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.2rem;
+}
+
+.profile h2, .heading h2  {
+    margin-top: 0;
+}
+
+.heading h2 {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.cv-section {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+}
+
+.cv-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.cv-section h1:first-child {
+    margin-top: 20px;
+}
+
+.cv-item {
+    padding-right: 20px;
+    margin: 20px 0;
+}
+
+.heading {
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.heading:after {
+    clear: both;
+}
+
+.heading .info a {
+    margin-left: 10px;
+}
+
+.heading .pull-left {
+    margin-right: 10px;
+}
+
+.technologies {
+    list-style: none;
+    padding-left: 0;
+}
+
+.technologies li>strong{
+    margin-right: 8px;
+}
+
+@media only screen and (max-width: 670px),
+only screen and (min-width: 768px) and (max-width: 910px) {
+    .profile {
+        text-align: center;
+    }
+    .profile img {
+        float: none;
+        margin: 0;
+    }
+}
