@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ page.title }}</title>
+    <title>{{ page.html_title | default: "MLOwl - Blog about Machine Learning et al." }}</title>
     <base href="{{site.url}}">
 
     <!-- SEO start -->

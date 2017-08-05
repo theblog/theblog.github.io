@@ -5,12 +5,25 @@ javascripts: '<script type="text/javascript" async src="https://cdnjs.cloudflare
 ---
 
 <div class="row">
-    {% for post in site.posts %}
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="headings">
-                    <h1><a href="{{ post.url }}">{{ post.title }}</a></h1>
+                    <h1>{{page.title}}</h1>
+                </div>
+            </div>
+            <div class="panel-body post-body">{{page.introduction}}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for post in site.categories[page.category] reversed %}
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1><a href="{{ post.url }}">{% if page.is_series %}Part {{ forloop.index }} - {% endif %}{{post.title}}</a></h1>
                     <h5><span><i class="fa fa-calendar-o"></i>{{ post.date | date_to_long_string }}</span></h5>
                 </div>
 
@@ -20,7 +33,7 @@ javascripts: '<script type="text/javascript" async src="https://cdnjs.cloudflare
                     {% endfor %}
                 </div>
             </div>
-            <div class="panel-body post-body">{{ post.excerpt }}</div>
+            <div class="panel-body post-body">{{ post.summary }}</div>
         </div>
     </div>
     {% endfor %}
