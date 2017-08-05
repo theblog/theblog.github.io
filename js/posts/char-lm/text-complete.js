@@ -38,7 +38,8 @@ let selectedDataset = null;
 let pendingRequestId = null;
 let result = null;
 
-window.onContentReadyCallbacks.push(function () {
+// MAIN Function
+$(function () {
     TEXT_INPUT = $('.text-input');
     TEXT_OUTPUT = $('.text-output');
     TEXT_BRIDGE = $('.text-input-output-bridge');

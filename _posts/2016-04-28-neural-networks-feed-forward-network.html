@@ -1,0 +1,112 @@
+---
+layout: post
+title: "When One Neuron Is Not Enough"
+category: "neural-network"
+html_title: "When One Neuron Is Not Enough - Understanding Neural Networks"
+meta_description: "How can you extend a Perceptron to a Neural Network? Read this blog post to find out more about Deep Neural Networks."
+focus_keyword: "Feed-Forward"
+summary: "We observed that a single neuron fails to learn not linearly separable datasets like the XOR dataset. In this post, we expand from a single neuron to a net of neurons that can learn more complex functions."
+excerpt: "<p>In the last post, we talked about linear separability. We observed that our neuron fails to learn not linearly separable datasets like the XOR dataset. In this post, we will expand to a net of neurons that can learn more complex functions – a neural network.</p>
+
+<figure>
+<img src=\"/images/posts/feedforward-neural-network/neural-network.png\" />
+</figure>"
+tags: [neural-networks, theory]
+stylesheets: ""
+javascripts: ""
+---
+<p><a href="https://github.com/batzner/understanding-nn/tree/feed-forward-network">Code to this post</a></p>
+
+<p>In the last post, we talked about linear separability. We observed that our neuron fails to learn not linearly separable datasets like the XOR dataset. In this post, we will expand to a net of neurons that can learn more complex functions – a neural network.</p>
+
+<h3>Neural Networks</h3>
+<p>For the XOR dataset, we still need two input variables and one output variables. What changes is what happens in between. We start with the smallest useful net, a net with three neurons:</p>
+<figure>
+<img src="/images/posts/feedforward-neural-network/neural-network.png" />
+</figure>
+
+<p>The first two circles are not neurons. They have no input, they <strong>are</strong> the input. Two neurons follow forming the hidden layer. Their output is the input for the last neuron, which generates the net’s output.</p>
+
+<h3>No benefit at all</h3>
+<p>In the first posts, our neuron did not have an activation function. The output was only a weighted sum of the input variables. If we keep this practice for our neurons in the net, having multiple neurons will not improve our predictions. That is because the output of the net will still only be a linear combination of the net’s input meaning it does nothing more than a single neuron would do. Instead, we need a non-linear activation function to allow our net to learn non-linearly separable datasets.</p>
+
+<p>For a more detailed explanation, let us numerate the neurons and weights in our net and calculate the output. The two inputs have indices 1 and 2, the top neuron in the hidden layer has index 3, the lower neuron index 4 and the neuron in the output layer index 5. A weight \(w_{i,j}\) goes from input / neuron \(i\) to \(j\). The output of neuron 3 is:</p>
+
+$$o_3 = w_{1,3}x_1 + w_{2,3}x_2$$
+The output of the net is:
+
+$$o_5 = w_{3,5}(w_{1,3}x_1 + w_{2,3}x_2) + w_{4,5}(w_{1,4}x_1 + w_{2,4}x_2)$$
+$$o_5 = (w_{3,5}w_{1,3}+w_{4,5}w_{1,4})x_1 + (w_{3,5}w_{2,3}+w_{4,5}w_{2,4})x_2$$
+
+<h3>Changing the Activation Function</h3>
+<p>In our last post, we already used an activation function. However, we should not use it here. We need a continuous and differentiable activation function in order to calculate the error gradient. A popular choice is the <a href="https://en.wikipedia.org/wiki/Sigmoid_function">sigmoid function</a>. Its main advantage is that its derivative at x can be easily calculated using the function value at \(x\): 
+
+$$g'(x) = g(x)(1-g(x))$$
+
+For further info on the battle of step functions vs. sigmoid functions you can read <a href="http://stackoverflow.com/a/34470478/2628369">this answer</a> on Stackoverflow.</p>
+
+<div class="split-figure">
+<figure>
+<img src="/images/posts/feedforward-neural-network/step-function.png"/>
+<figcaption>Step Function</figcaption>
+</figure>
+<figure>
+<img src="/images/posts/feedforward-neural-network/sigmoid-function.png"/>
+<figcaption>Sigmoid Function</figcaption>
+</figure>
+</div>
+
+<p>With our new activation function, which we add to every neuron, the net’s output changes. The output of neuron 3 is:
+
+$$o_3 = g(w_{1,3}x_1 + w_{2,3}x_2)$$
+
+The output of the net is:
+
+$$o_5 = g[w_{3,5} g(w_{1,3}x_1 + w_{2,3}x_2) + w_{4,5} g(w_{1,4}x_1 + w_{2,4}x_2)]$$
+
+Now, our net represents a non-linear function and every weight has a unique contribution to the output value.</p>
+
+<h3>Forward-feeding the input</h3>
+
+<p>Let us see how the neural network transforms input to output in the code. Instead of saving each weight in a variable, we store the weights of each layer in a matrix \(W\). Each column contains the weight vector of a neuron. Similarly, we store the biases of the layer’s neurons in a vector as well. Thus, to calculate the net input of a layer we simply need a vector-matrix multiplication followed by a vector addition: \(net = xW + b\). The net input of a layer with multiple neurons is a vector. We feed each entry of this vector into the activation function and thus get the layer’s output vector. Then we do the same for the next layer using the previous layer’s output as input.</p>
+
+<p>The following code contains the operations explained above:</p>
+
+<pre><code>def activation(x):
+    return 1 / (1 + np.exp(-x))
+
+# Generate a dataset
+inputs, targets = generate_dataset(200)
+
+n_hidden = 2
+
+W_ih = np.random.randn(2, n_hidden)  # weights between input and hidden layer
+W_ho = np.random.rand(n_hidden, 1)  # weights between hidden and output layer
+b_h = np.random.randn(1, n_hidden)  # biases of the hidden layer
+b_o = np.random.rand(1, 1)  # bias of the output layer
+
+mse = float("inf")
+epoch = 1
+learning_rate = 0.1
+
+while mse > 1e-6 and epoch < 200:
+    # Feed each input vector to the neuron and keep the errors for calculating
+    # the MSE.
+    errors = []
+    for x, y in zip(inputs, targets):
+        # bring x into the right shape for the vector-matrix multiplication
+        x = np.reshape(x, (1, 2))
+        # feed x to every neuron in the hidden layer by multiplying it with
+        # their weight vectors
+        net_h = x.dot(W_ih) + b_h
+        out_h = activation(net_h)
+        net_o = out_h.dot(W_ho) + b_o
+        prediction = activation(net_o)
+
+        # TODO: calculate the error
+
+        # TODO: update the weights</code></pre>
+
+<p>Now, our net transforms the input vector into an output value, feeding it through its layers. What is missing is the learning, which consists of calculating the error and updating the weights. So far we did that by calculating the derivative of the error w.r.t. each weight. As it turns out, this is much more complicated for a network of neurons than for a single neuron. That is because the weights in the hidden layer only have indirect impact on the output, as the hidden layer’s output is processed again with other weights. We will tackle this problem in the next post. It will require some tricky math, but there is a way to avoid complicated calculations in the code, called Backpropagation.</p>
+
+<p>Next Post: <a href="/post/neural-networks-implementing-backpropagation/">Implementing Backpropagation in a Neural Network</a></p>

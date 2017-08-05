@@ -1,0 +1,111 @@
+---
+layout: post
+title: "Experimenting with Hyperparameters"
+category: "neural-network"
+html_title: "Experimenting with Hyperparameters - Understanding Neural Networks"
+meta_description: "In this post we will experiment hyperparameters: the number of hidden neurons in our neural network and the learning rate."
+focus_keyword: "Hyperparameters"
+summary: "In this post, we will experiment with our neural network. We will test out values for hyperparameters such as the learning rate and the number of hidden neurons."
+excerpt: "In this post, we will experiment with our neural network. We will test out values for hyperparameters such as the learning rate and the number of hidden neurons.
+
+<img src=\"/images/posts/hyperparameters/preview.png\"/>"
+tags: [neural-networks, theory]
+stylesheets: ""
+javascripts: ""
+---
+<p><a href="https://github.com/batzner/understanding-nn/tree/hyperparameters">Code to this post</a></p>
+
+<h3>Object-oriented Refactoring</h3>
+<p>As the code got more complex, I refactored it into an object-oriented design. This way it is easier to stay on top of things and the neural network can be used by other Python modules. I really recommend taking a look at the <a href="https://github.com/batzner/understanding-nn/blob/hyperparameters/src/net.py">net.py on GitHub</a>. There, you will also find the files for our following experiments in the same package.</p>
+
+<p>Now, we have classes for the net, the hidden layers and the output layer. This way, we can build a modular net and quickly vary its size and depth by connecting multiple hidden layers. The calculations, however, stayed the same.</p>
+
+<h3>Experiments</h3>
+<p>I ran some experiments on the XOR dataset with a net with 3 hidden neurons. I visualized the decision boundary by using the code that Denny Britz also uses in <a href="http://www.wildml.com/2015/09/implementing-a-neural-network-from-scratch/">his tutorial</a>. This is the result:</p>
+
+<figure>
+<img src="/images/posts/hyperparameters/xor-decision-boundary-3-hidden.png"/>
+<figcaption>Decision boundary of a neural network with 3 hidden neurons</figcaption>
+</figure>
+
+<p>I also tracked the decrease of the Mean Squared Error for 50 runs. This resulted in the following graph:</p>
+
+<figure>
+<img src="/images/posts/hyperparameters/learning-rate-3-hidden-50-tries.png"/>
+<figcaption>Error decrease for 50 runs with a learning rate of 0.1.</figcaption>
+</figure>
+
+<p>You can find the code for both experiments on Github in <a href="https://github.com/batzner/understanding-nn/blob/hyperparameters/src/boundary_visualization.py">boundary_visualization.py</a> and <a href="https://github.com/batzner/understanding-nn/blob/hyperparameters/src/error_visualization.py">error_visualization.py</a>. Both experiments show that our network seems to learn the dataset pretty well. Also, our choice of 0.1 as the learning rate seems ok.</p>
+
+<p>Next, I tried out <a href="http://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_moons.html">sklearn</a>‘s moon dataset – two interleaving circles with a net of 5 hidden neurons and a learning rate of 0.1. The code is in <a href="https://github.com/batzner/understanding-nn/blob/hyperparameters/src/moons.py">moons.py</a>. The net reached a MSE of 0.01 after 2000 epochs through the 200 samples. The visualization of its decision boundary shows that it was able to learn the underlying structure of the dataset:</p>
+
+<figure>
+<img src="/images/posts/hyperparameters/moon-decision-boundary-5-hidden.png"/>
+<figcaption>Decision boundary with 5 hidden neurons</figcaption>
+</figure>
+
+<h3>Choosing the Number of HIdden Neurons</h3>
+Similar to Denny Britz, I also tried out other values for the number of hidden neurons. You can take a look at the results and compare them to <a href="http://d3kbpzbmcynnmx.cloudfront.net/wp-content/uploads/2015/09/nn-from-scratch-hidden-layer-varying.png">his results</a>.
+
+<div class="split-figure">
+<figure>
+<img src="/images/posts/hyperparameters/moon-decision-boundary-1-hidden.png" />
+<figcaption>1 hidden neuron</figcaption>
+</figure>
+<figure>
+<img src="/images/posts/hyperparameters/moon-decision-boundary-2-hidden.png" />
+<figcaption>2 hidden neurons</figcaption>
+</figure>
+</div>
+
+<div class="split-figure">
+<figure>
+<img src="/images/posts/hyperparameters/moon-decision-boundary-3-hidden.png" />
+<figcaption>3 hidden neurons</figcaption>
+</figure>
+<figure>
+<img src="/images/posts/hyperparameters/moon-decision-boundary-10-hidden.png" />
+<figcaption>10 hidden neurons</figcaption>
+</figure>
+</div>
+
+<div class="split-figure">
+<figure>
+<img src="/images/posts/hyperparameters/moon-decision-boundary-50-hidden.png" />
+<figcaption>50 hidden neurons</figcaption>
+</figure>
+<figure>
+<img src="/images/posts/hyperparameters/moon-decision-boundary-50-hidden.png" />
+<figcaption>100 hidden neurons</figcaption>
+</figure>
+</div>
+
+<p>Beware that his network is larger for the same number of hidden neurons and that he uses a different error function, the Cross Entropy Loss. We will talk about this error function in the next post. For now, we can see in both experiments that a higher number of neurons leads to a higher number of weights / parameters to optimize. Therefore, large networks tend to overfit the data. This is bad because it makes our net <strong>remember</strong> the data without generalizing to the underlying structure. In fact, through the last posts, we committed a major crime in Machine Learning.</p>
+
+<h3>Dividing between Training and Test Data</h3>
+<p>So far, we learned our data and evaluated the performance of our classifier on the exact same data. If we stick to this measure, the best classifier will be a database that simply looks up the x and returns the stored y. But we want a classifier that can predict the target value of <strong>new</strong> data. Therefore it is important to measure its performance on <strong>new</strong> data. We divide the dataset at hand into two parts: a training set for training the classifier and a test set for evaluating its performance. <strong>The classifier must not see the samples of the test set until training is finished and the evaluation starts.</strong> We will add the code for evaluating the net’s performance with a test set in the next post.</p>
+
+<p>As for our current example, we can see that we need to prevent overfitting. Otherwise, new data will not be predicted based on the general structure of the training data, but also on where outliers lie. These examples illustrate the problem in a more extreme way: <a href="http://d3kbpzbmcynnmx.cloudfront.net/wp-content/uploads/2015/09/nn-from-scratch-hidden-layer-varying.png">[1]</a> <a href="http://cs231n.github.io/neural-networks-1/#setting-number-of-layers-and-their-sizes">[2]</a>.</p>
+
+<p>An immediate solution would be to limit the number of hidden neurons. However, we should be careful with that. As Andrej Karpathy puts it in his <a href="http://cs231n.github.io/neural-networks-1/#setting-number-of-layers-and-their-sizes">course on Neural Networks</a>:
+<blockquote>
+The subtle reason behind this is that smaller networks are harder to train with local methods such as Gradient Descent: It’s clear that their loss functions have relatively few local minima, but it turns out that many of these minima are easier to converge to, and that they are bad (i.e. with high loss). Conversely, bigger neural networks contain significantly more local minima, but these minima turn out to be much better in terms of their actual loss.
+</blockquote></p>
+<p>So, we should limit the number of hidden neurons, but beware of getting stuck in local minima. Instead of choosing the number of parameters to learn too low, we should use other techniques to prevent overfitting, such as constraining the values of the weights. We will talk about those techniques in the next post.</p>
+
+<h3>Choosing the Learning Rate</h3>
+<p>For our simple dataset, the net with 3 hidden neurons did not get stuck in a local minimum. So, I tried out a couple of learning rates:</p>
+<figure>
+<img src="/images/posts/hyperparameters/moon-learning-rates.png"/>
+</figure>
+<p>We can see that dynamically decreasing (or annealing) the learning rate is a very good idea for this dataset. Right now, we are decreasing the learning rate by two once the training error did not get lower after an epoch. However, the learning rate may not get lower than \(10^{-6}\).</p>
+
+<h3>Conclusion</h3>
+<p>This was a short post. We experimented with two hyperparameters – the learning rate and number of hidden neurons – and found out that
+<ul>
+<li>a high number of weights leads to overfitting, but also that</li>
+<li>choosing the number of weights too low increases the danger of getting stuck in a local minimum</li>
+</ul>
+Generally, we “conquered” the XOR and the Moons dataset. So, in the next post, we will move on to a more complicated task – a problem from the real world: digit recognition.</p>
+
+<p>Next Post: <a href="/post/neural-networks-multiple-class-softmax/">Using Softmax for Multiple Classes</a></p>

@@ -1,0 +1,58 @@
+---
+layout: post
+title: "Validation and Batch Learning"
+category: "neural-network"
+html_title: "Validation and Batch Learning - Understanding Neural Networks"
+meta_description: "In this post we will continue with digit recognition and try to reach the benchmark of 99.8% accuracy by using validation and batch learning."
+focus_keyword: "Batch Learning"
+summary: "In this post, we will continue with digit recognition and try to come closer to the benchmark of 99.8% accuracy. This post will be about validation, which we can use to reduce overfitting, and batch learning, which speeds up the training phase."
+excerpt: "<p>In this post we will continue with digit recognition and try to come closer to the benchmark of 99.8% accuracy. In the last post we already ran a test run with a network consisting of 300 hidden neurons and 10 output neurons. After only 15 epochs, it already reached an accuracy of 95% on the test set. However, in the following epochs, the net overfitted, which I will display in detail below. Furthermore, the optimization of the ca. 240,000 parameters took a significant amount of time per epoch. This slows down the process of finding the correct hyperparameters, such as the learning rate or the number of hidden neurons. This post will be about validation, which we can use to reduce overfitting, and batch learning, which speeds up the training phase.</p>"
+tags: [neural-networks, theory]
+stylesheets: ""
+javascripts: ""
+---
+<p><a href="https://github.com/batzner/understanding-nn/tree/validation-batch-learning">Code to this post</a></p>
+
+<p>In this post we will continue with digit recognition and try to come closer to the benchmark of 99.8% accuracy. In the last post we already ran a test run with a network consisting of 300 hidden neurons and 10 output neurons. After only 15 epochs, it already reached an accuracy of 95% on the test set. However, in the following epochs, the net overfitted, which I will display in detail below. Furthermore, the optimization of the ca. 240,000 parameters took a significant amount of time per epoch. This slows down the process of finding the correct hyperparameters, such as the learning rate or the number of hidden neurons. This post will be about validation, which we can use to reduce overfitting, and batch learning, which speeds up the training phase.</p>
+
+<h3>Validation</h3>
+<p>So far, what we are doing in every epoch of training is to feed the dataset to our network and run backpropagation after each sample. During the epoch, we store all losses (Cross Entropy Loss) and calculate the mean after the epoch. If it got lower, we assume that the net got better. This is prone to overfitting, as the following scenario shows:</p>
+
+<figure>
+<img src="/images/posts/validation-batch-learning/mnist-overfitting.jpg"/>
+<figcaption>Neural Network with 1 hidden layer (300 neurons) and 10 output neurons. Learning rate: 0.1, Momentum: none, Weight decay: 0.001, Dataset: The first 10% of MNIST</figcaption>
+</figure>
+
+<p>The training accuracy reaches 99.5%, which means our net is almost perfect. But if we validate its performance with a validation set, we get an accuracy of 91.7%. This means our net overfitted and is not perfect at all. With its 240,000 parameters, it was able to “remember” specific features of the 5,500 training images (10% of the full training dataset). It could do this by adjusting the parameters to features like a high value in pixel 8, row 13. Such features are useless for the test case, as are not related to the shape of a digit.</p>
+
+<p>This is not necessarily bad, as long as the validation error does not get worse due to overfitting. But if it does, we need to stop immediately. Therefore it is better to do backpropagation on the training data, but evaluate the accuracy on a separate validation set. Once the validation loss / accuracy does not improve anymore, we can stop training. In the example above, using the validation accuracy as a stop signal does not improve the performance of the net, so the net did not overfit “fatally”. In the last post, we did see examples of fatal overfitting on the moons dataset.</p>
+
+<h3>Batch Learning</h3>
+<p>Instead of feeding the network one sample at a time, we can speed up the learning process by feeding it multiple samples at once. This is called batch learning or batch training. Technically, we are doing a matrix-matrix multiplication \(X\cdot W\) instead of a vector-matrix multiplication \(\vec{x}\cdot W\). \(X\) is the matrix containing multiple training samples in its rows. So, if the number of input vectors, called batch size, is \(b\), we have a input matrix with \(b\) rows. As numpy is doing efficient matrix multiplication and our code is not really efficient, we can achieve a significant speed-up by using batch learning.</p>
+
+<p>Feeding multiple samples in a matrix causes the layers’ (and network’s) output vectors to be matrices as well, each row containing the output for a certain sample. Thus, the sensitivity vector becomes a matrix as well. When it comes to backpropagation, we already calculate a gradient and weight update matrix per layer, even for just one input vector. With b input samples we get b weight update matrices for each weight matrix. We take the mean of those as our final weight update matrix. In the code, there are only a few changes, as the variables of our layers already were n-dimensional arrays in the code instead of vectors. It is important to set the <code>axis</code>  parameter for numpy functions such as <code>mean</code> or <code>sum</code> correctly. I hunted a bug for hours, because I set  <code>axis=0</code> instead of  <code>axis=1</code>.</p>
+
+<p>The result is a speedup in learning. I used the same net as above and measured the time per epoch (in seconds) for the MNIST dataset with different batch sizes:</p>
+
+<figure>
+<img src="/images/posts/validation-batch-learning/batch-learning-speedup.jpg"/>
+</figure>
+
+<p>Yet, the speedup comes with a downside: averaging the weight update matrices causes the net to converge slower. This means it takes more epochs. So, the speedup between 200 and 1000 samples per batch might not be worth its costs, but the speedup between 1 and 50 samples will definitely be. In conclusion, we can now train the net <strong>a lot</strong> faster and gained another hyperparamater to optimize.</p>
+
+<h3>Finishing MNIST</h3>
+<p>Now it is time to really give our net a try on the MNIST dataset. On <a href="http://yann.lecun.com/exdb/mnist/">Yann LeCun’s website</a>, we can see that neural networks with 300 hidden neurons in 1 hidden layer seem to do pretty well. So, I gave our network a try with the same parameters as above, except for a learning rate of 1 instead of 0.1. The result on the whole MNIST dataset: an validation accuracy of <strong>97.6%</strong> and a test accuracy of <strong>97.3%</strong>. Compared with the “2-layer NN, 300 hidden units, mean square error” network from the website, this is better by 2%. However, I also tried 800 hidden neurons, which did not lead to an improve of accuracy. According to the website, the comparable net with 800 hidden units scores an accuracy of 98.4%. Here are the validation error graphs for both runs:</p>
+
+<figure>
+<img src="/images/posts/validation-batch-learning/mnist-300-vs-800.jpg"/>
+</figure>
+
+<h3>Conclusion</h3>
+<p>Our network does fairly good, but is still far away from the global benchmark of almost 99.8% accuracy. By tuning some hyperparameters, we could maybe increase the accuracy by 0.5%. To reach 99.8%, however, we need more drastic changes. As you can see in the table on the website, Convolutional Neural Networks reach far higher accuracies. So we might want to try them out next. However, there are a lot of excellent tutorials available on Convolutional Neural Networks, so I didn't feel the need to repeat them. They pretty much start off at the point where we finished with this post. Here are my favorites:</p>
+
+<ul>
+<li><a href="http://cs231n.github.io/convolutional-networks/">http://cs231n.github.io/convolutional-networks/</a></li>
+<li><a href="http://colah.github.io/posts/2014-07-Conv-Nets-Modular/">http://colah.github.io/posts/2014-07-Conv-Nets-Modular/</a></li>
+<li><a href="http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf">ImageNet Classification with Deep Convolutional
+Neural Networks, Krizhevsky et al. 2012</a></li>
+</ul>

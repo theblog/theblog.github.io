@@ -1234,7 +1234,8 @@ const EPOCH_MINUTES = {
     }
 };
 
-window.onContentReadyCallbacks.push(function () {
+// MAIN Function
+$(function () {
     new Chart('batch-size-decay-chart', BATCH_SIZE_DECAY_CHART);
     plotEpochDuration('batch_size', 'batch-size-epoch-duration-chart', {
         max: 30,

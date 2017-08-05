@@ -1,0 +1,203 @@
+---
+layout: post
+title: "Implementing Backpropagation in a Neural Network"
+category: "neural-network"
+html_title: "Implementing Backpropagation in a Neural Network - Understanding Neural Networks"
+meta_description: "How do neural networks learn? Read this blog post to find out how to implement backpropagation in a neural network."
+focus_keyword: "Backpropagation"
+summary: "This post explains the math behind the update rules for weights during backpropagation. In other words, it explains how neural networks learn and why. After that, we will implement the update rules - with just 8 lines of code."
+excerpt: "<p>How do neural networks learn? So far, we implemented a single neuron and derived the update rules for its weights, i.e. let it learn. In the last post, we created a neural network consisting of three neurons and already implemented the generation of its outputs. In this post, we will find out, how to update the weights in the neural network. Thus, we will enable our network to learn by adding just 8 lines to the code.</p>"
+tags: [neural-networks, theory]
+stylesheets: ""
+javascripts: ""
+---
+<p><a href="https://github.com/batzner/understanding-nn/tree/backpropagation">Code to this post</a></p>
+
+<p>How do neural networks learn? So far, we implemented a single neuron and derived the update rules for its weights, i.e. let it learn. In the last post, we created a neural network consisting of three neurons and already implemented the generation of its outputs. In this post we will find out, how to update the weights in the neural network. Thus, we will enable our network to learn by adding just 8 lines to the code.</p>
+
+<h3>New Activation Function - New Error Gradient</h3>
+
+<p>At first, we need to adjust the general computation of gradients. Instead of
+
+$$\frac{\partial e}{\partial w_i} = \frac{\partial e}{\partial y} \frac{\partial y}{\partial w_i}$$
+
+we now have
+
+$$\frac{\partial e}{\partial w_i} = \frac{\partial e}{\partial y} \frac{\partial y}{\partial net} \frac{\partial net}{\partial w_i}$$
+
+So, if \(g\) is our activation function, we need to multiply our gradient term with \(g(t) (1-g(t))\). This brings us to the main problem: How do we calculate the derivative of the error with respect to each weight in the neural network?</p>
+
+<h3>Growing Pains</h3>
+<p>Expanding to a net sounded easy at first and the calculation of the net’s output is easy indeed. But what about learning? How do we train the net? So far, we only could train a neuron on its error. The error of the output neuron is quite clear, but what about the error of the hidden neurons? Again, we need to adjust the computation of the error gradient.</p>
+<p>What we are doing is <strong>Backpropagation</strong>. Backpropagation is <strong>the</strong> most important concept of neural networks, at least for me. It is essential to understand how it works. There are many excellent tutorials out there, for example <a href="http://colah.github.io/posts/2015-08-Backprop/">this one by Christopher Olah</a>. My understanding of it is the following:</p>
+
+<blockquote>
+Every neuron is given the difference between desired output and actual output, starting from the output layer. It first adjusts its weights. Inputs that led to the output being closer to the desired output are weighted higher next time. For example, if an input was 5, but the actual output was too small, the input’s weight increases. Then, it propagates the error back to the previous layer. Each previous neuron gets a new error proportional to its weight.
+</blockquote>
+
+<p>Please correct me, if any part of my interpretation is incorrect.</p>
+
+<p>The actual computation of the derivative of the error function w.r.t. a weight in a hidden layer is far more complicated than for the output layer. It is a good exercise to do it on paper once, but here I will only state the resulting formulas, so that you can directly implement them. The <a href="https://en.wikipedia.org/wiki/Backpropagation#Derivation">Wikipedia article</a> about Backpropagation contains a derivation as well. Note that is not essential to understand the following equations in order to build a neural network. I think, understanding the concept of Backpropagation suffices. In later posts, we will use a python module that automatically derivates our error function anyways. But it does not hurt to take a look at the weight update rules.</p>
+
+<p>We start in the output layer. We sum up 
+
+$$\frac{\partial e}{\partial y} \frac{\partial y}{\partial net}$$
+
+ to \(\delta\). We will reuse \(\delta\) for the computation of the gradient in the previous layer. In the next equations, we look at three neurons. Neuron \(k\) in the output layer, neuron \(j\) in the last hidden layer and neuron \(j\) in the second to last hidden layer. They are connected with weights \(w_{i,j}\) and \(w_{j,k}\), for which we try to find update rules. To each \(w\), we will add \(\Delta\) w. \(o_j\) is the output of neuron \(j\) and \(\eta\) is the learning rate. \(M\) is the number of neurons in the following layer connected to the current neuron. Ok, enough explanations, let’s see the equations.</p>
+
+<h5>Output Layer</h5>
+$$\delta _k = (y-\hat{y})g'(net_k)$$
+$$\frac{\partial e}{\partial w_{j,k}} = - \delta _k o_j$$
+$$\Delta w_{j,k} = - \eta \frac{\partial e}{\partial w_{j,k}}$$
+
+<h5>Hidden Layer</h5>
+$$\delta _j = g'(net_j) \sum _{k'=1} ^{M} {w_{j,k'} \delta _{k'}}$$
+$$\frac{\partial e}{w_{i,j}} = - \delta _j o_i$$
+$$\Delta w_{i,j} = - \eta \frac{\partial e}{\partial w_{i,j}}$$
+
+<p>Please note that every derivation and explanation of these equations in the internet uses different symbols, so you might have to translate the equations. I used the ones that my professor taught me. But enough math and equations, let’s take a look at the code.</p>
+
+<h3>Implementing Backpropagation</h3>
+<p>Implementing Backpropagation is fairly simple once you know the equations for updating the weights. The following lines of code update the weights after the net has calculated the output fo an input vector.</p>
+
+<pre><code class="python">error = 0.5 * np.square(y - prediction)
+errors.append(error)
+ 
+# Adjust the weights and the bias by calculating the gradient
+# Weight updates in the output layer
+delta_o = (y - prediction) * d_activation(net_o)
+W_ho += learning_rate * delta_o * out_h.T
+b_o += learning_rate * delta_o
+ 
+# Weight updates in the hidden layer
+delta_h = d_activation(net_h) * W_ho.T * delta_o
+W_ih += learning_rate * x.T.dot(delta_h)
+b_h += learning_rate * delta_h</code></pre>
+
+<p>with the global functions:</p>
+<pre><code>def activation(x):
+    return 1 / (1 + np.exp(-x))
+ 
+def d_activation(x):
+    return activation(x) * (1 - activation(x))</code></pre>
+
+<p>You can see that we almost directly implemented the equations above, except for cancelling out minus signs.</p>
+
+<h3>Putting it all together</h3>
+<p>Now we can put all parts together and tackle the XOR problem. I added a few tweaks, so if anything is unclear, take a look at the notes below.</p>
+<pre><code>import numpy as np
+
+
+# Define the function behind the dataset
+def get_target(x):
+    return 1 \
+        if (x[0] > 0.5 and x[1] <= 0.5) \
+           or (x[0] <= 0.5 and x[1] > 0.5) \
+        else 0
+
+
+def generate_dataset(size):
+    # Spread the inputs around the corners of [0,1]^2 instead of uniformly
+    inputs = np.random.randint(0, 2, (size, 2))
+    inputs = inputs.astype(float)
+    # Add some noise to the points on the edges
+    inputs += np.random.randn(size, 2) / 10
+    targets = np.apply_along_axis(get_target, 1, inputs)
+    return inputs, targets
+
+
+def activation(x):
+    return 1 / (1 + np.exp(-x))
+
+
+def d_activation(x):
+    return activation(x) * (1 - activation(x))
+
+
+# Generate a dataset
+inputs, targets = generate_dataset(200)
+
+n_hidden = 2
+
+W_ih = np.random.randn(2, n_hidden)  # Weights between input and hidden layer
+W_ho = np.random.rand(n_hidden, 1)  # Weights between hidden and output layer
+b_h = np.random.randn(1, n_hidden)  # Biases of the hidden layer
+b_o = np.random.rand(1, 1)  # Bias of the output layer
+
+mse = float("inf")
+misclassifications = 0
+epoch = 1
+learning_rate = 0.1
+
+while mse > 1e-6 and epoch < 2000:
+    # Feed each input vector to the neuron and keep the errors for calculating
+    # the MSE.
+    errors = []
+    misclassifications = 0
+    for x, y in zip(inputs, targets):
+        # Bring x into the right shape for the vector-matrix multiplication
+        x = np.reshape(x, (1, 2))
+        # Feed x to every neuron in the hidden layer by multiplying it with
+        # their weight vectors
+        net_h = x.dot(W_ih) + b_h
+        out_h = activation(net_h)
+        net_o = out_h.dot(W_ho) + b_o
+        prediction = activation(net_o)
+
+        # Evaluate the quality of the net
+        label = 1 if prediction > 0.5 else 0
+        if label != y:
+            misclassifications += 1
+
+        # Calculate the error
+        error = 0.5 * np.square(y - prediction)
+        errors.append(error)
+
+        # Adjust the weights and the bias by calculating the gradient
+        # Weight updates in the output layer
+        delta_o = (y - prediction) * d_activation(net_o)
+        W_ho += learning_rate * delta_o * out_h.T
+        b_o += learning_rate * delta_o
+
+        # Weight updates in the hidden layer
+        delta_h = d_activation(net_h) * W_ho.T * delta_o
+        W_ih += learning_rate * x.T.dot(delta_h)
+        b_h += learning_rate * delta_h
+
+    # Calculate the mean squared error
+    new_mse = np.mean(errors)
+    if epoch % 10 == 1:
+        print "Error after epoch %d: %s" % (epoch, new_mse)
+
+    # If the error did not improve, decrease the learning rate, since we
+    # might be close to an optimum
+    if new_mse > mse and epoch > 20:
+        learning_rate *= 0.5
+        learning_rate = max(learning_rate, 1e-6)
+        print "New learning rate: %s" % learning_rate
+
+    # If the error converges (possibly in a local minimum), stop the training
+    if 0 < mse - new_mse < 1e-6:
+        break
+
+    mse = new_mse
+    epoch += 1
+
+print "Finished training after %d epochs. Misclassifications in last epoch: " \
+      "%f%%" % (epoch, misclassifications * 100.0 / len(inputs))</code></pre>
+
+<h5>Notes</h5>
+<ul>
+<li><strong>Input vectors</strong> - So far, the input vectors were uniformly distributed in \([0,1]^2\). Now we use samples in the four edges of \([0,1]^2\), as these are easier to separate for our small network. We will tackle uniformly distributed vectors later.</li>
+<li><strong>Misclassification</strong> - We measure the error of our net with the halved MSE, as it is easy to derive during Backpropagation. The output of our net is continuous, but the XOR problem is a classification task. Thus, the MSE will never fully reach zero. In order to evaluate the performance of our net after training has finished, we round its output to zero or one and count the number of misclassifications.</li>
+<li><strong>Learning rate</strong> - Compared to previous implementations, we decrease the learning rate more slowly and do not let it get below \(10^{-6}\).</li>
+</ul>
+
+<h3>Testing the net</h3>
+<p>Run the code and test the net. After about 500 epochs, the MSE converges to zero with an accuracy of 100%. 500 epochs seems a bit slow for learning a simple XOR function. Nevertheless, we have to remember that even if the net does output the correct prediction, like 0.6 for a target value of 1, it will calculate an error of \(0.5 \cdot 0.4^2 = 0.08\). It reaches an MSE of 0.007 after 80 epochs. So, a lot of the last epochs are just about “making the sigmoid function steeper”.</p>
+
+<h3>Conclusion</h3>
+<img src="/images/posts/implementing-backpropagation/thumbs-up-kid.gif" />
+<p>Great success! We created a net of neurons and enabled it to learn non-linearly separable datasets. Our small network scored an accuracy of 100% on the so far impossible XOR dataset. By defining the number of hidden neurons in a variable and storing the weights in a matrix, we can now easily change the size of the network. This will help us to tackle more complicated datasets. There are some minor problems that we need to address in the next posts. For example, the net sometimes converges at errors around 0.12. This means it probably got stuck in a local and not global optimum. Also, we will try to speedup the net’s training. But for now, we can be happy to have a neural network that actually learns.</p>
+
+<p>Next Post: <a href="/post/neural-networks-hyperparameters/">Experimenting with Hyperparameters</a></p>

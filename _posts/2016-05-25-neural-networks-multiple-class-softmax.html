@@ -1,0 +1,130 @@
+---
+layout: post
+title: "Using Softmax for Multiple Classes"
+category: "neural-network"
+html_title: "Using Softmax for Multiple Classes - Understanding Neural Networks"
+meta_description: "In this post we will do digit recognition. For that, we need to extend the output layer of our network using the softmax function with cross entropy loss."
+focus_keyword: "Softmax"
+summary: "In this post, we will do digit recognition. For that, we need to extend the output layer of our network using the softmax function with cross entropy loss. This enables us to output predictions for multiple classes."
+excerpt: "<p>In this and the next posts, we will do digit recognition using the MNIST dataset. It consists of 70,000 images of handwritten digits (0 to 9). Our current net outputs one value, so in this post, we will modify it. Thus, it will be able to tackle classification tasks with more than two classes.</p>
+
+<img src=\"/images/posts/multiple-class-softmax/mnist.png\" style=\"width:100%\"/>"
+tags: [neural-networks, theory]
+stylesheets: ""
+javascripts: ""
+---
+<p><a href="https://github.com/batzner/understanding-nn/tree/multiclass-softmax">Code to this post</a></p>
+
+<p>In this and the next posts, we will do digit recognition using the MNIST dataset. It consists of 70,000 images of handwritten digits (0 to 9). Each image is 28×28 pixels large.</p>
+
+<figure>
+<img src="/images/posts/multiple-class-softmax/mnist.png"/>
+</figure>
+
+<p>An image is represented by a vector with 28·28 = 784 values between 0 and 1:</p>
+
+<figure>
+<img src="/images/posts/multiple-class-softmax/mnist-matrix.png"/>
+<figcaption>From https://www.tensorflow.org/versions/r0.8/tutorials/index.html</figcaption>
+</figure>
+
+<p>This means, instead of mapping from two input values to one output value, we will need a network that maps from 784 input values to 10 output values. Our current net outputs one value, so in this post, we will modify it. Thus, it will be able to tackle classification tasks with more than two classes.</p>
+
+<h3>Why one Output Value will not work</h3>
+<p>So far, we had one output neuron that generated a value between 0 and 1. We could change the activation of our output neuron to return values between 0 and 9. However, this is not at all a viable solution, because:</p>
+
+<ul>
+<li>It would be hard to interpret the values. What does an output of 7.5 mean?</li>
+<li>Although we are dealing with numbers, there is no numerical coherence between our 10 classes. The images could also contain letters or dog breeds. If the net outputs 2 for a dalmatian and 4 for a golden retriever, are two dalmatians one golden retriever?</li>
+<li>We are doing classification, not regression.</li>
+</ul>
+
+<p>Instead, we want our network to output probabilities for the different classes, just like it did so far. We can achieve this by extending the output layer to 10 neurons. Each neuron will correspond to a class / digit and output a value representing the probability of the image being the digit. If we use the sigmoid function as an activation function for each output neuron, the values will lie between 0 and 1, but there is no guarantee that the 10 values (probabilities!) sum up to 1. Instead, we need the <a href="https://en.wikipedia.org/wiki/Softmax_function">Softmax function</a>.</p>
+
+<h3>The Softmax Function</h3>
+<p>We remove the sigmoid activation function from the output layer. The softmax function \(\sigma(z)\) takes the layer’s output vector \(z \in \mathbb{R}^{10}\) with 10 values, exponentiates each value and then normalizes them by dividing through the sum of all exponentiated values:
+
+$$\sigma(z)_j = \frac{e^{z_j}}{\sum _{k=1} ^{K}{e^{z_k}}}$$
+
+Each value will lie between 0 and 1 and the sum of all values will be 1. Thus, we can interpret the values as probabilities / predictions for the image belonging to class \(j\). Changing the activation function of the output layer results in a different calculation of the gradient. But if we also change our loss function, we can prevent complicated derivations.</p>
+
+<h5>Changing the Loss Function</h5>
+<p>So far, we used the Mean Squared Error as the error / loss function. We can still do that by looking at the probability of the correct class in the output vector and squaring its distance to 1 (which would be the optimal output). However, there is another loss function, which is more popular: the <a href="https://en.wikipedia.org/wiki/Cross_entropy">Cross Entropy Loss</a>. What it does is looking at the calculated probability \(\hat{y}_i\) of the correct class \(c_i\) and calculating the negative logarithm of that 
+
+$$L(y, \hat{y}) = -\log(\hat{y}_i)$$
+
+So, the Cross Entropy Loss penalizes large deviations from the desired target label (take a look at the \(-\log(x)\) function between 0 and 1). More technically, the Cross Entropy Loss calculates the cross-entropy between the estimated class probabilities \(\hat{y}\) and the “true” distribution \(y\). The true distribution is a 0 vector with a 1 the index of the correct class.</p>
+
+$$L(y, \hat{y}) = - \sum _{i \in C} y_{i} \log \hat{y}_{i}$$
+
+<p>But since \(y_i\) is zero except for the correct class, this equation reduces to \(-\log(\hat{y}_i)\) as explained above. As James McCaffrey writes in his blog, using the Cross Entropy Loss instead of the Mean Squared Error is more common and expected to be better. But the combination of softmax and Cross Entropy Loss has a major advantage: the derivative of the loss w.r.t. the output layer’s net input is quite easy: it is \(\hat{y} - y\). You can find a quick derivation <a href="http://stats.stackexchange.com/questions/79454/softmax-layer-in-a-neural-network">here</a> and a more exhaustive one <a href="http://peterroelants.github.io/posts/neural_network_implementation_intermezzo02/">here</a>. Now we can calculate the \(\delta\) (called sensivity) in the output layer quickly with</p>
+
+<pre><code>self.sensitivity = np.copy(self.output)
+self.sensitivity[0, target] -= 1</code></pre>
+
+<p>Take a look at the <a href="https://github.com/batzner/understanding-nn/blob/11b04f7885085d2e15709be617cd22453218a388/src/net.py">updated code</a>. It also contains the other improvements that I will explain later in this post.</p>
+
+<h5>Why not use Linear Normalization?</h5>
+<p>The softmax exponentiates the output and then normalizes it. This can have strange effects. For example, an output vector of (20,21) will result in a softmax of (0.27, 0.73). Why not just directly normalize the output using the lowest and highest elements in the output vector? <a href="http://cs231n.github.io/linear-classify/#softmax-classifier">This post</a> states that the softmax interprets the output vector unnormalized log probabilities (so the logarithm of the “real” probability). By minimizing its loss, we are minimizing the negative log likelihood of the correct class, which is similar to performing Maximum Likelihood Estimation.</p>
+
+<h3>Other Improvements</h3>
+<p>I also added a couple of other improvements to the code, which I will explain now. Most of them only affected one or two lines of code.</p>
+
+<h5>Tanh Activation Function</h5>
+<p>From now on, we use the \(\tanh(x)\) function instead of the sigmoid function. They both look and behave similar, but the \(\tanh(x)\) function is used more widely. <a href="http://cs231n.github.io/neural-networks-1/#commonly-used-activation-functions">Why?</a></p>
+
+<h5>Regularization</h5>
+<p>Regularization adds the sum of the squared weights multiplied by a regularization parameter \(0.5 \Delta\) to the loss function. Thus, it introduces a “preference for a certain set of weights” <a href="http://cs231n.github.io/linear-classify/#multiclass-support-vector-machine-loss">[1]</a>. A preference for small squared weights leads to a decrease of the influence of a single dimension on the prediction all by itself: \(||(100,0,0,0)||_2 > ||(25,25,25,25)||_2\). This improves the generalization of the learning and prevents overfitting. In the code, you will find this line:</p>
+
+<pre><code>weights_gradient += Net.weight_decay * self.weights</code></pre> 
+
+<p>in the HiddenLayer and the OutputLayer class. As the regularization \(0.5 \Delta ||\vec{w}||_2\) is part of the loss function, it is also part of the gradient with \(\Delta \vec{w}\). The regularization parameter is called weight_decay in the code. It is not easily determined, but usually by testing different values between \(10^{-6}\) and \(0.1\), just like for the learning rate.</p>
+
+<h5>Weight Initialization</h5>
+
+<p>So far, we initialized the weights and the bias with the Normal Distribution:</p>
+
+<pre><code>self.weights = np.random.randn(n_input, size)
+self.bias = np.random.randn(1, size)</code></pre>
+
+<p>This works fine. The most important thing is, not to set all weights to zero in the beginning, because then the gradients for all weights will be the same and they will never diverge. However, setting the bias to zero initially and the weights to</p>
+
+<pre><code>self.weights = np.random.randn(n_input, size) / np.sqrt(n_input)</code></pre>
+
+<p>is common practice. <a href="http://cs231n.github.io/neural-networks-2/#init">Here</a> is the explanation why.</p>
+
+<h5>Preprocessing</h5>
+<p>It is best, if the mean of all input vectors is zero, similar to the weights. So we center the matrix of training samples by subtracting its mean from every vector. For new vectors in the testing phase we also subtract the mean of the training matrix, since it is important to use the exact same preprocessing operations for test samples as for training samples.</p>
+
+<p>We could also normalize all input dimensions. This is useful, if the dataset contains attributes with different ranges, for example yearly income and age. Then, we may want the attributes to be scaled down to the same range, for example [0,1]. All values in the MNIST dataset are already in [0,1], so we will consider normalization for later datasets. We will also consider <a href="https://en.wikipedia.org/wiki/Principal_component_analysis">PCA</a>, which is a popular preprocessing technique. In the current code, however, it is not yet implemented.</p>
+
+<h5>Momentum</h5>
+<p>I added another hyperparameter, the momentum. It also prevents getting stuck in local minima by adding a small portion of the last weight change to the current weight change. We will try out that parameter, when we encounter convergence at suboptimal error values. <a href="http://cs231n.github.io/neural-networks-3/#sgd">Read more</a>.</p>
+
+<figure>
+<img src="/images/posts/multiple-class-softmax/momentum.png" />
+<figcaption>Visualization of momentum - on the left without, on the right with momentum. From <a href="https://www.willamette.edu/~gorr/classes/cs449/momrate.html">[2]</a></figcaption>
+</figure>
+
+<h5>Test and Training Set</h5>
+<p>As announced in the last post, from now on we divide our dataset into training and test data. Take a look at the test method in the <a href="https://github.com/batzner/understanding-nn/blob/multiclass-softmax/src/net.py">Net class</a>. It returns the net’s accuracy on the test data, i.e. the ratio of correctly classified samples.</p>
+
+<h3>Moon Dataset Reprise</h3>
+<a href="https://github.com/batzner/understanding-nn/blob/multiclass-softmax/src/moons.py">Code of the experiment</a>
+<p>The new network with 5 hidden neurons converges after 700 epochs over the 200 samples from the moon dataset with a loss (not MSE!) of 0.1. Since we now have 2 output neurons, the whole net has 27 parameters to optimize. Below you see the decision boundary after each epoch for the first 40 epochs of training:</p>
+
+<figure>
+<img src="/images/posts/multiple-class-softmax/moons-convergence.gif"/>
+</figure>
+
+<h3>Digit Recognition</h3>
+<a href="https://github.com/batzner/understanding-nn/blob/multiclass-softmax/src/mnist.py">Code of the experiment</a>
+<p>Now, we can finally start with digit recognition. The 70,000 samples in the MNIST dataset are divided into 55,000 training images, 5,000 validation images and 10,000 test images. The validation images are for tuning the hyperparameters. We will integrate them later. For now, we use a net with 10 hidden neurons and 10 output neurons. We use a dynamic learning rate of 0.1, a weight decay of 0.001 and no momentum.</p>
+
+<p>After 100 epochs the net is still learning, but has already reached an accuracy of 92% on the test set. The benchmark for this dataset lies at almost 99.8%, scored by a state of the art neural network in 2012. Although we are still far away from that value, I consider 92% accuracy as a good value for our first try. Nevertheless, the 100 epochs took 15 minutes. For the final learning of a perfect neural network this is definitely ok, considering that the networks in Image Recognition challenges take “between five and six days to train on two GTX 580 3GB GPUs” <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf">[source]</a>. However, for tuning the hyperparameters, such as the size of the network, this takes too long. Furthermore, the “standard” neural networks (not convolutional etc.) that set the benchmarks on the MNIST dataset in the last years had 300 to 1000 hidden units, as you can see in <a href="http://yann.lecun.com/exdb/mnist/">this table</a> (our network with 300 hidden neurons scored 95% accuracy on the test set after 15 epochs). So in the next posts, I will focus on making the networks learning and the tuning of hyperparameters faster.</p>
+
+<h3>Conclusion</h3>
+<img src="/images/posts/multiple-class-softmax/andy-wow.gif"/>
+<p>We made our net even more flexible by using multiple output neurons combined with the Softmax function. Now we can use it to learn a lot of common classification datasets. Together with the Softmax function, we introduced the Cross Entropy Loss as a loss function, which makes the calculation of the derivative fast and simple. We also added some minor improvements, such as momentum, weight regularization, better weight initialization and normalization as preprocessing. At the end, we got a quick peek at the strength of our network: 95% accuracy with 300 hidden neurons after 15 epochs on the MNIST dataset. This comes with one downside: the complete training of our large net takes hours and therefore the tuning of hyperparameters as well. Let’s see, how we can speed up training and tuning in the next post.</p>
+
+<p>Next Post: <a href="/post/neural-networks-validation-batch-learning/">Validation and Batch Learning</a></p>

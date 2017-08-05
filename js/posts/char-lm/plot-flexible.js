@@ -71,7 +71,8 @@ const AXIS_LABELS = {
 let Y_AXIS_RANGE_SLIDER = $('#y-axis-range');
 let chartExport = null;
 
-window.onContentReadyCallbacks.push(function () {
+// MAIN Function
+$(function () {
     Chart.defaults.global.maintainAspectRatio = false;
     Chart.defaults.global.elements.line.fill = false;
     Chart.defaults.global.elements.line.tension = 0;

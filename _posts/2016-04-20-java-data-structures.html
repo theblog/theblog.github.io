@@ -1,0 +1,148 @@
+---
+layout: post
+title: "Java's Data Structures"
+category: "general"
+html_title: "Java's Data Structures"
+meta_description: "Take a look at the 9 most important data structures implemented in Java 8."
+focus_keyword: "Data Structures"
+summary: "In this post, we will cover the major data structures and their implementation in Java 8."
+excerpt: "This week, I will have a technical interview for a Software Engineering internship. To solve coding problems it is essential to remember the most frequently used data structures. It is even better to know how they are implemented. So, in order to structure my thoughts, I will cover the major data structures and their implementation in Java 8."
+tags: [coding]
+stylesheets: "<link rel=\"stylesheet\" href=\"css/posts/java-data-structures.css\">"
+javascripts: ""
+---
+This week, I will have a technical interview for a Software Engineering internship. To solve coding problems it is essential to remember the most frequently used data structures. It is even better to know how they are implemented. So, in order to structure my thoughts, I will cover the major data structures and their implementation in Java 8.
+
+<!--more-->
+
+Before we start, let us take a look at the <code>Collection&lt;E&gt;</code>  interface of Java. All following classes implement this interface. However, they differ in the runtime of executing certain operations. In order to compare the data structures, we will take a look at their complexity of the following methods of Collection: <code>add(E e)</code>  and <code>contains(Object o)</code>. Furthermore, we will consider the complexity of <code>add(E e, int index)</code>, <code>remove(int index)</code> and <code>get(int index)</code>, given that these are available.
+<h3>Array / ArrayList</h3>
+<h5>When to use it</h5>
+Given that we need a list data structure, the only other option is LinkedList. The main benefit of ArrayList is its constant access time. <code>get(int index)</code> runs in \(\mathcal{O}(1)\). Even <code>add(int index)</code> runs in amortized constant runtime. As we will see below, LinkedList has only a few advantages over ArrayList. So in most cases, an ArrayList is the better choice. Nevertheless, if we know that the list will never exceed a certain size, we can use a simple array and avoid suboptimal resizing.
+<h5>Implementation</h5>
+Arrays are implemented directly in Java, while I see ArrayList as "wrapper" around an array to extend its functionality in order to implement the Collection interface. An ArrayList always operates on a single array. On creation, the default ArrayList holds an array with 10 empty slots. When the array is full and a new element is being added, all elements are copied into a new array with 1.5 times the capacity.
+<h5>Notes</h5>
+<ul>
+ 	<li>It's always best to set the object's initial capacity to the largest capacity that your program will need.</li>
+ 	<li>The class Vector is the synchronized and thus thread safe version of ArrayList. It also differs in the growth factor.</li>
+</ul>
+<h5>Runtimes of Operations</h5>
+<table class="complexity-table">
+<tbody>
+<tr>
+<th>add(E e)</th>
+<th>add(E e, int index)</th>
+<th>contains(Object o)</th>
+<th>get(int index)</th>
+<th>remove(int index)</th>
+</tr>
+<tr>
+<td>$$\mathcal{O}(1)^*$$</td>
+<td>$$\mathcal{O}(n)$$</td>
+<td>$$\mathcal{O}(n)$$</td>
+<td>$$\mathcal{O}(1)$$</td>
+<td>$$\mathcal{O}(n)$$</td>
+</tr>
+<tr>
+<td colspan="100%">\(*\) means an amortized runtime.</td>
+</tr>
+</tbody>
+</table>
+<h3>LinkedList</h3>
+<h5>When to use it</h5>
+In contrast to ArrayList, accessing elements by index is expensive for a LinkedList. In exchange, adding and removing elements at the front and end of the list runs in \(\mathcal{O}(1)\). Therefore, the LinkedList is suitable for queues, for example during Breadth First Search. Adding and removing elements while iterating through the list with an ListIterator is also \(\mathcal{O}(1)\).
+<h5>Implementation</h5>
+LinkedList is an implementation of a doubly-linked list.
+<h5>Runtimes of Operations</h5>
+<table class="complexity-table">
+<tbody>
+<tr>
+<th>add(E e)</th>
+<th>add(E e, int index)</th>
+<th>contains(Object o)</th>
+<th>get(int index)</th>
+<th>remove(int index)</th>
+</tr>
+<tr>
+<td>$$\mathcal{O}(1)$$</td>
+<td>$$\mathcal{O}(n)$$</td>
+<td>$$\mathcal{O}(n)$$</td>
+<td>$$\mathcal{O}(n)$$</td>
+<td>$$\mathcal{O}(n)$$</td>
+</tr>
+</tbody>
+</table>
+<h3>HashMap</h3>
+The basic purpose of maps is to provide a dictionary-like data structure consisting of key-value pairs. One key can only have one value. The three implementations in Java 8 mainly differ in the way, the inserted elements are ordered. A HashMap provides no ordering of the elements, but ensures fast access to the value of a key.
+<h5>When to use it</h5>
+If the order of the key-value pairs in the HashMap is not important and we want fast access and storing times, the HashMap is the optimal choice.
+<h5>Implementation</h5>
+The core of a HashMap is an array of buckets. By default this array has a capacity of 16. When a key-value pair is inserted, the key is hashed to an integer smaller than the capacity of the array. The pair is then saved in the array at the index given by the hash function. If two different keys get hashed to the same index, a collision occurs. Therefore, we store a singly-linked list of key-value pairs at each slot in the array. Inserted key-value pairs are appended to the list at the index given by the hashed key. When we retrieve the value to a key, we iterate through the list until we find the exact same key. Once the size of the HashMap exceeds a certain load factor (0.75 by default), the array's capacity doubles.
+<h5>Runtimes of Operations</h5>
+<table class="complexity-table">
+<tbody>
+<tr>
+<th>put(K k, V v)</th>
+<th>containsKey(K k)</th>
+<th>get(K k)</th>
+<th>remove(Object object)</th>
+</tr>
+<tr>
+<td>$$\mathcal{O}(1)^*$$</td>
+<td>$$\mathcal{O}(1)^*$$</td>
+<td>$$\mathcal{O}(1)^*$$</td>
+<td>$$\mathcal{O}(1)^*$$</td>
+</tr>
+</tbody>
+</table>
+<h3>LinkedHashMap</h3>
+The LinkedHashMap is a mixture between a HashMap and a doubly-linked list storing the Entry objects in their insertion order. The runtimes all are \(\mathcal{O}(1)^*\), just like for the HashMap. However, we need more space and time for updating the linked list. Therefore, we should only use a LinkedHashMap, if we need a predictably iteration order given by the insertion time.
+<h3>TreeMap</h3>
+<h5>When to use it</h5>
+When we need natural ordering of the keys.
+<h5>Implementation</h5>
+A TreeMap does not use hashing to organize its key-value pairs, but a Red-Black tree. This tree is sorted according to the natural ordering of its keys. Each entry of the tree stores the key-value pair. The Red-Black tree data structure causes \(log(n)\) time for the four major operations.
+<h5>Runtimes of Operations</h5>
+<table class="complexity-table">
+<tbody>
+<tr>
+<th>put(K k, V v)</th>
+<th>containsKey(K k)</th>
+<th>get(K k)</th>
+<th>remove(Object object)</th>
+</tr>
+<tr>
+<td>$$\mathcal{O}(log(n))^*$$</td>
+<td>$$\mathcal{O}(log(n))^*$$</td>
+<td>$$\mathcal{O}(log(n))^*$$</td>
+<td>$$\mathcal{O}(log(n))^*$$</td>
+</tr>
+</tbody>
+</table>
+<h3>HashSet / TreeSet</h3>
+A set simply stores elements without caring about their order. It provides three major methods: <code>add(E e)</code>, <code>contains(E e)</code> and <code>remove(E e)</code>. In Java, sets are implemented by storing keys in a map and using <code>new Object()</code> as value. A HashSet uses a HashMap and a TreeSet uses a TreeMap, giving the possibility to iterate the objects in their natural order. Therefore the runtimes of the major operations are equal to the runtimes of the corresponding map.
+<h3>PriorityQueue</h3>
+<h5>When to use it</h5>
+A PriorityQueue is used, when we need to sort a queue not by the insertion order but by the priority of the elements, for example patients in a hospital. By giving the PriorityQueue a comparator or letting E implement Comparable, we can specify the priority of each element. The major operations are <code>add(E e)</code>, <code>peek()</code>, <code>poll()</code> and <code>remove(E e)</code>. A famous application of the PriorityQueue is Dijkstra's algorithm.
+<h5>Implementation</h5>
+The PriorityQueue uses a heap to store its elements. However, the implementation in Java assumes that the priority of added elements does not change. Therefore, to perform the decreaseKey operation, for example in Dijkstra's algorithm, we need to delete and reinsert the element with the new priority.
+<h5>Runtimes of Operations</h5>
+<table class="complexity-table">
+<tbody>
+<tr>
+<th>add(E e)</th>
+<th>poll()</th>
+<th>remove(Object object)</th>
+</tr>
+<tr>
+<td>$$\mathcal{O}(1)^*$$</td>
+<td>$$\mathcal{O}(log(n))^*$$</td>
+<td>$$\mathcal{O}(log(n))^*$$</td>
+</tr>
+</tbody>
+</table>
+<h3>Links</h3>
+<ul>
+ 	<li><a href="http://grepcode.com/snapshot/repository.grepcode.com/java/root/jdk/openjdk/8u40-b25/">Java 8 Source Code</a></li>
+ 	<li><a href="http://www.javaworld.com/article/2077425/java-se/vector-or-arraylist-which-is-better.html">Vector vs. ArrayList</a></li>
+</ul>
