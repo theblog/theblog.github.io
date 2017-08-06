@@ -1,0 +1,38 @@
+{
+  "name": "batzner.github.io",
+  "version": "1.0.0",
+  "description": "ML blog",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/batzner/batzner.github.io.git"
+  },
+  "keywords": [
+    "machine",
+    "learning",
+    "blog",
+    "jekyll"
+  ],
+  "author": "Kilian Batzner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/batzner/batzner.github.io/issues"
+  },
+  "homepage": "https://github.com/batzner/batzner.github.io#readme",
+  "devDependencies": {
+    "babel-polyfill": "^6.23.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "latest",
+    "gulp-clean": "latest",
+    "gulp-clean-css": "^3.7.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-eslint": "^4.0.0",
+    "gulp-imagemin": "^3.3.0",
+    "gulp-merge": "^0.1.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "latest"
+  }
+}

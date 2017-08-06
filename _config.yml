@@ -1,3 +1,8 @@
+source: _dist
 excerpt_separator: <!--more-->
 include: ["_pages"]
 permalink: /:title/
+exclude:
+  - package.json
+  - node_modules
+  - gulpfile.js

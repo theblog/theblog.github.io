@@ -34,8 +34,8 @@ function colorCellsByLogValue() {
             let val = parseFloat(cell.html());
             if (!isNaN(val)) {
                 val = Math.log(val);
-                let percentage = (val-min) / (max-min);
-                cell.css('background-color', 'rgba(229,115,115,'+percentage+')');
+                let percentage = (val - min) / (max - min);
+                cell.css('background-color', 'rgba(229,115,115,' + percentage + ')');
             }
         });
     });
