@@ -86,6 +86,7 @@
 .text-output {
     color: #ddd;
     white-space: pre-wrap;
+    margin-left: 10px;
 }
 
 .text-input-output-bridge {
