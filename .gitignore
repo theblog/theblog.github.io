@@ -51,5 +51,7 @@ fabric.properties
 
 # CUSTOM
 .idea
-_dist
 node_modules
+
+# Only on dev
+_dist
