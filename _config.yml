@@ -2,6 +2,7 @@ source: src
 excerpt_separator: <!--more-->
 include: ["_pages"]
 permalink: /post/:title/
+url: http://mlowl.com
 exclude:
   - package.json
   - node_modules
