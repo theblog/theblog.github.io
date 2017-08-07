@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "8 facts I did not know about Java"
+disqus_id: "8-facts-java"
 category: "general"
 html_title: "8 facts I did not know about Java"
 meta_description: "I found out some helpful and some surprising properties of Java. Did you know that to this day, Java has Go To statements?"
@@ -22,11 +23,11 @@ int negative = -17 % 7; // will be -3</code></pre>
 <h3>2. Java's Garbage collection finds isolated circular references</h3>
 Java's GC starts from the garbage collection root. Every object that it does not reach from there is considered garbage. The main types of GC roots are (see <a href="https://www.yourkit.com/docs/java/help/gc_roots.jsp" target="_blank">yourkit.com</a>):
 <ul>
-<li><strong>Classes </strong>- they are never unloaded by the GC. Thus, their static fields cannot be unloaded either.</li>
-<li><strong>Threads</strong> - which are alive</li>
-<li><strong>Stack</strong> - local variables and method parameters</li>
-<li><strong>Used Monitors </strong>- objects used as a monitor for synchronization</li>
-<li><strong>Objects for JVM </strong><strong>purposes</strong></li>
+    <li><strong>Classes </strong>- they are never unloaded by the GC. Thus, their static fields cannot be unloaded either.</li>
+    <li><strong>Threads</strong> - which are alive</li>
+    <li><strong>Stack</strong> - local variables and method parameters</li>
+    <li><strong>Used Monitors </strong>- objects used as a monitor for synchronization</li>
+    <li><strong>Objects for JVM </strong><strong>purposes</strong></li>
 </ul>
 <h3>3. Static classes are not possible per se</h3>
 I did a lot of C# programming in the last months, so I was surprised to find out that you cannot define a <code>public static class Customer</code> in Java. This will result in a compiler error. Nevertheless, you can imitate C#'s static classes (read the <a href="https://msdn.microsoft.com/en-us/library/79b3xss3(v=vs.80).aspx" target="_blank">MSDN article</a> about their purpose). By making a class final and making all its constructors private , no one will be able to subclass it or create an object of it outside of the class. In fact, <code>java.lang.Math</code> does exactly this.
@@ -61,8 +62,8 @@ Synchronized statements provide two features: <strong>mutual exclusion</strong>
 
 Volatile variables only provide <strong>visibility</strong>. Therefore they should not be used for cases where
 <ul>
-<li>the writes to the volatile variable depend on its current value or</li>
-<li>the volatile variable is used in a condition together with other variables.</li>
+    <li>the writes to the volatile variable depend on its current value or</li>
+    <li>the volatile variable is used in a condition together with other variables.</li>
 </ul>
 They can however be used for notifying a thread from another thread by changing the value of a volatile variable. The benefits of using a volatile variable are simplicity and performance. Volatile reads are about as fast as non-volatile reads. Volatile and synchronized can also be combined to provide <a href="http://stackoverflow.com/questions/11681326/volatile-synchronized-combination-for-performance">fast read and safe increase operations</a>.
 <h3>7. Labelling loops for break and continue</h3>

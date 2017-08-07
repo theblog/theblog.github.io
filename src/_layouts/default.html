@@ -6,17 +6,22 @@
     <title>{{ page.html_title | default: "MLOwl - Blog about Machine Learning et al." }}</title>
 
     <!-- SEO start -->
-    <meta name="description" content="{{page.meta_description | default: "Blog about Data Science, TensorFlow and other buzzwords"}}">
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="{{page.html_title | default: "MLOwl - Blog about Machine Learning et al." }}" />
-    <meta property="og:description" content="{{page.meta_description | default: "Blog about ML, Data Science and other buzzwords"}}" />
-    <meta property="og:url" content="http://www.mlowl.com" />
-    <meta property="og:site_name" content="MLOwl" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:description" content="{{page.meta_description | default: "Blog about ML, Data Science and other buzzwords"}}" />
-    <meta name="twitter:title" content="{{page.html_title | default: "MLOwl - Blog about Machine Learning et al." }}" />
-    <meta name="twitter:site" content="@therealkilianb" />
+    <meta name="description" content="{{page.meta_description | default: " Blog about Data Science, TensorFlow and other buzzwords
+    "}}">
+    <meta property="og:locale" content="en_US"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="{{page.html_title | default: " MLOwl - Blog about Machine Learning et al.
+    " }}" />
+    <meta property="og:description" content="{{page.meta_description | default: " Blog about ML, Data Science and other buzzwords
+    "}}" />
+    <meta property="og:url" content="http://www.mlowl.com"/>
+    <meta property="og:site_name" content="MLOwl"/>
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:description" content="{{page.meta_description | default: " Blog about ML, Data Science and other buzzwords
+    "}}" />
+    <meta name="twitter:title" content="{{page.html_title | default: " MLOwl - Blog about Machine Learning et al.
+    " }}" />
+    <meta name="twitter:site" content="@therealkilianb"/>
     <!-- SEO end -->
 
     <!-- Favicons start -->
@@ -81,17 +86,17 @@
     <div id="navbarCollapse" class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
             <li>
-                <a {% if page.nav_item == 'home' %} class="active" {% endif %} ng-class="nav.getClass('blog')" href="{{site.url}}"><i class="fa fa-home"></i>Blog</a>
+                <a {% if page.nav_item== 'home' %} class="active" {% endif %} ng-class="nav.getClass('blog')" href="{{site.url}}"><i class="fa fa-home"></i>Blog</a>
             </li>
             <li>
-                <a {% if page.category == 'neural-network' %} class="active" {% endif %} href="/category/neural-network/"><i class="fa fa-sitemap"></i>
-                    <div>Neural
-                        Network from Scratch
-                    </div>
+                <a {% if page.category== 'neural-network' %} class="active" {% endif %} href="/category/neural-network/"><i class="fa fa-sitemap"></i>
+                <div>Neural
+                    Network from Scratch
+                </div>
                 </a>
             </li>
             <li>
-                <a {% if page.nav_item == 'about' %} class="active" {% endif %} ng-class="nav.getClass('about')" href="/about/"><i class="fa fa-user"></i>About</a>
+                <a {% if page.nav_item== 'about' %} class="active" {% endif %} ng-class="nav.getClass('about')" href="/about/"><i class="fa fa-user"></i>About</a>
             </li>
         </ul>
     </div>
