@@ -10,3 +10,4 @@ exclude:
   - src
   - .eslintrc
   - README.md
+  - _dist

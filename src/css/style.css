@@ -356,3 +356,7 @@ h1 a, h1 a:hover, h1 a:active, h1 a:focus {
         padding-right: 0;
     }
 }
+
+#disqus_heading {
+    clear: both;
+}

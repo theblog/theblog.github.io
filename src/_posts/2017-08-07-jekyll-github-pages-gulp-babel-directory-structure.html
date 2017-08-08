@@ -1,0 +1,118 @@
+---
+layout: post
+title: "Directory Structure for Jekyll / GitHub Pages with Gulp and Babel"
+disqus_id: "jekyll-github-pages-gulp-babel"
+category: "general"
+html_title: "Directory Structure for Jekyll / GitHub Pages with Babel"
+meta_description: "Ready-to-fork setup of Babel, Gulp and Jekyll for GitHub Pages"
+focus_keyword: "Jekyll"
+summary: "Ready-to-fork setup of Babel, Gulp and Jekyll for GitHub Pages"
+tags: [coding, web-dev]
+stylesheets: ""
+javascripts: ""
+---
+
+<ul>
+    <li><strong><a href="https://jekyllrb.com/" target="_blank">Jekyll</a></strong> is the most popular static site generator.</li>
+    <li><strong><a href="https://pages.github.com/" target="_blank">GitHub Pages</a></strong> hosts your jekyll sites for free under *.github.io.</li>
+    <li><strong><a href="https://gulpjs.com/" target="_blank">Gulp</a></strong> lets you automate your build process (minifying .css files, concatenating all .js files etc.).</li>
+    <li><strong><a href="https://babeljs.io/" target="_blank">Babel</a></strong> lets you write ES6 <i>(cool new JavaScript)</i> even though not all browsers support it by transpiling it into ES5 <i>(lame old JavaScript)</i>.</li>
+</ul>
+
+<p>I switched to using Jekyll for MLOwl yesterday and I love it. There are blog posts describing how to combine a subset of the above, but I could not find one for combining all four.</p>
+
+<!--more-->
+
+<h3>Result</h3>
+
+<p>I created a <a href="https://github.com/batzner/github-pages-boilerplate/" target="_blank">boilerplate repository</a> for GitHub Pages with Gulp and Babel set up.</p>
+
+<h5>Usage</h5>
+<ol>
+    <li>Fork the repo</li>
+    <li>Run <code>npm install</code> in the root directory to install Gulp and Babel locally.</li>
+    <li>Run <code>gulp jekyll</code> to build the site with Babel and serve it with Jekyll afterwards. Visit <a href="http://localhost:4000" target="_blank">http://localhost:4000</a> to see the blog.</li>
+</ol>
+
+<h5>Development</h5>
+<p>The <code>master</code> branch should only be used for deploying (see considerations below). For development, switch to the <code>dev</code> branch. After implementing your changes, test them by running <code>gulp jekyll</code> and visiting <a href="http://localhost:4000" target="_blank">http://localhost:4000</a>.</p>
+
+<p>If you are happy, checkout the <code>master</code> branch, merge the <code>dev</code> branch, run <code>gulp</code> to build the site into the project's root directory and push / deploy the new build to the <code>master</code> branch on GitHub.</p>
+
+
+<p>Note: You can skip Babel during development by changing <code>source: _dist</code> to <code>source: src</code> and running <code>jekyll serve</code> in the root directory.</p>
+
+<h5>Directory Structure</h5>
+
+<p>See the <a href="https://jekyllrb.com/docs/structure/">Jekyll docs</a> for an explanation of the files and directories.</p>
+
+<p>On <code>master</code></p>
+
+<pre>
+<code>
+.
+├── _layouts  // built by gulp
+├── _posts  // built by gulp
+├── js  // built by gulp
+|   ├── main.js // transpiled by Babel
+├── index.html  // built by gulp
+├── src
+|   ├── _layouts
+|   ├── _posts
+|   ├── js
+|       ├── main.js // in ES6
+|   ├── index.html
+├── _config.yml
+├── gulpfile.js
+├── package.json
+├── README.md
+├── .gitignore
+</code>
+</pre>
+
+<p>On <code>dev</code></p>
+
+<pre>
+<code>
+.
+├── _dist // built by gulp
+|   ├── _layouts
+|   ├── _posts
+|   ├── js
+|       ├── main.js // transpiled by Babel
+|   ├── index.html
+├── src
+|   ├── _layouts
+|   ├── _posts
+|   ├── js
+|       ├── main.js // in ES6
+|   ├── index.html
+├── _config.yml
+├── gulpfile.js
+├── package.json
+├── README.md
+├── .gitignore
+</code>
+</pre>
+
+<h3>Considerations</h3>
+
+<ul>
+    <li>Running Babel for transpiling the ES6 files into ES5 before each deployment of the site is not practical, so a build tool like Gulp that runs Babel automatically is a must.</li>
+    <li>There is a <a href="https://github.com/babel/jekyll-babel" target="_blank">jekyll-babel Jekyll plugin</a> but you have to start each .js file with exactly
+        <pre><code>---<br>---</code></pre>
+        WebStorm does not like that and formats it wrongly every time. If you try to escape that block with <code>// @formatter:off</code>, the Jekyll plugin won't work anymore. Also, it is a bit dirty to mess with the .js files. If I want to directly run them during development, they will error. So, Babel has to be called by Gulp.
+    </li>
+    <li>Babel will generate the transpiled .js files somewhere. I don't want these files to mingle with the actual source .js files - that would cause confusion. So, using a <code>src</code> and a <code>_dist</code> directory (ignored by git) would be clean. Jekyll can then generate the static site in <code>_site</code> by using the files in <code>_dist</code>.</li>
+    <li>You have to commit all files that Jekyll needs to the <code>master</code> branch on GitHub. So <code>_dist</code> must not be ignored by git. At the same time it is generated code so it should be ignored. A solution is to ignore <code>_dist</code> on the <code>dev</code> branch. Then, merge the <code>dev</code> branch to the <code>master</code> branch, run Gulp and push the newly <code>_dist</code> to the GitHub <code>master</code> branch.</li>
+    <li>For running Jekyll on the <code>_dist</code> directory, you would have to specify <code>source: _dist</code> in Jekyll's <code>_config.yml</code>. However, GitHub overrides the <code>source</code> setting, which you cannot change (<a href="https://help.github.com/articles/configuring-jekyll/#configuration-settings-you-cannot-change" target="_blank">GitHub docs</a>). So Jekyll's source directory <strong>has to be the repo's top level directory</strong> (for username.github.io pages). You also <strong>must</strong> commit the page to the <code>master</code> branch. The solution is to keep the <code>source: _dist</code> setting for the <code>dev</code> branch, but let gulp build the site into the root directory on the <code>master</code> branch (<a href="https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/" target="_blank">docs</a>).</li>
+</ul>
+
+<h3>Drawbacks</h3>
+
+<ul>
+    <li>On <code>master</code>, Gulp cannot clean the build directory before building because it is the project's root directory.</li>
+    <li>You have to go to <code>master</code>, build and push for every deployment of the site. <a href="https://github.com/shinnn/gulp-gh-pages">This gulp plugin</a> might help with that.</li>
+    <li>On <code>master</code>, I had to change <code>_config.yml</code> and <code>gulpfile.js</code> to make Gulp build into the root directory. Thus, changes to these files in <code>dev</code> will have to be merged manually with master.</li>
+</ul>
+
