@@ -21,7 +21,10 @@ nav_item: home
                     {% endfor %}
                 </div>
             </div>
-            <div class="panel-body post-body">{{ post.excerpt }}</div>
+            <div class="panel-body post-body">
+                {{ post.excerpt }}
+                <a href="{{ post.url }}">Read more</a>
+            </div>
         </div>
     </div>
     {% endfor %}

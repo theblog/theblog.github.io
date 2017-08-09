@@ -1,0 +1,58 @@
+---
+layout: post
+title: "iCloud Key-Value Storage in Swift 3 / iOS 10 / Xcode 8"
+disqus_id: "swift-icloud-key-value-store"
+category: "general"
+html_title: "iCloud Key-Value Storage in Swift 3 / iOS 10 / Xcode 8"
+meta_description: "A really quick tutorial with 3 lines of code on how to add iCloud backups / synchronization to your app"
+focus_keyword: "iCloud"
+summary: "A really quick tutorial with 3 lines of code on how to add iCloud backups / synchronization to your app"
+tags: [coding]
+stylesheets: ""
+javascripts: ""
+---
+The iCloud key-value storage is like the <code>UserDefaults</code> but synced across devices. It also survives uninstalls of the app. I used it today to add iCloud backups to <a href="https://itunes.apple.com/us/app/emoji-diary-daily-journal-with-emoticons/id1247061044?mt=8">Emoji Diary</a>. It required 4 lines of code.
+
+<h3>Activate the iCloud capability</h3>
+
+<p>Select your project in Xcode and then select the target under "Project and Targets". Activate iCloud and check "Key-Value storage".</p>
+
+<img src="/images/posts/swift-icloud-key-value-store/project-settings.png"/>
+
+<!--more-->
+
+<h3>Add iCloud to your App ID</h3>
+
+<ol>
+    <li>Go to <a href="https://developer.apple.com/account/#/welcome">https://developer.apple.com/account/</a> -> Certificates, Identifiers & Profiles</li>
+    <li>Under <strong>Identifiers -> App IDs</strong>, edit your App ID and <strong>check the iCloud box</strong>. For Key-Value storage "Compatible with Xcode 5" suffices. CloudKit is for documents, large files and Core Data. Click Done.</li>
+    <li>Go to your <strong>Provisioning Profiles</strong>. You will see that they turned invalid. For each of them, click edit and then generate to regenerate them. By opening the downloaded Provisioning Profiles, Xcode will automatically update them.</li>
+</ol>
+
+<h3>4 lines of code</h3>
+
+<p>Wherever you need to access the key-value store, call</p>
+
+<pre>
+    <code>var keyStore = NSUbiquitousKeyValueStore()</code>
+</pre>
+
+<p>Add data just like with the <code>UserDefaults</code>:</p>
+
+<pre>
+    <code>keyStore.set("John Appleseed", forKey: "userName")</code>
+</pre>
+
+<p>Retrieve data somewhere else with:</p>
+
+<pre>
+    <code>let storedUserName = keyStore.string(forKey: "userName")</code>
+</pre>
+
+<p>So far, the keyStore acts like the <code>UserDefaults</code>. The data will be stored locally. To sync them with iCloud, call</p>
+
+<pre>
+    <code>keyStore.synchronize()</code>
+</pre>
+
+<p>This may not synchronize immediately but at "an appropriate later time" as the Apple Docs put it.</p>
