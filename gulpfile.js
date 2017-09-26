@@ -20,7 +20,6 @@ const distDir = '_dist/';
 // Paths to be used in gulp.src
 const sourcePaths = {
     javascripts: ['js/**/*.js', '!js/lib/**/*.js'],
-    stylesheets: ['stylesheets/**/*.css'],
     images: ['images/**/*.png', 'images/**/*.jpg', 'images/**/*.jpeg', 'images/**/*.gif']
 };
 

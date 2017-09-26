@@ -149,11 +149,11 @@ javascripts: "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/he/1.1.1/he.m
 
 <ul>
     <li>The idea is not new at all. I was inspired by <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/" target="_blank">this popular blog post</a> by Andrej Karpathy. If you would like to know more about the theory behind this post, this is an excellent resource. He also trained his network on character-level on Shakespeare, Wikipedia, Linux Source Code etc. The results are quite funny.</li>
-    <li>I implemented the LSTM from scratch with TensorFlow. You can check out the <a href="https://github.com/batzner/tensorflow-pet-projects" target="_blank">GitHub repository</a>. However, since it was my first TensorFlow project, I don't think the code is noteworthy. For implementing character-level language models with LSTMs in Tensorflow, <a href="https://github.com/sherjilozair/char-rnn-tensorflow" target="_blank">this repo</a> and <a href="https://github.com/tensorflow/models/blob/master/tutorials/rnn/ptb/ptb_word_lm.py" target="_blank">this TensorFlow example</a> might be better points to start. Nevertheless, my code proves that five TensorFlow models with about 7 million parameters each can run simultaneously on a single <a href="https://aws.amazon.com/ec2/instance-types/#instance-type-matrix" target="_blank">AWS t2.micro</a> instance with only 1 GiB of RAM.</li>
+    <li>I implemented the LSTM from scratch with TensorFlow. You can check out the <a href="https://github.com/batzner/tensorlm" target="_blank">GitHub repository</a>. As it turns out, five TensorFlow models with about 7 million parameters each can run simultaneously on a single <a href="https://aws.amazon.com/ec2/instance-types/#instance-type-matrix" target="_blank">AWS t2.micro</a> instance with only 1 GiB of RAM.</li>
     <li>What <strong>is</strong> new about this post is that, firstly, it contains an interactive text box where you can find the strengths and weaknesses of the trained models and, secondly, I am publishing my complete hyperparameter odyssey. Below, I will explain, how I found the hyperparameters (batch size, learning rate, number of layers etc.) for the final networks - what mistakes I made and what I learned from them. So if hyperparameter-tuning of neural networks is a bit of a mystery to you, this post might save you some time and money spent on the inefficient training of models.</li>
 </ul>
 
-<p><a href="https://github.com/batzner/tensorflow-pet-projects" target="_blank">Code to this post</a></p>
+<p><a href="https://github.com/batzner/tensorlm" target="_blank">Code to this post</a></p>
 
 <h3>Setup</h3>
 <h5>Dataset</h5>
