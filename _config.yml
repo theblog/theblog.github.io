@@ -2,7 +2,7 @@ source: src
 excerpt_separator: <!--more-->
 include: ["_pages"]
 permalink: /post/:title/
-url: http://mlowl.com
+url: http://theblog.github.io
 exclude:
   - package.json
   - node_modules

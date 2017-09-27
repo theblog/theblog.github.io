@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Basic concept follows https://www.justinmccandless.com/post/a-tutorial-for-getting-started-with-gulp/
  * TODO: Plug-ins to consider: gulp-changed, gulp-minify-html (see
