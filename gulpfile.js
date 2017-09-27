@@ -42,6 +42,7 @@ gulp.task('_javascripts', ['_copy'], function () {
         .pipe(babel({
             presets: ['es2015']
         }))
+        .pipe(uglify())
         .pipe(gulp.dest(distDir));
 });
 
