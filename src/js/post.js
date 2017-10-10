@@ -7,8 +7,6 @@ function processPageElements() {
 
     // Apply the transforms
     colorCellsByLogValue();
-
-    runHighlighting();
 }
 
 function colorCellsByLogValue() {
@@ -38,14 +36,5 @@ function colorCellsByLogValue() {
                 cell.css('background-color', 'rgba(229,115,115,' + percentage + ')');
             }
         });
-    });
-}
-
-function runHighlighting() {
-    // MathJax.Hub.Queue(["Typeset", MathJax.Hub]); // Run Mathjax
-
-    // Run hljs
-    $('pre code').each(function (i, block) {
-        hljs.highlightBlock(block);
     });
 }

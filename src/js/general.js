@@ -19,6 +19,8 @@ $(function () {
         button.html(target.is(':visible') ? showText : hideText);
         target.slideToggle();
     });
+
+    runHighlighting();
 });
 
 function selectDropdownItem(elem, triggerOnChange=true) {
@@ -31,4 +33,11 @@ function selectDropdownItem(elem, triggerOnChange=true) {
     if (triggerOnChange) {
         buttonElem.change();
     }
+}
+
+function runHighlighting() {
+    // Run hljs
+    $('pre code').each(function (i, block) {
+        hljs.highlightBlock(block);
+    });
 }
