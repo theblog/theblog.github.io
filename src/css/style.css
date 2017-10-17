@@ -221,6 +221,10 @@ footer {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
+.panel-post {
+    position: relative;
+}
+
 .panel-default > .panel-heading {
     border-bottom: 1px solid #eee;
     background: none;
@@ -228,6 +232,10 @@ footer {
     padding: 20px 0 10px 0;
     overflow: hidden;
     position: relative;
+}
+
+.panel-post > .panel-heading {
+    margin-right: 120px;
 }
 
 .panel-default > .panel-heading h1 {
