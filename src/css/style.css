@@ -242,6 +242,12 @@ footer {
     font-weight: bold;
 }
 
+.panel-default > .panel-heading h2 {
+    margin-top: 10px;
+    font-weight: lighter;
+    font-size: 1.2rem;
+}
+
 .panel-default > .panel-heading h5 {
     text-transform: none;
     font-weight: lighter;
