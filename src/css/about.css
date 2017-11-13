@@ -13,10 +13,6 @@ h1, h2, h3 {
     letter-spacing: inherit;
 }
 
-h1 {
-    font-size: 1.7rem;
-}
-
 .panel-default > .panel-heading {
     border-bottom: none;
 }
@@ -27,17 +23,14 @@ h1 {
 
 .panel-default>.profile h1 {
     font-size: 2rem;
+    font-weight: bold;
     margin-top: 0.5rem;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0;
 }
 
-.profile h2, .heading h2  {
-    margin-top: 0;
-}
-
-.heading h2 {
-    font-size: 1.2rem;
-    margin-bottom: 4px;
+.panel-default>.profile h2 {
+    font-size: 1.3rem;
+    margin-top: 0.2rem;
 }
 
 .cv-section {
@@ -51,8 +44,10 @@ h1 {
     margin-bottom: 0;
 }
 
-.cv-section h1:first-child {
+.cv-section h2:first-child {
     margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
 }
 
 .cv-item {
@@ -60,20 +55,26 @@ h1 {
     margin: 20px 0;
 }
 
-.heading {
+.cv-heading {
     overflow: hidden;
     margin-bottom: 4px;
 }
 
-.heading:after {
+.cv-heading h3 {
+    margin-top: 0;
+    margin-bottom: 4px;
+    font-size: 1.3rem;
+}
+
+.cv-heading:after {
     clear: both;
 }
 
-.heading .info a {
+.cv-heading .info a {
     margin-left: 10px;
 }
 
-.heading .pull-left {
+.cv-heading .pull-left {
     margin-right: 10px;
 }
 
