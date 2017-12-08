@@ -51,7 +51,7 @@ $(function () {
     selectedDataset = null;
     pendingRequestId = null;
     result = null;
-    selectDataset('wiki');
+    selectDataset('congress');
 });
 
 // TODO: Stop the animation on an exception
