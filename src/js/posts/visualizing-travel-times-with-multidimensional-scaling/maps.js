@@ -1,5 +1,7 @@
 var cityMap;
 var coordinateMap;
+var geocoder;
+var cities;
 var cityNames = [];
 var cityMarkers = [];
 var coordinateMarkers = [];
@@ -22,11 +24,11 @@ function displayError(message) {
     message = message || "Something went wrong with the Google Maps API. Please try reloading" +
         " the page";
     $("#post-error").show().html(message);
+    console.error(message);
 }
 
 function getCityCoordinates(cityNames, callback) {
     var result = [];
-    var geocoder = new google.maps.Geocoder();
     cityNames.forEach(function(city) {
         geocoder.geocode({
             'address': city
@@ -394,7 +396,7 @@ function initMap() {
     coordinateMap.mapTypes.set(customMapTypeId, customMapType);
     coordinateMap.setMapTypeId(customMapTypeId);
 
-    geocoder = new google.maps.Geocoder;
+    geocoder = new google.maps.Geocoder();
 
     getCityCoordinates(cityNames, function(result) {
         cities = result;
