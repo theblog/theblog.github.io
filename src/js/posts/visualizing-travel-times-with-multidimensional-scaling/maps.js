@@ -1,3 +1,4 @@
+var cityMap;
 var cityNames = [];
 var cityMarkers = [];
 var coordinateMarkers = [];
@@ -11,8 +12,8 @@ $(function () {
     try {
         initMap();
     } catch (e) {
-        // Display the error beneath the interactive google maps
-        displayError();
+        // Display the error below the interactive google maps
+        displayError(e);
     }
 });
 
