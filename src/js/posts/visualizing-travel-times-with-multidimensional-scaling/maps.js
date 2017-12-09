@@ -1,4 +1,5 @@
 var cityMap;
+var coordinateMap;
 var cityNames = [];
 var cityMarkers = [];
 var coordinateMarkers = [];
