@@ -158,7 +158,7 @@ function getMeanEuclideanError(pointsA, pointsB) {
 }
 
 function center(points) {
-    centroid = mean(points);
+    var centroid = mean(points);
     for (var i = 0; i < points.length; i++) {
         points[i] = numeric.sub(points[i], centroid);
     }

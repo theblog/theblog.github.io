@@ -50,6 +50,7 @@ crashlytics-build.properties
 fabric.properties
 
 # CUSTOM
+.DS_Store
 .idea
 node_modules
 
