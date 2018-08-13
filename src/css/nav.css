@@ -3,7 +3,7 @@
     width: 100%;
     z-index: 1;
     font-weight: lighter;
-    box-shadow: #999 2px 0 10px;
+    box-shadow: rgba(0,0,0,0.5) 2px 0 10px;
     background: #242745; /* For browsers that do not support gradients */
     background: -webkit-linear-gradient(left, #212433, #232636); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(right, #212433, #232636); /* For Opera 11.1 to 12.0 */
