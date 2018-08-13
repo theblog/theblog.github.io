@@ -1,4 +1,4 @@
-source: src
+source: _dist
 excerpt_separator: <!--more-->
 include: ["_pages"]
 permalink: /post/:title/
