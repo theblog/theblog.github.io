@@ -91,21 +91,18 @@
     </div>
     <!-- Collection of nav links and other content for toggling -->
     <div id="navbarCollapse" class="collapse navbar-collapse">
+        <h5><a href="{{site.url}}">Posts</a></h5>
         <ul class="nav navbar-nav">
+            {% assign pinned = site.posts | where_exp: 'post', 'post.pinned' %}
+            {% assign not_pinned = site.posts | where_exp: 'post', 'post.pinned != true' %}
+            {% assign sorted_posts = pinned | concat: not_pinned %}
+            {% for post in sorted_posts %}
             <li>
-                <a {% if page.nav_item== 'home' %} class="active" {% endif %} href="{{site.url}}"><i class="fa fa-home"></i>Blog</a>
+                <a {% if page.url== post.url %} class="active" {% endif %} href="{{post.url}}">{{ post.title }}</a>
             </li>
-            <li>
-                <a {% if page.category== 'neural-network' %} class="active" {% endif %} href="/category/neural-network/"><i class="fa fa-sitemap"></i>
-                <div>Neural
-                    Network from Scratch
-                </div>
-                </a>
-            </li>
-            <li>
-                <a {% if page.nav_item== 'about' %} class="active" {% endif %} href="/about/"><i class="fa fa-user"></i>About</a>
-            </li>
+            {% endfor %}
         </ul>
+        <h5><a href="/about/">About</a></h5>
     </div>
 </nav>
 
