@@ -2,7 +2,7 @@
     position: fixed;
     width: 100%;
     z-index: 1;
-    font-weight: lighter;
+    font-weight: 300;
     box-shadow: rgba(0,0,0,0.5) 2px 0 10px;
     background: #242745; /* For browsers that do not support gradients */
     background: -webkit-linear-gradient(left, #212433, #232636); /* For Safari 5.1 to 6.0 */
@@ -89,7 +89,8 @@
 .navbar-nav {
     width: 100%;
     float: none;
-    overflow-y: scroll;
+    overflow-y: auto;
+    -ms-overflow-style: none;
     padding: 0 0 0 15px;
     list-style: none;
     margin: 0;
