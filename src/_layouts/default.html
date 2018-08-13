@@ -93,7 +93,7 @@
     <div id="navbarCollapse" class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
             <li>
-                <a {% if page.nav_item== 'home' %} class="active" {% endif %} ng-class="nav.getClass('blog')" href="{{site.url}}"><i class="fa fa-home"></i>Blog</a>
+                <a {% if page.nav_item== 'home' %} class="active" {% endif %} href="{{site.url}}"><i class="fa fa-home"></i>Blog</a>
             </li>
             <li>
                 <a {% if page.category== 'neural-network' %} class="active" {% endif %} href="/category/neural-network/"><i class="fa fa-sitemap"></i>
@@ -103,7 +103,7 @@
                 </a>
             </li>
             <li>
-                <a {% if page.nav_item== 'about' %} class="active" {% endif %} ng-class="nav.getClass('about')" href="/about/"><i class="fa fa-user"></i>About</a>
+                <a {% if page.nav_item== 'about' %} class="active" {% endif %} href="/about/"><i class="fa fa-user"></i>About</a>
             </li>
         </ul>
     </div>
