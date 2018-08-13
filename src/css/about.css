@@ -18,6 +18,7 @@
 .panel-default > .profile h2 {
     font-size: 1.3rem;
     margin-top: 0.2rem;
+    font-weight: normal;
 }
 
 h1, h2, h3 {
