@@ -234,6 +234,7 @@ footer {
     text-transform: none;
     font-weight: lighter;
     font-size: 1rem;
+    letter-spacing: -0.5px;
 }
 
 .panel-default > .panel-heading h5 a {
@@ -278,8 +279,9 @@ h1 a, h1 a:hover, h1 a:active, h1 a:focus {
 
 .post-body {
     color: rgba(0, 0, 0, 0.8);
-    line-height: 1.6em;
+    line-height: 1.4em;
     font-size: 1rem;
+    letter-spacing: -0.5px;
 }
 
 .post-body h3 {

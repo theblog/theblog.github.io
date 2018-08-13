@@ -5,7 +5,7 @@
     background-attachment: fixed;
     padding: 30px 0;
     text-align: center;
-    margin: 0 -20px 10px -20px;
+    margin: 0 -20px 30px -20px;
     -webkit-box-shadow: inset 0px 0px 20px 0px rgba(0,0,0,0.5);
     -moz-box-shadow: inset 0px 0px 20px 0px rgba(0,0,0,0.5);
     box-shadow: inset 0px 0px 20px 0px rgba(0,0,0,0.5);
@@ -106,25 +106,6 @@
 
 #perplexity-table td {
     border: none;
-}
-
-#flip-dataset-card-button {
-    width: 100%;
-}
-
-#dataset-card {
-    height: 300px;
-    margin-bottom: 20px;
-}
-
-#dataset-card .front, #dataset-card .back {
-    background-color: white;
-}
-
-#dataset-excerpt {
-    height: 300px;
-    white-space: pre-wrap;
-    overflow-y: scroll;
 }
 
 @media only screen and (max-width: 670px),

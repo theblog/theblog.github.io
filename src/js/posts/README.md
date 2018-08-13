@@ -1,1 +1,0 @@
-You can use this folder to store post-specific javascripts.
