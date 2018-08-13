@@ -13,12 +13,12 @@ const DATASET_DEFAULTS = {
     southPark: {
         steps: 500,
         maxSentences: 3,
-        prime: 'Kenny'
+        prime: 'Oh my God'
     },
     sherlock: {
         steps: 500,
         maxSentences: 3,
-        prime: 'Suddenly'
+        prime: 'The'
     },
     goethe: {
         steps: 500,

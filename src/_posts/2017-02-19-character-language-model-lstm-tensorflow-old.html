@@ -1,0 +1,575 @@
+---
+layout: post
+title: "Building a Character-Level Language Model with LSTMs in TensorFlow"
+disqus_id: "char-lm-1"
+pinned: true
+github_url: https://github.com/batzner/tensorlm
+category: "general"
+html_title: "Building a Character-Level Language Model with LSTMs in TensorFlow"
+meta_description: "I let a LSTM read texts one character at a time. Find out, what it learned, by feeding it some letters in this interactive post."
+focus_keyword: "Language Model"
+summary: "I let a neural network read long texts one letter at a time. Its task was to predict the next letter based on those it had seen so far. Over time, it recognized patterns between letters. Find out, what it learned, by feeding it some letters."
+excerpt: "<p>I let a neural network read long texts one letter at a time. Its task was to predict the next letter based on those it had seen so far. Over time, it recognized patterns between letters. Find out, what it learned, by feeding it some letters below. When you click the send button on the right, it will read your text and auto-complete it.</p>
+<p>You can choose between networks that read a lot of Wikipedia or US Congress transcripts etc.</p>
+<a href=\"/post/character-language-model-lstm-tensorflow\" style=\"color:white\"><div class=\"talk-box\" >
+    <table>
+        <tr class=\"talk-box-heading\">
+            <td></td>
+            <td class=\"no-stretch\">
+                <div>Generate text from</div>
+                <div class=\"btn-group\" role=\"group\" aria-label=\"Dataset choice\">
+                    <button type=\"button\" value=\"congress\" onclick=\"selectDataset(this.value)\" class=\"btn btn-default dark\">US Congress</button>
+                    <button type=\"button\" value=\"wiki\" onclick=\"selectDataset(this.value)\" class=\"btn btn-default dark\">Wikipedia</button>
+                    <button type=\"button\" value=\"sherlock\" onclick=\"selectDataset(this.value)\" class=\"btn btn-default dark\">Sherlock Holmes</button>
+                    <button type=\"button\" value=\"southPark\" onclick=\"selectDataset(this.value)\" class=\"btn btn-default dark\">South Park</button>
+                    <button type=\"button\" value=\"goethe\" onclick=\"selectDataset(this.value)\" class=\"btn btn-default dark\">Goethe</button>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+        <tr class=\"talk-box-body\">
+            <td></td>
+            <td>
+                <div class=\"talk-box-input\" onclick=\"focusOnInput()\">
+                    <div class=\"text-input\" contentEditable=\"true\" oninput=\"onInput()\"></div>
+                    <div class=\"text-input-output-bridge\">...</div>
+                    <span class=\"text-output\"></span>
+                </div>
+            </td>
+            <td>
+                <button type=\"button\" class=\"send-button btn btn-default round btn-icon\" onclick=\"completeText()\">
+                    <span class=\"fa fa-paper-plane\"></span>
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class=\"talk-box mobile\">
+    <div class=\"talk-box-heading\">
+        <div>Generate text from</div>
+        <div id=\"talk-box-dataset-dropdown\" class=\"btn-group dropdown-full-width\">
+            <button type=\"button\" value=\"wiki\" class=\"btn btn-default dropdown-toggle dark\" onchange=\"selectDataset(null)\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">
+                <span class=\"choice\">Wikipedia</span> <span class=\"caret\"></span>
+            </button>
+            <ul class=\"dropdown-menu dark\">
+                <li><a href=\"#\" data-value=\"congress\">US Congress</a></li>
+                <li><a href=\"#\" data-value=\"wiki\">Wikipedia</a></li>
+                <li><a href=\"#\" data-value=\"sherlock\">Sherlock Holmes</a></li>
+                <li><a href=\"#\" data-value=\"southPark\">South Park</a></li>
+                <li><a href=\"#\" data-value=\"goethe\">Goethe Poems</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class=\"talk-box-body\">
+        <div class=\"talk-box-input\" onclick=\"focusOnInput()\">
+            <div class=\"text-input\" contentEditable=\"true\" oninput=\"onInput()\"></div>
+            <div class=\"text-input-output-bridge\">...</div>
+            <span class=\"text-output\"></span>
+        </div>
+        <button type=\"button\" class=\"send-button btn btn-default dark\" onclick=\"completeText()\">
+            Send
+        </button>
+    </div>
+</div></a>"
+tags: [neural-networks, lstm, nlp]
+stylesheets: "<link rel=\"stylesheet\" href=\"/css/posts/char-lm.css\">"
+javascripts: "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/he/1.1.1/he.min.js\"></script>
+<script src=\"https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js\"></script>
+<script src=\"/js/posts/char-lm/text-complete.js\"></script>
+<script src=\"/js/posts/char-lm/plot-flexible.js\"></script>
+<script src=\"/js/posts/char-lm/plot.js\"></script>
+<script src=\"/js/posts/char-lm/plot-datasets.js\"></script>"
+---
+<p>I let a neural network read long texts one letter at a time. Its task was to predict the next letter based on those it had seen so far. Over time, it recognized patterns between letters. Find out, what it learned, by feeding it some letters below. When you click the send button on the right, it will read your text and auto-complete it.</p>
+<p>You can choose between networks that read a lot of Wikipedia or US Congress transcripts etc.</p>
+
+<div class="talk-box">
+    <table>
+        <tr class="talk-box-heading">
+            <td></td>
+            <td class="no-stretch">
+                <div>Generate text from</div>
+                <div class="btn-group" role="group" aria-label="Dataset choice">
+                    <button type="button" value="congress" onclick="selectDataset(this.value)" class="btn btn-default dark">US Congress</button>
+                    <button type="button" value="wiki" onclick="selectDataset(this.value)" class="btn btn-default dark">Wikipedia</button>
+                    <button type="button" value="sherlock" onclick="selectDataset(this.value)" class="btn btn-default dark">Sherlock Holmes</button>
+                    <button type="button" value="southPark" onclick="selectDataset(this.value)" class="btn btn-default dark">South Park</button>
+                    <button type="button" value="goethe" onclick="selectDataset(this.value)" class="btn btn-default dark">Goethe</button>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+        <tr class="talk-box-body">
+            <td></td>
+            <td>
+                <div class="talk-box-input" onclick="focusOnInput()">
+                    <div class="text-input" contentEditable="true" oninput="onInput()"></div>
+                    <div class="text-input-output-bridge">...</div>
+                    <span class="text-output"></span>
+                </div>
+            </td>
+            <td>
+                <button type="button" class="send-button btn btn-default round btn-icon" onclick="completeText()">
+                    <span class="fa fa-paper-plane"></span>
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="talk-box mobile">
+    <div class="talk-box-heading">
+        <div>Generate text from</div>
+        <div id="talk-box-dataset-dropdown" class="btn-group dropdown-full-width">
+            <button type="button" value="wiki" class="btn btn-default dropdown-toggle dark" onchange="selectDataset(null)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="choice">Wikipedia</span> <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dark">
+                <li><a href="#\" data-value="congress">US Congress</a></li>
+                <li><a href="#\" data-value="wiki">Wikipedia</a></li>
+                <li><a href="#\" data-value="sherlock">Sherlock Holmes</a></li>
+                <li><a href="#\" data-value="southPark">South Park</a></li>
+                <li><a href="#\" data-value="goethe">Goethe Poems</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="talk-box-body">
+        <div class="talk-box-input" onclick="focusOnInput()">
+            <div class="text-input" contentEditable="true" oninput="onInput()"></div>
+            <div class="text-input-output-bridge">...</div>
+            <span class="text-output"></span>
+        </div>
+        <button type="button" class="send-button btn btn-default dark" onclick="completeText()">
+            Send
+        </button>
+    </div>
+</div>
+
+<p>Here is the detailed description of what I did and what this post is about: I used a specific form of recurrent neural networks, the <a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank">LSTM (Long Short-Term Memory)</a>, to generate a language model for a given text corpus. Because I fed it one letter at a time, it generated a character-level language model. For implementation, I used <a href="https://www.tensorflow.org/" target="_blank">TensorFlow</a>.</p>
+<p>Now, why do I write a blog post about that?</p>
+
+<ul>
+    <li>The idea is not new at all. I was inspired by <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/" target="_blank">this popular blog post</a> by Andrej Karpathy. If you would like to know more about the theory behind this post, this is an excellent resource. He also trained his network on character-level on Shakespeare, Wikipedia, Linux Source Code etc. The results are quite funny.</li>
+    <li>I implemented the LSTM from scratch with TensorFlow. You can check out the <a href="https://github.com/batzner/tensorlm" target="_blank">GitHub repository</a>. As it turns out, five TensorFlow models with about 7 million parameters each can run simultaneously on a single <a href="https://aws.amazon.com/ec2/instance-types/#instance-type-matrix" target="_blank">AWS t2.micro</a> instance with only 1 GiB of RAM.</li>
+    <li>What <strong>is</strong> new about this post is that, firstly, it contains an interactive text box where you can find the strengths and weaknesses of the trained models and, secondly, I am publishing my complete hyperparameter odyssey. Below, I will explain, how I found the hyperparameters (batch size, learning rate, number of layers etc.) for the final networks - what mistakes I made and what I learned from them. So if hyperparameter-tuning of neural networks is a bit of a mystery to you, this post might save you some time and money spent on the inefficient training of models.</li>
+</ul>
+
+<p><a href="https://github.com/batzner/tensorlm" target="_blank">Code to this post</a></p>
+
+<h3>Setup</h3>
+<h5>Dataset</h5>
+<p>I chose a small dataset hoping that my findings would transfer to large datasets as well. The dataset consists of the whole Sherlock Holmes corpus by Sir Arthur Conan Doyle. It is a <a href="https://sherlock-holm.es/stories/plain-text/cano.txt" target="_blank">.txt file</a> (3.6 MB) containing roughly 3.6 million characters and 650 thousand words after preprocessing. The only preprocessing I did was to remove indentation. I kept all line breaks even if their only purpose was formatting. I split the dataset into 90% training and 10% validation.</p>
+<h5>Model</h5>
+<p>To feed the text to the model, I one-hot encoded each character to a vector. The corpus contains 97 different characters causing input vectors of length 97. In the net, a softmax layer follows the LSTM layers and serves as an output layer. Its 97 neurons are fully connected to the last LSTM layer. The softmax layer outputs a 97-dimensional vector containing the predicted probability of each character being the next one.</p>
+<p>For optimization, I used <a href="http://sebastianruder.com/optimizing-gradient-descent/index.html#rmsprop" target="_blank">RMSprop</a>. It is an enhancement of the classic Stochastic Gradient Descent with the improvement that it uses a different learning rate for every single parameter. This learning rate depends on the last gradients of that parameter. Parameters that recently had multiple large updates get a smaller learning rate to avoid oscillation around minima of the loss function. That brings us to our loss function:</p>
+<h5>Perplexity - the WTF metric</h5>
+<p>As a loss function, I chose the cross-entropy loss based on the prediction the model made at each step / for each character. However, in the charts below I exponentiated each loss value with base 2. This makes the values easier to interpret, because the cross-entropy \(H\) can be interpreted as the average number of bits that the model would need to encode the next letter at each step.
+    <button class="show-more" data-target-id="perplexity-explanation" data-show-text="Why?" data-hide-text="OK, got it.">Why?</button>
+</p>
+<div id="perplexity-explanation" class="detail">
+    <p>Say the model's task is to encode the text to bits and its aim is to minimize the number of bits it needs. For example, it might have recognized some likely characters, so it gives them a low number of bits. It encodes A to 01 and X to 00101. That is smart because A occurs way more often than X, so why spend an equal amount of bits on X as on A? So the better the model is at predicting the next character the less bits it will need to encode the text. This makes the cross-entropy a good error measure / loss function to optimize. See <a href="http://stats.stackexchange.com/questions/80967/qualitively-what-is-cross-entropy" target="_blank">this excellent answer on StackOverflow</a> for more info.</p>
+    <p>Because our model learns patterns between characters in sentences it would not just look at the probability of each letter based on the number of occurrences in the text. Instead, it is smarter and uses the current position in the text for encoding and decoding. For example, if the whole text is a repetition of the pattern ABCDABCD, it wouldn't have to give each letter 2 bits based on its direct probability of 0.25. Instead, it would just have to encode the first letter, the rest of the text would be directly determined by that. So, it needs 2 bits <strong>for the whole text.</strong></p>
+    <p>Anyhow, why exponentiate the cross-entropy? So remember that the cross-entropy \(H\) gives us the average number of bits the model would need to encode the next letter at each step.</p>
+</div>
+<p>Thus, \(2^{H}\) gives us the average number of possibilities it has to choose from. Say our input data consists of 1000 characters and the model achieves a cross-entropy of 3.322 bits per character. This would mean a perplexity of \(2^{3.322} = 10\). So, the model is as confused on the input data as if it had to choose uniformly and independently among 10 possibilities for each character (example taken from <a href="https://en.wikipedia.org/wiki/Perplexity" target="_blank">this Wiki article</a>). We aim for a perplexity of 1 meaning the model is not surprised at all. A perplexity value equal to the vocabulary size would be equivalent to random guessing.</p>
+<h5>Initial Hyperparameters</h5>
+<ul>
+    <li>Number of LSTM layers: 2</li>
+    <li>Number of neurons per layer: 512</li>
+    <li>Batch size: 1</li>
+    <li>Number of time steps for each backpropagation: 40<br/>This means the data is given in chunks of 40 characters. For each character, the model compares its output with the correct output. Then it does backpropagation from the current step to the start of the chunk of characters to see whether it would have made a better prediction if it had behaved differently in an earlier step. Consequently, the network optimizes its parameters looking 0-39 time steps into the past.</li>
+    <li>Learning rate: 0.005</li>
+    <li>Learning rate decay: 0.9</li>
+    <li>Probability of keeping the output: 0.8<br/>This refers to the dropout technique, in which each LSTM cell sometimes randomly outputs zero instead of what it actually calculated.</li>
+</ul>
+<p>Small details:</p>
+<ul>
+    <li>I <a href="http://www.wildml.com/deep-learning-glossary/#gradient-clipping" target="_blank">clipped the gradients</a> to an L2 norm of 5.</li>
+    <li><p>The hidden state of the LSTM never gets reset during training. Even though each backpropagation run is only done within chunks of 40 characters, the model can use the last hidden state of the last chunk when predicting the first character of the current chunk. Thus, the hidden state is zero at the very start of training, but then only changes as a result of the LSTM's update rules.</p>
+        <p>I changed this behavior later during the experiments, as it leads to suboptimal results.</p></li>
+    <li>I used the Xavier method for weight initialization.</li>
+    <li>I trained all models on an AWS p2.xlarge instance ($0.2 per hour).</li>
+</ul>
+
+<h3>1. Batch Size</h3>
+<p>I thought it might be smart to start with the batch size because it will influence, how fast and efficient the training will be in future experiments. For a batch size of \(n\), I split up the text into \(n\) parts and fed these parts character by character simultaneously to the model. Thus, each LSTM layer had \(n\) different and independent hidden states, one for each part of the text. The network's parameters, however, were shared, used simultaneously for all batches and optimized on all of them - just like in regular mini-batch learning. Splitting up the text leads to minor distortions of the data because each batch starts without any context and probably in the middle of a word or sentence, but I assume this has no noticeable effect on the loss.</p>
+<p>Here you can see validation losses and the minutes per epoch for different batch sizes.</p>
+<div class="content-9">
+    <canvas id="batch-size-decay-chart" class="chart" width="600" height="300"></canvas>
+</div>
+<div class="content-3">
+    <canvas id="batch-size-epoch-duration-chart" class="chart" width="200" height="300"></canvas>
+</div>
+<p>Before interpreting the results, I should note that it is unfair to compare different batch sizes with the same learning rate. For larger batch sizes, the steps that the optimizer takes are more stable, because it optimizes/generalizes on multiple samples at once. Thus, we can use a higher learning rate with higher batch sizes meaning each batch size has a different optimal learning rate. This is to some extent compensated by the RMSProp optimizer, which adapts the learning rate over time.</p>
+<p>As for the interpretation:</p>
+<ul>
+    <li>We can see that batch sizes of 1, 10 and 20 are definitely too inefficient. I also concluded that 1 and 10 overfit because they see too little sentences at the same time. This means that the parameters get optimized too much on the current sentence instead of on the whole text. This could be compensated by a lower learning rate, though.</li>
+    <li><p>We can also see that batch sizes of 500 and 2000 converge slower - both in terms of epochs and actual training time. I attribute this to the limited effect that increasing the batch size has on the stability of the gradient step. Calculating a gradient step on just one sample is much noisier than calculating it on 100 samples combined. But a gradient step calculated on 100,000 samples might not be much more stable than the step calculated on the 100 samples. The error function based on the 100 samples might already approximate the error function of the whole dataset quite well. Thus, calculating the gradient w.r.t. the 99,900 other samples is a waste of time because it results in more or less the same gradient step.</p>
+        <p>In the chart above, the x-axis is the number of epochs. Say, the 2000-batch-size model does 100 steps per epoch while the 50-batch-size model does 4,000 steps per epoch. If we now assume that both models take gradient steps with more or less the same stability, it makes sense that models with a batch size < 2000 converge much faster, because they take more steps per epoch. The speed uplift of using a batch size of 2000 cannot compensate this disadvantage.</p>
+        <p>For more info on the effect of batch sizes on the convergence, you can read <a href="https://www.quora.com/Intuitively-how-does-mini-batch-size-affect-the-performance-of-stochastic-gradient-descent/answer/Brian-Wong-21" target="_blank">this excellent answer</a>.</p></li>
+</ul>
+
+<p>I chose 200 as a batch size because it causes a low time per epoch and a fast convergence - when measuring the training time instead of epochs, batch sizes of 50, 100 and 200 led to roughly the same convergence.</p>
+
+<div class="lesson-learned">
+    <strong>Lesson Learned:</strong> Choose a good batch size first, because it affects the training time of future experiments.
+</div>
+
+<p>Throughout the training of all experiments, I let the models complete a sentence started with "The " every now and then. This was a good evaluation metric in addition to the validation loss. Here is the output of the model with a batch size of 200 after training:</p>
+
+<blockquote>The house which had been the strange problem which had been the strange of the man who had been the strange of the man who had been the strange of the man who had been the strange of the man who had been the strange of the man who had been the stran...</blockquote>
+
+<p>We can use this as a baseline to evaluate the impact of the following hyperparameter tuning.</p>
+
+<h3>2. Learning Rate</h3>
+<figure>
+    <canvas id="learning-rate-chart" class="chart" width="600" height="300"></canvas>
+</figure>
+
+<p>Carelessly, I went for 0.01 as the future learning rate, because of a marginally better validation loss. I regretted that choice later when I expanded the model to use more neurons per layer (section 4). Then, 0.01 was everything but the optimal learning rate. Also, values like 0.05 or 0.005 yielded far inferior results. I should have read more about the RMSProp method before optimizing its parameters. In the <button class="show-more" data-target-id="rmsprop-slides" data-show-text="slides" data-hide-text="slides">slides</button>
+    <span id="rmsprop-slides" class="detail">(Coursera: Neural Networks for Machine Learning Lecture 6)</span> where Geoffrey Hinton proposed RMSprop, he states that 0.001 is a good initial learning rate for most problems. This turned out to be the case for a network with 1024 instead of 512 neurons per layer.
+</p>
+
+<div class="lesson-learned">
+    <strong>Lessons Learned:</strong>
+    <ul>
+        <li>For optimizers that use an adaptive learning rate for each parameter (Adadelta, Adam, RMSprop) it is quite safe to use the recommended values and focus on other hyperparameters.</li>
+        <li>The learning rate should be optimized once the size of the network is fixed.</li>
+    </ul>
+</div>
+
+<p>One disadvantage of the popular RMSprop and Adam optimizers is that they need more memory space during training because they store additional values for each parameter. For 1 MB parameters, RMSprop needs 1 MB and Adam needs 2 MB of additional memory space. Thus, for situations where a larger network will yield better results than adaptive learning rates, vanilla Stochastic Gradient Descent is the better choice.</p>
+
+<h3>3. Number of Time Steps</h3>
+<p>As explained above, this is the maximum number of past steps that the optimizer considers for backpropagation. Put differently, it is the number of steps that we unroll the LSTM for. Theoretically, a linearly growing number of time steps leads to:</p>
+<ul>
+    <li>An increased ability to learn long-range dependencies between letters.</li>
+    <li>A linearly growing graph size and thus a linearly growing memory footprint during training. The number of parameters stays the same.</li>
+    <li>
+        <p>A linearly growing training time per epoch.
+            <button class="show-more" data-target-id="timesteps-complexity" data-show-text="Why?" data-hide-text="Ok, got it!">Why?</button>
+        </p>
+        <div id="timesteps-complexity" class="detail">
+            <p>Say, our text is 10 characters long. With <code>num_timesteps = 2</code>, we run backpropagation 5 times. Each time, we go back 1 time step for the first character and then 2 time steps for the second character. There, we also take into account if a different hidden state after the first character would have helped us at predicting the second. This means a total of 5 &middot; (1+2) = 15 steps.</p>
+            <p>With <code>num_timesteps = 5</code>, we run backpropagation 2 times. For the 5 characters per run, we need to go 1, 2, 3, 4 and 5 time steps back. This means a total of 2 &middot; (1+2+3+4+5) = 30 steps.</p>
+            <p>Generally, the backpropagation runs decrease linearly while the complexity of each run increases quadratically. For a constant text size \(S\) and a number of time steps \(t\) we get a total of roughly $$\frac{S}{t} \cdot \frac{t \cdot (t-1)}{2}$$ time steps per epoch. Therefore, the complexity and training time per epoch grows linearly.</p>
+        </div>
+    </li>
+</ul>
+<div class="content-9">
+    <canvas id="num-timesteps-decay-chart" class="chart" width="600" height="300"></canvas>
+</div>
+<div class="content-3">
+    <canvas id="num-timesteps-epoch-duration-chart" class="chart" width="200" height="300"></canvas>
+</div>
+
+<p>As one might expect, the validation loss improves with more time steps. However, the model's output still sounds quite dumb as it has a high chance of getting stuck in endless loops ("the man, who saw the man, who saw...'). So, it apparently doesn't pay too much attention to what it output 160 steps ago.</p>
+<p>What surprised me was the constant training time per epoch. This also occurred with other datasets and a higher number of time steps (200 and 500). I attribute this to an efficient gradient calculation in TensorFlow. Instead of feeding single letters, I feed the model chunks of size <code>num_timesteps</code>. TensorFlow calculates and derives the loss for the whole chunk at once. It seems like the complexity per chunk only grows linearly with the chunk size. As the number of chunks per epoch decreases at the same time, the total time per epoch remains constant.</p>
+<p>All in all, increasing the number of time steps leads to (decreasingly) better results while having no effect on the training time. I stopped at 160 time steps though to keep the memory footprint low.</p>
+
+<h3>4. Number of Neurons</h3>
+
+<p>Next, I tried increasing the model's parameters. Given a vocabulary size \(V\), here is the formula for the total number of parameters \(p_{total}\) based on the number of LSTM layers \(l\) and the neurons per layer \(n\):
+
+    $$p_{total} = p_{first~hidden} + (l-1) \cdot p_{hidden} + p_{softmax}$$
+    $$= 4 \cdot (n \cdot (V+n) + n) + (l-1) \cdot 4 \cdot (n \cdot 2 \cdot n + n) + V \cdot n + V$$
+
+    For the calculation of a single layer's parameters, take a look at the formulas in <a href="https://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank">this blog post</a>. For 512 neurons per layer, we get ca. 3.4 million parameters. For 1024 neurons per layer, we get ca. 13 million parameters. Here is how that affected the validation loss and training time:</p>
+
+<div class="content-9">
+    <canvas id="num-neurons-decay-chart" class="chart" width="600" height="300"></canvas>
+</div>
+<div class="content-3">
+    <canvas id="num-neurons-epoch-duration-chart" class="chart" width="200" height="300"></canvas>
+</div>
+
+<p>While both models reach the same validation perplexity of 2.26, the larger neural network overfits after 80 minutes / 20 epochs. So, I went for 1024 neurons per layer and tried to tackle the overfitting with dropout. But before trying to prevent overfitting, we need to discuss, if it even is a problem.</p>
+
+<h3>The Allure of Overfitting</h3>
+
+<p>My goal was to build a language model. The purpose of a language model is to assign probabilities to sequences of characters. So, if a model generates realistic sentences it should also be able to distinguish real sentences from fake ones, right? Take a look at these sentences that two different models generated:
+</p>
+
+<blockquote>The hand of the man who had been the same as the other. The man was still sent to him that he had not been...</blockquote>
+<blockquote>The house of Dr. Mortimer, who was a man of excellent character, which was the most profound feeling of...</blockquote>
+
+<p>Which one sounds more like an actual Sherlock Holmes excerpt? In my opinion, the second one because it uses an actual name instead of just talking about a man and another man. Both sentences were sampled during the training of the model with 1024 neurons per layer. But while the second one was sampled at the end with a validation perplexity of 2.47, the first sentence was generated when the model reached its lowest validation perplexity of 2.26. So the more realistic sounding model is actually more confused when we reading unseen Sherlock Holmes text. It assigns a lower probability to it, which means it is a worse language model.</p>
+
+<p>I think it is reasonable that the better non-overfitting model generates such generic sentences. Say that for each noun describing a person in the Sherlock Holmes corpus there is a 20% probability of it being "man", 20% for "woman", 10% for "Sherlock Holmes", 5% for "Mrs. Watson", 5% for "Dr. Mortimer", 5% for "Watson", 5% for "Dr. Moriarty and so on. Now, if a human were given the task to generate a sentence he/she would use names because there is a 60% probability of the noun being a name and a 40% probability of the noun being "man" or "woman". But during training, we don't let the model generate sentences. We only ask it for the next character/word. So, if the model knows that the next word will be a noun describing a person it has the choice between multiple different nouns. Each name of these nouns might have a 5% probability, but "man" has 20%, so it goes for "man".</p>
+<p>While this behavior is understandable, it is not optimal. An optimal model would have learned that while the probability of "man" is high, the probability of a sentence using only "man" to describe what persons are doing is low. But until our model gets so smart, we have to forgive generic sentences and resists the temptation of overfitting.</p>
+
+<div class="lesson-learned">
+    <strong>Lessons Learned:</strong>
+    <ul>
+        <li>Overfitting is tempting for impressing people with your language model, but it makes it worse.</li>
+        <li>Realistic generated sentences are not necessarily an indication of a good language model.</li>
+    </ul>
+</div>
+
+<h3>4. Dropout</h3>
+
+I tested three probabilities to keep the output value of a neuron:
+<figure>
+    <canvas id="dropout-chart" class="chart" width="600" height="300"></canvas>
+</figure>
+
+
+<p>We see that a low keep-output probability / high dropout probability overcomes the overfitting. I chose 0.5 for future experiments. The validation perplexity is still at 2.26 though - just like with 512 neurons per layer. Let's see if a deeper architecture can fix that.
+    <button class="show-more" data-target-id="peaks-explanation" data-show-text="What's with the peaks?" data-hide-text="Ok, got it!">What's with the peaks?</button>
+</p>
+<p>For more info on tuning the dropout probability, I can recommend <a href="https://www.reddit.com/r/MachineLearning/comments/3oztvk/why_50_when_using_dropout/" target="_blank">this thread</a>.</p>
+
+<p id="peaks-explanation" class="detail">The initial peaks in the validation perplexity were caused by padding. Because I used mini-batch learning, I split the text into 200 parts. These parts likely have unequal sizes and are also not multiples of 160, our number of timesteps. Thus, when the program reaches the end of the parts at the end of an epoch, it pads all chunks in the batch with PAD tokens. Then, all chunks have an equal length of 160 tokens. In the worst case, however, this means that the model might see about 200 &middot; 160 = 32000 PAD tokens. This has a large influence in the early phase of training. So, when we validate the model just at the end of an epoch, it will be confused, because the validation text, does not solely constist of PAD tokens. I also let the model complete a sentence started with "The" after every validation. At each of the peaks, the model's output was "The PADPADPADPAD...". In retrospective, it would have been better to just skip the last batch of
+    the text.</p>
+
+<h3>5. Number of LSTM layers</h3>
+
+<p>Keeping the number of parameters the same I tried to see if increasing the network's depth helps. My intuition is that a deeper network helps to learn complex dependencies in the data. On the other hand, having a lot of neurons in a layer helps to remember a lot of <strong>different</strong> patterns. For example "Sherlock" -> "Holmes" and "Mrs." -> "Hudson", not to mention all the character-level patterns for building words. So there is a trade-off between the complexity and the number of the learned patterns.</p>
+
+<p>With a constant number of 13 million parameters, the resulting architectures are:<p>
+<ul>
+    <li>2 LSTM layers with 1024 neurons each</li>
+    <li>3 layers with 795 neurons each</li>
+    <li>4 layers with 675 neurons each</li>
+</ul>
+<p>Here are the results:</p>
+
+<div class="content-6">
+    <canvas id="num-layers-training-chart" class="chart" width="400" height="300"></canvas>
+</div>
+<div class="content-6">
+    <canvas id="num-layers-validation-chart" class="chart" width="400" height="300"></canvas>
+</div>
+
+<p>The training time per epoch was roughly the same for each run. As for the model's performance, it seems that depth does not drastically improve the validation perplexity. Looking at the training perplexity, 3 layers seems to be a good compromise between the number and the complexity of the patterns that the model can learn.</p>
+
+<p>A small note on the number of neurons: from convolutional neural networks I was used to decreasing the layer size with depth. So, using the same number of neurons per layer seems strange. However, it seems to be a common practice for LSTMs. <a href="https://arxiv.org/pdf/1409.3215v3.pdf" target="_blank">Sutskever et al.</a>, for example, use 3 layers with 1024 neurons each for their translation LSTMs. I assume that this is because convolutional networks map from a high-dimensional input space to a low-dimensional output space, while translation and language models map between spaces of equal dimensionality.</p>
+
+<h3>Resetting the LSTM state</h3>
+<p>There is one last experiment that I did, which was related to resetting the LSTM's internal hidden state. So far the internal state never got reset during training. It worked fine for the Sherlock dataset, but when training on Wikipedia articles, the model always generated something like this:</p>
+<blockquote>The Victorian Artist of the Year 1943) was a student of the University of California...</blockquote>
+<blockquote>The Victorian Army and the United States Congress of the United States and the United States) and the Committee of the American...</blockquote>
+
+<p>Sounds good except for that closing bracket in every sentence. I assume that happens because the model only sees a zero hidden state once during training - at the very beginning. After that, the state never gets reset to a zero vector. Thus, the model can safely store information in the hidden state and even attribute information to a zero hidden state, such as "I need to close the bracket soon". For validation and sampling, however, the model starts again with a zero state, so it closes the bracket that was never opened.</p>
+<p>Resetting the hidden state to zero every now and then solves this problem. I tested different token intervals on Sherlock. "always" means that the state got reset after each backpropagation run (160 tokens). Similarly, 320 means that the state got reset after 320 tokens per batch / 2 backpropagation runs.</p>
+
+<figure>
+    <canvas id="reset-state-chart" class="chart" width="600" height="300"></canvas>
+</figure>
+
+<p>We can see that resetting the state every now and then does not have a major influence on the validation perplexity. It did, however, make the models more robust to interpreting a zero hidden state - especially for datasets with more punctuation. The reason why that does not get reflected in the validation perplexity is that the validation set consists of 360,000 characters. Like in training, the model sees a zero state only at the start. So, it depends on how we evaluate the performance of language models. We can give it a lot of independent sentences, paragraphs or, like we did, whole books. For experiments on other datasets, I went with resetting the state every 3000 tokens.</p>
+
+
+<h3>Other Datasets</h3>
+
+<p>I also tried some other datasets:</p>
+<strong>Wikipedia</strong>
+<ul>
+    <li>447 million characters from about 140,000 articles (4.6% of the English Wikipedia)</li>
+    <li>Trained for 2 days, but already converged after about 20 hours / 3 epochs</li>
+</ul>
+<strong>US Congress</strong>
+<ul>
+    <li>488 million characters from transcripts of the United States Senate's congressional record</li>
+    <li>Trained for 2 days, but already converged after about 21 hours / 3 epochs</li>
+</ul>
+<strong>Goethe</strong>
+<ul>
+    <li>1.5 million characters from all poems by Johann Wolfgang von Goethe</li>
+    <li>I used 2 layers with 795 neurons to prevent overfitting. With 3 layers, the network completely remembered whole poems.</li>
+    <li>Trained for 2 hours; overfitted a bit in the end</li>
+</ul>
+<strong>South Park</strong>
+<ul>
+    <li>4.7 million characters from all 277 South Park episodes</li>
+    <li>Used 2 layers with 795 neurons to prevent overfitting</li>
+    <li>Trained for 2 hours; overfitted a bit in the end</li>
+</ul>
+
+
+
+<div class="content-9">
+    <div id="dataset-card">
+        <div class="front">
+            <canvas id="dataset-chart" class="chart" data-width="600" data-height="300"></canvas>
+        </div>
+        <div class="back">
+            <blockquote id="dataset-excerpt"></blockquote>
+        </div>
+    </div>
+</div>
+<div class="content-3">
+    <div class="chart-form-group">
+        <div>
+            <label for="dataset-dropdown">Dataset</label>
+            <div id="dataset-dropdown" class="btn-group dropdown-full-width">
+                <button type="button" value="southPark" class="btn btn-default dropdown-toggle" onchange="onDatasetChanged()" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="choice">South Park</span> <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#\" data-value="wiki">Wikipedia</a></li>
+                    <li><a href="#\" data-value="congress">Congress Transcripts</a></li>
+                    <li><a href="#\" data-value="goethe">Goethe Poems</a></li>
+                    <li><a href="#\" data-value="southPark">South Park</a></li>
+                    <li><a href="#\" data-value="sherlock">Sherlock</a></li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <button type="button" value="showExcerpt" id="flip-dataset-card-button" class="btn btn-default" onclick="flipDatasetCard()">Show Excerpt</button>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+
+<p>I also fed every validation dataset to each of the models and measured their average perplexity. Here is how confused they were:</p>
+
+<table id="perplexity-table" data-transform="color-cells-by-log-value">
+    <tr>
+        <td></td>
+        <td colspan="5" class="table-heading-columns">Trained on</td>
+    </tr>
+    <tr>
+        <td>Evaluated on</td>
+        <th>Sherlock</th>
+        <th>Wikipedia</th>
+        <th>Congress</th>
+        <th>South Park</th>
+        <th>Goethe</th>
+    </tr>
+    <tr>
+        <th>Sherlock</th>
+        <td>2.11</td>
+        <td>4.32</td>
+        <td>3.14</td>
+        <td>3.56</td>
+        <td>37.01</td>
+    </tr>
+    <tr>
+        <th>Wikipedia</th>
+        <td>2.77</td>
+        <td>2.22</td>
+        <td>3.20</td>
+        <td>3.97</td>
+        <td>37.53</td>
+    </tr>
+    <tr>
+        <th>Congress</th>
+        <td>4.00</td>
+        <td>2.51</td>
+        <td>1.73</td>
+        <td>4.11</td>
+        <td>48.50</td>
+    </tr>
+    <tr>
+        <th>South Park</th>
+        <td>3.89</td>
+        <td>3.01</td>
+        <td>3.48</td>
+        <td>2.31</td>
+        <td>40.22</td>
+    </tr>
+    <tr>
+        <th>Goethe</th>
+        <td>18.38</td>
+        <td>6.36</td>
+        <td>11.88</td>
+        <td>14.93</td>
+        <td>3.20</td>
+    </tr>
+</table>
+
+<p>We can see that Goethe was quite confused by the English language. The Wikipedia model seems to generalize best. But considering its low perplexity even on the Goethe dataset, I think that the diversity of the Wikipedia dataset also cause the model to be generally unsure in its predictions. Thus, it is less confused, if it was wrong. Similarly, the strong homogeneity of Congress transcripts facilitates scoring a low perplexity.</p>
+
+<div class="lesson-learned">
+    <strong>General Lessons Learned:</strong>
+    <ul>
+        <li>Don't spend too many epochs for optimizing hyperparameters in the early stages of the tuning. Search rough values with a small training budget and do the fine tuning later.</li>
+        <li>Start with a model size that is at the maximum of the reasonable and available computing capacity. Then, optimize the model's architecture (number of layers etc.) with standard hyperparameter values (learning rate=0.001 etc.). After that, you can do the fine tuning.</li>
+        <li>Don't activate dropout until the model overfits.</li>
+    </ul>
+</div>
+
+<h3>The reasonable ineffectiveness of character-level language models</h3>
+
+<h5>Blaming the Loss Function</h5>
+
+<p>Overall, the hyperparameter tuning seemingly yielded only marginal results. I improved the Sherlock model's validation perplexity from 2.48 to 2.11. That is to some extent due to the loss function I used. It penalizes wrong letters instead of words. In addition to that, I even told the model if it was about to generate a wrong word directly after the first wrong character. Say, the model wants to output 'house', but the correct word would be 'street'. It starts with 'h', gets corrected with the 's' and can then continue with 'treet'. In the end, its output is 'htreet', meaning 83% were correct when, in fact, it's initial choice was completely wrong. This makes the training ineffective and the evaluation metric less meaningful. But it also means that the hyperparameter tuning was more effective than it seems.</p>
+
+<h5>Blaming the Problem</h5>
+
+<p>What also troubles me is that building a good language model and generating realistic sentences are slightly different tasks. I explained this discrepancy above with respect to overfitting. In addition to that, the way that I trained and sampled from the model increases that discrepancy: during training, I immediately corrected the model when it was wrong. During sampling, it just generated freely without correction. To me, that feels like telling a racecar driver to 'just drive' and expecting the path to look like a racetrack.</p>
+
+<h5>Blaming the Character Level</h5>
+
+<p>Another factor for the generic non-sense that the model outputs is the inefficient use of past time steps. It often gets stuck in loops like<p>
+<blockquote>the Senate of the United States of the United States of the United States [...]</blockquote>
+<p>With <code>num_timesteps=300</code>, it looks back 300 characters during training. So, you might think that should be enough for the model to know what it is currently talking about. But even with LSTMs, gradients still vanish the further the backpropagation goes through time. Naturally, recent time steps have the greatest impact on the current prediction of the model. After 'of the United States', 20 time steps have passed, so it is likely that the model lost sense of what it was talking about before. On word-level, that would have been only 4 time steps.</p>
+
+<p>In conclusion, modeling a language on character-level comes with a couple of drawbacks:</p>
+
+<ul>
+    <li>The model spends a lot of its parameters on building a vocabulary. For example, on 'boo' might follow 'k' but on 'bamboo' never follows 'k'. Therefore, it has less parameters left to learn logical dependencies on word-level.</li>
+    <li>It needs to do backpropagation with a high number of time steps in order to cover the last words that were given to the model. That causes a large computational graph.</li>
+    <li>With a high number of time steps, the backpropagated gradients vanish and the model loses sense of what it was talking about - even after only a few words.</li>
+</ul>
+
+
+<h3>Appendix: All Sherlock Experiments</h3>
+<div class="content-9">
+    <canvas id="flexible-chart" class="chart" data-width="600" data-height="300"></canvas>
+</div>
+<div class="content-3">
+    <div class="chart-form-group">
+        <div>
+            <label for="run-group-dropdown">Experiment</label>
+            <div id="run-group-dropdown" class="btn-group dropdown-full-width">
+                <button type="button" value="batch_size" class="btn btn-default dropdown-toggle" onchange="plot(true)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="choice">Batch Size</span> <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#\" data-value="batch_size">Batch Size</a></li>
+                    <li><a href="#\" data-value="learning_rate_512">Learning Rate</a></li>
+                    <li><a href="#\" data-value="num_timesteps">Number of Time Steps</a></li>
+                    <li><a href="#\" data-value="learning_rate_1024">Learning Rate (1024 Neurons)</a></li>
+                    <li><a href="#\" data-value="num_neurons">Neurons per Layer</a></li>
+                    <li><a href="#\" data-value="output_keep_prob">Output Keep Prob.</a></li>
+                    <li><a href="#\" data-value="num_layers">Number of Layers</a></li>
+                    <li><a href="#\" data-value="reset_state_interval_tokens">Reset State after Tokens</a></li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <label for="x-axis-dropdown">X Axis</label>
+            <div id="x-axis-dropdown" class="btn-group dropdown-full-width">
+                <button type="button" value="minutesSinceStart" class="btn btn-default dropdown-toggle" onchange="plot()" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="choice">Training Time</span> <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#\" data-value="minutesSinceStart">Training Time</a></li>
+                    <li><a href="#\" data-value="epochs">Epochs</a></li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <label for="y-axis-dropdown">Y Axis</label>
+            <div id="y-axis-dropdown" class="btn-group dropdown-full-width">
+                <button type="button" value="lossesValid" class="btn btn-default dropdown-toggle" onchange="plot(true)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="choice">Validation Loss</span> <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#\" data-value="lossesValid">Validation Loss</a></li>
+                    <li><a href="#\" data-value="lossesTrain">Training Loss</a></li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <label for="y-axis-range">Y Axis Range</label>
+            <input id="y-axis-range">
+        </div>
+        <div>
+            <button id="export-button" type="button" class="btn btn-default" onclick="exportChart()" style="display: none;">Export Chart</button>
+        </div>
+    </div>
+</div>
