@@ -64,13 +64,13 @@ print('Gini: %.3f, Max. Gini: %.3f, Normalized Gini: %.3f' % (gini_predictions, 
 
 <h3>Economic Explanation</h3>
 
-<p>The first figure on the "Gini Coefficient" Wikipedia article is this one:</p>
+<p>The first figure in the <a href="https://en.wikipedia.org/wiki/Gini_coefficient">Gini Coefficient</a> Wikipedia article is this one:</p>
 
 <figure>
     <img height="400" width="400" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Economics_Gini_coefficient.svg/500px-Economics_Gini_coefficient.svg.png">
 </figure>
 
-<p>They go through the population from poorest to richest and plot the running total / cumulative share of income, which gives them the Lorenz Curve. The Gini Coefficient is then defined as the blue area divided by the area of the lower triangle.</p>
+<p>They go through the population from poorest to richest and plot the running total / cumulative share of income, which gives them the Lorenz Curve. The Gini Coefficient is then defined as the blue area divided by the total area of the triangle.</p>
 
 <h3>Application to Machine Learning</h3>
 
@@ -99,7 +99,7 @@ plt.show()</code></pre>
 
 <p>This corresponds to the Lorenz Curve in the diagram above.</p>
 
-<p>We normalize both axes so that they go from 0 to 100% like in the economic figure and display the 45° line for illustrating random guessing:</p>
+<p>We normalize both axes so that they go from 0 to 100% like in the economic figure and display the 45° line to illustrate random guessing:</p>
 
 <pre><code>cumulative_actual_shares = cumulative_actual / sum(actual)
 cumulative_index_shares = cumulative_index / len(predictions)
@@ -129,7 +129,7 @@ print('Orange Area: %.3f' % orange_area)</code></pre>
 
 <pre><code class="no-highlight">Orange Area: 0.189</code></pre>
 
-<p>So, the orange area is equal to the Gini Coefficient calcualted above with the `gini` function. We can do the same using the actual values as predictions to get the maximum possible Gini Coefficient.</p>
+<p>So, the orange area is equal to the Gini Coefficient calculated above with the <code>gini</code> function. We can do the same using the actual values as predictions to get the maximum possible Gini Coefficient.</p>
 
 <pre><code>cumulative_actual_shares_perfect = np.cumsum(sorted(actual)) / sum(actual)
 y_values_perfect = [0] + list(cumulative_actual_shares_perfect)
@@ -160,7 +160,7 @@ print('Orange Area: %.3f' % orange_area)</code></pre>
 
 <h3>Alternative Explanation</h3>
 
-<p>I also found another interpreation of the Gini Coefficient <a href="http://www.rhinorisk.com/Publications/Gini%20Coefficients.pdf">here</a>. Again, we take the predictions and actual values from above and sort them in descending order:</p>
+<p>I also found another interpretation of the Gini Coefficient <a href="http://www.rhinorisk.com/Publications/Gini%20Coefficients.pdf">here</a>. Again, we take the predictions and actual values from above and sort them in descending order:</p>
 
 <pre><code>print('Predictions', predictions)
 print('Actual Values', actual)
