@@ -1,17 +1,17 @@
 ---
 layout: post
-title: "8 facts I did not know about Java"
-disqus_id: "8-facts-java"
+title: "Some facts I did not know about Java"
+disqus_id: "some-facts-java"
 category: "general"
-html_title: "8 facts I did not know about Java"
-meta_description: "I found out some helpful and some surprising properties of Java. Did you know that to this day, Java has Go To statements?"
+html_title: "Some facts I did not know about Java"
+meta_description: "I found out some helpful and some surprising properties of Java today. Did you know that to this day, Java has Go To statements?"
 focus_keyword: "Java"
-summary: "I found out some helpful and some surprising properties of Java. Did you know that to this day, Java has Go To statements?"
+summary: "I found out some helpful and some surprising properties of Java today. Did you know that to this day, Java has Go To statements?"
 tags: [coding]
 stylesheets: ""
 javascripts: ""
 ---
-I found out some helpful and some surprising properties of Java 6. Did you know that to this day, Java has Go To statements? Here are eight facts about the language I was not aware of. Would you have known all of them?
+I found out some helpful and some surprising properties of Java 6 today. Did you know that to this day, Java has Go To statements? Here are some facts about the language I was not aware of.
 
 <!--more-->
 
@@ -28,9 +28,7 @@ Java's GC starts from the garbage collection root. Every object that it does no
     <li><strong>Used Monitors </strong>- objects used as a monitor for synchronization</li>
     <li><strong>Objects for JVM </strong><strong>purposes</strong></li>
 </ul>
-<h3>3. Static classes are not possible per se</h3>
-I did a lot of C# programming in the last months, so I was surprised to find out that you cannot define a <code>public static class Customer</code> in Java. This will result in a compiler error. Nevertheless, you can imitate C#'s static classes (read the <a href="https://msdn.microsoft.com/en-us/library/79b3xss3(v=vs.80).aspx" target="_blank">MSDN article</a> about their purpose). By making a class final and making all its constructors private , no one will be able to subclass it or create an object of it outside of the class. In fact, <code>java.lang.Math</code> does exactly this.
-<h3>4. Static initialization blocks</h3>
+<h3>3. Static initialization blocks</h3>
 
 <pre><code>public static final HashSet&lt;String&gt; set = new HashSet();
 static {
@@ -38,10 +36,10 @@ static {
 }</code></pre>
 
 This is possible. Static initialization blocks are used for initializations that cannot be done in one line. If we remove the static keyword before the block, the code would be called every time that an object of the class was constructed <a href="http://stackoverflow.com/questions/2420389/static-initialization-blocks">(reference)</a>. By making it static, we ensure, that it only gets called on the first construction.
-<h3>5. Interfaces can initialize static constants as well</h3>
+<h3>4. Interfaces can initialize static constants as well</h3>
 You probably already knew that this is possible in an interface:
 <pre><code>static final int ID = 1234;</code></pre>
-But did you know that you can also define a static final Hashset and populate it with values in the interface? However, the compiler will give you an error for the code we used in the section above: "<span class="s1">The interface cannot define an initializer." The book gives the following workaround:</span>
+But did you know that you can also define a static final Hashset and populate it with values in the interface? While the compiler will give you an error for the code we used in the section above (<code>"The interface cannot define an initializer."</code>) there is a workaround:
 
 <pre><code>public interface SomeInterface {
   static final HashSet&lt;String&gt; set = new HashSet&lt;String&gt;();
@@ -54,7 +52,7 @@ But did you know that you can also define a static final Hashset and populate it
   }
 }</code></pre>
 
-<h3>6. The correct use of volatile</h3>
+<h3>5. The correct use of volatile</h3>
 If you already learned about parallel programming in Java, you probably know the <code>synchronized</code> keyword. But what about <code>volatile</code> ? <a href="https://www.ibm.com/developerworks/java/library/j-jtp06197/" target="_blank">Brian Goetz</a> calls it the "Lite-version" of synchronized.
 
 Synchronized statements provide two features: <strong>mutual exclusion</strong> and <strong>visibility.</strong> The former guarantees that only one thread at a time has a certain lock. This may give him sole access to reading or writing a variable, be it reading or writing. Visibility ensures that after the lock is released, the next thread works with the up-to-date versions of all locked variables.
@@ -65,7 +63,7 @@ Volatile variables only provide <strong>visibility</strong>. Therefore they sho
     <li>the volatile variable is used in a condition together with other variables.</li>
 </ul>
 They can however be used for notifying a thread from another thread by changing the value of a volatile variable. The benefits of using a volatile variable are simplicity and performance. Volatile reads are about as fast as non-volatile reads. Volatile and synchronized can also be combined to provide <a href="http://stackoverflow.com/questions/11681326/volatile-synchronized-combination-for-performance">fast read and safe increase operations</a>.
-<h3>7. Labelling loops for break and continue</h3>
+<h3>6. Labelling loops for break and continue</h3>
 
 <pre><code>int a = 5;
 outerloop:
@@ -78,7 +76,7 @@ while (true) {
 }
 // the break jumps to this point, where a is 4.</code></pre>
 
-<h3>8. The difference between inner and static nested classes</h3>
+<h3>7. The difference between inner and static nested classes</h3>
 Inner classes are nested classes <strong>without</strong> the static keyword. They belong to an <strong>instance</strong> of the outer class and can therefore access the members of the instance. They cannot define static variables. In contrast, "a static nested class is behaviorally a top-level class that has been nested in another top-level class for packaging convenience" (from <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html" target="_blank">Oracle Docs</a>).
 
 <pre><code>public class Outer {
