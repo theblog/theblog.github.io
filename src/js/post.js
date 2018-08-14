@@ -118,7 +118,7 @@ function makeClaps() {
         triangleBurst,
         circleBurst,
         countAnimation,
-        countTotalAnimation,
+    //    countTotalAnimation,
         scaleButton
     ])
 
