@@ -1,0 +1,83 @@
+/*========================
+ SASS definitions
+ =======================*/
+/*========================
+ BUTTON styles
+ =======================*/
+#clap-box {
+    float: right;
+    height: 80px;
+    margin-left: 20px;
+}
+
+.clap {
+    position: relative;
+    outline: 1px solid transparent;
+    border-radius: 50%;
+    border: 1px solid rgba(189, 195, 199, 1);
+    width: 50px;
+    height: 50px;
+    background: none;
+}
+.clap:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    border-radius: 50%;
+    width: 49px;
+    height: 49px;
+}
+.clap:hover {
+    cursor: pointer;
+    border: 1px solid #1f2757;
+    transition: border-color 0.3s ease-in;
+}
+.clap:hover:after {
+    animation: shockwave 1s ease-in infinite;
+}
+.clap svg {
+    width: 25px;
+    fill: none;
+    stroke: #1f2757;
+    stroke-width: 2px;
+}
+.clap svg.checked {
+    fill: #1f2757;
+    stroke: #fff;
+    stroke-width: 1px;
+}
+.clap .clap--count {
+    position: absolute;
+    top: -30px;
+    left: 13px;
+    font-size: 0.8rem;
+    color: white;
+    background: #1f2757;
+    border-radius: 50%;
+    height: 25px;
+    width: 25px;
+    line-height: 25px;
+}
+.clap .clap--count-total {
+    position: absolute;
+    font-size: 0.8rem;
+    width: 50px;
+    text-align: center;
+    left: 0;
+    top: 60px;
+    color: rgba(189, 195, 199, 1);
+}
+@keyframes shockwave {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 2px #1f2757;
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+        box-shadow: 0 0 50px #1f2757, inset 0 0 10px rgba(20, 50, 91, 1);
+    }
+}
