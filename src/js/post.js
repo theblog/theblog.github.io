@@ -54,7 +54,7 @@ function makeClaps() {
 
     const triangleBurst = new mojs.Burst({
         parent: clap,
-        radius: {50:95},
+        radius: {50: 95},
         count: 5,
         angle: 30,
         children: {
@@ -66,13 +66,13 @@ function makeClaps() {
             angle: 210,
             delay: 30,
             speed: 0.2,
-            easing: mojs.easing.bezier(0.1, 1, 0.3 ,1),
+            easing: mojs.easing.bezier(0.1, 1, 0.3, 1),
             duration: tlDuration
         }
     })
     const circleBurst = new mojs.Burst({
         parent: clap,
-        radius: {50:75},
+        radius: {50: 75},
         angle: 25,
         duration: tlDuration,
         children: {
@@ -89,19 +89,19 @@ function makeClaps() {
         isShowStart: false,
         isShowEnd: true,
         y: {0: -30},
-        opacity: {0:1},
+        opacity: {0: 1},
         duration: tlDuration
     }).then({
-        opacity: {1:0},
+        opacity: {1: 0},
         y: -80,
-        delay: tlDuration/2
+        delay: tlDuration / 2
     })
     const countTotalAnimation = new mojs.Html({
         el: '#clap--count-total',
         isShowStart: false,
         isShowEnd: true,
-        opacity: {0:1},
-        delay: 3*(tlDuration)/2,
+        opacity: {0: 1},
+        delay: 3 * (tlDuration) / 2,
         duration: tlDuration,
         y: {0: -3}
     })
@@ -111,19 +111,20 @@ function makeClaps() {
         scale: {1.3: 1},
         easing: mojs.easing.out
     })
-    clap.style.transform = "scale(1, 1)" /*Bug1 fix*/
+    clap.style.transform = "scale(1, 1)"
+    /*Bug1 fix*/
 
     const animationTimeline = new mojs.Timeline()
     animationTimeline.add([
         triangleBurst,
         circleBurst,
         countAnimation,
-    //    countTotalAnimation,
+        //    countTotalAnimation,
         scaleButton
     ])
 
 
-    clap.addEventListener('click', function() {
+    clap.addEventListener('click', function () {
         repeatClapping();
     })
 
@@ -148,10 +149,16 @@ function makeClaps() {
         numberOfClaps < 50 ? numberOfClaps++ : null
         clapCount.innerHTML = "+" + numberOfClaps
         clapTotalCount.innerHTML = initialNumberOfClaps + numberOfClaps
+
+        // Send a bot message
+        $.get('https://api.telegram.org/bot629238171:AAHAuedyERuuBcLrud08EBPqZH1MqtfLoC4/sendMessage', {
+            chat_id: -286349906,
+            text: 'clap ' + window.location.href
+        });
     }
 
     function generateRandomNumber(min, max) {
-        return Math.floor(Math.random()*(max-min+1)+min);
+        return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
     /*====== TODO ==========
