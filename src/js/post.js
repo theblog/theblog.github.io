@@ -8,7 +8,7 @@ function processPageElements() {
     // Apply the transforms
     colorCellsByLogValue();
 
-    makeClaps();
+    // makeClaps();
 }
 
 function colorCellsByLogValue() {

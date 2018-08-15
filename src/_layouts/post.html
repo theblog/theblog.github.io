@@ -3,7 +3,6 @@ layout: default
 javascripts: '
 <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-<script src="//cdn.jsdelivr.net/mojs/latest/mo.min.js"></script>
 <script src="/js/post.js"></script>
 <script src="/js/post-util.js"></script>'
 stylesheets: "
@@ -40,6 +39,8 @@ stylesheets: "
                     var disqus_config = function () {
                         this.page.url = "{{ site.url }}{{ page.url }}";  // Replace PAGE_URL with your page's canonical URL variable
                         this.page.identifier = "{{ page.disqus_id }}"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                        console.log(this.page.url);
+                        console.log(this.page.identifier);
                     };
 
                     (function() { // DON'T EDIT BELOW THIS LINE
