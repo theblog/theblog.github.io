@@ -160,12 +160,11 @@ figcaption {
 }
 
 .fa {
-    font-size: 0.8rem;
     color: #666;
 }
 
-.fa-github {
-    font-size: 1rem;
+.fa-calendar-o, .fa-thumb-tack {
+    font-size: 0.8em;
 }
 
 .no-highlight {

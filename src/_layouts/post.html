@@ -18,7 +18,7 @@ stylesheets: "
                     <h2>{{ page.subtitle }}</h2>
                     {% endif %}
                     <h5>
-                        <span><i class="fa fa-calendar-o"></i>{{ page.date | date_to_long_string }}</span>
+                        <span><i class="fa fa-calendar-o"></i> {{ page.date | date_to_long_string }}</span>
                         {% if page.github_url %}
                         <span><i class="fa fa-github"></i> <a href="{{ page.github_url }}"> Source Code</a></span>
                         {% endif %}

@@ -35,6 +35,15 @@ h1, h2, h3 {
     border-top: 1px solid #eee;
 }
 
+.profile-link {
+    margin-right: 10px;
+    white-space: nowrap;
+}
+
+.profile-link .fa{
+    margin-right: 4px;
+}
+
 .cv-section {
     border-bottom: 1px solid #eee;
     margin-bottom: 40px;
@@ -97,5 +106,7 @@ only screen and (min-width: 768px) and (max-width: 910px) {
     .profile img {
         float: none;
         margin: 0;
+        width: 120px;
+        height: 120px;
     }
 }
