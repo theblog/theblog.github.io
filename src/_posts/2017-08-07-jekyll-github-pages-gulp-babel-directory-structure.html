@@ -20,7 +20,7 @@ javascripts: ""
     <li><strong><a href="https://babeljs.io/" target="_blank">Babel</a></strong> lets you write ES6 <i>(cool new JavaScript)</i> even though not all browsers support it by transpiling it into ES5 <i>(lame old JavaScript)</i>.</li>
 </ul>
 
-<p>I switched to using Jekyll for this blog yesterday and I love it. There are blog posts describing how to combine a subset of the above, but I could not find one for combining all four.</p>
+<p>I switched to using Jekyll for this blog yesterday and I love it. There are blog posts describing how to combine a subset of the above, but I could not find one for combining all four. However, each of these four components brings its own peculiarities to consider, so no blog post worked out of the box. Here is the solution that I ended up with:</p>
 
 <!--more-->
 
@@ -39,7 +39,6 @@ javascripts: ""
 <p>The <code>master</code> branch should only be used for deploying (see considerations below). For development, switch to the <code>dev</code> branch. After implementing your changes, test them by running <code>gulp jekyll</code> and visiting <a href="http://localhost:4000" target="_blank">http://localhost:4000</a>.</p>
 
 <p>If you are happy, checkout the <code>master</code> branch, merge the <code>dev</code> branch, run <code>gulp</code> to build the site into the project's root directory and push / deploy the new build to the <code>master</code> branch on GitHub.</p>
-
 
 <p>Note: You can skip Babel during development by changing <code>source: _dist</code> to <code>source: src</code> and running <code>jekyll serve</code> in the root directory.</p>
 
@@ -113,7 +112,7 @@ javascripts: ""
 
 <ul>
     <li>On <code>master</code>, Gulp cannot clean the build directory before building because it is the project's root directory.</li>
-    <li>You have to go to <code>master</code>, build and push for every deployment of the site. <a href="https://github.com/shinnn/gulp-gh-pages">This gulp plugin</a> might help with that.</li>
+    <li>You have to go to <code>master</code>, build and push for every deployment of the site. <a href="https://github.com/shinnn/gulp-gh-pages">The <code>gulp-gh-pages</code> gulp plugin</a> might help with that.</li>
     <li>On <code>master</code>, I had to change <code>_config.yml</code> and <code>gulpfile.js</code> to make Gulp build into the root directory. Thus, changes to these files in <code>dev</code> will have to be merged manually with master.</li>
 </ul>
 
