@@ -1,0 +1,51 @@
+---
+layout: post
+title: "Yet another Derivation of the Variational Autoencoder"
+disqus_id: "vae-derivation"
+category: "general"
+html_title: "Yet another Derivation of the Variational Autoencoder"
+meta_description: ""
+focus_keyword: "VAE"
+summary: ""
+stylesheets: ""
+javascripts: ""
+---
+
+<p><i>"How can we perform efficient approximate inference and learning with directed probabilistic models whose continuous latent variables and/or parameters have intractable posterior distributions?"</i> - the Auto-Encoding Variational Bayes paper by Kingma and Welling [1] starts off with several terms that require knowledge of probabilistic models. This can be a challenge to people coming from a Deep Learning background. Luckily, there are several good blog posts [TODO] that introduce Variational Autoencoders in a simplified manner. After reading these, I still had some open questions regarding small details that these posts omitted. So, in this blog post I provide <i>yet another</i> derivation of the Variational Autoencoder aimed at readers with open questions. I will start at zero and define the terms used by Kingma and Welling [1] step by step.</p>
+
+<h3>\(p(x|X)\) is interesting</h3>
+
+<p>We have a dataset, \(X\) consisting of \(N\) examples \(x_1, ..., x_n\). Given \(X\), it would be interesting to know \(p(x|X)\). We could use it to predict if a new \(x\) belongs to the dataset or not. This is helpful for clustering, anomaly detection, data generation and other unsupervised learning tasks.</p>
+
+<p>For modeling \(p(x|X)\), we can try to approximate it with a distribution \(p_\theta(x) \approx p(x|X)\). This distribution \(p_\theta(x)\) is parametrized by \(\theta\). \(\theta\) could for example be the parameters of a neural network, which outputs \(p_\theta(x)\), i.e. the prediction for the real and unknown \(p(x|X)\). <!--To find a good approximation of \(p(x|X)\), we could train the neural network using \(X\) and Maximum Likelihood Estimation.--></p>
+
+<h3>\(p(x|X)\) is hard to model</h3>
+
+<p>The problem with \(p(x|X)\) is that it is close to zero almost everywhere for many interesting datasets. For example, the CIFAR-10 dataset contains 60,000 32x32 images, i.e. points in a 1024-dimensional space, the pixel space. Randomly generating an image in this space will likely not produce an image of an object from one of the 10 classes. Following the manifold hypothesis, we can therefore assume that the data points lie on a lower-dimensional manifold. This means that \(p(x|X) \approx 0\) for \(x\) outside of this manifold. Thus, \(p(x|X)\) has to be very large for \(x\) on the manifold, since \( \int p(x|X) \,d x \overset{!}{=} 1\). Such a function is very hard to model with a neural network.</p>
+
+<h3>\(p(x|X,z)\) is easier to model</h3>
+
+<p>We can make modeling \(p(x|X)\) easier by using a generative network, similar to the generator in a Generative Adversarial Network. We introduce a lower-dimensional latent/hidden variable \(z\).</p>
+
+<p>We can make modeling \(p(x|X)\) easier by introducing a lower-dimensional latent/hidden variable \(z\). This latent variable can follow a simple probability distribution, for example \(z \sim \mathcal{N}(\vec{0}, I)\). The key is that instead of using \(\theta\) for \(p_\theta(x)\), \(\theta\) now contains the parameters of \(p_\theta(z)\) and \(p_\theta(x|z)\). Thus, we are still modeling \(p_\theta(x)\), since we can calculate it at any time via</p>
+
+$$p_\theta(x) = \int_z p_\theta(x|z) p_\theta(z) \,dz$$
+
+<p>Now, why is \(p_\theta(x|z) \approx p(x| X, z)\) easier to model than \(p(x|X)\)? We chose a simple and arbitrary \(p_\theta(z) = \mathcal{N}(\vec{0}, I)\), which does not depend on \(\theta\) or \(X\). How would this help in modeling \(p(x|z)\)? Let's say we model \(p_\theta(x|z)\) with a neural network. The idea then is that this network can use \(z\) as a latent code. </p>
+
+<h3>Notes</h3>
+<ul>
+    <li>The notation used in this post follows the notation of "Deep Learning" by Goodfellow et al. [TODO]</li>
+</ul>
+
+------
+
+TODO:
+- Neuronale Netze getrennt einführen! Vorher alles NN agnostisch machen.
+- die terme des VAE papers (oder beider VAE paper) der reihe nach einführen und jedes mal eine bootstrap alert box hinzufügen, die den term exakt definiert
+- mit p(X) anfangen, aufteilung in p(x_i)*... ist eine annahme!
+- Credit to Berthold Bäuml and Paul Bergmann
+- Um p(x|z) zu modeln, müsste der generator x und z als input bekommen und eine zahl als output liefern -> kein generative model!
+- Ganz am Schluss, wenn der Text steht, den Post durchgehen und überall wo sinnvoll Grafiken einfügen, bzw eigene Figures generieren (manifold vs non-manifold)
+
+Wenn wir p(x|z) modeln wollen, also z als Zusatzinfo haben, dann wird der manifold zwar simpler (falls z Sinn macht), denn für unwahrscheinliche z ists egal, was wir ausgeben und für wahrscheinliche z müssen wir nur die durch z kodierten bilder "erkennen", indem wir ihnen eine hohe wahrscheinlichkeit zuweisen. allerdings haben wir weiterhin das problem von "fast überall 0 und nur manchmal sehr sehr groß". könnten wir über RBF lösen, was exakt auf generator + gaussian noise raus kommt.

@@ -142,7 +142,7 @@ javascripts: "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/he/1.1.1/he.m
     </div>
 </div>
 
-<p>Here is the detailed description of what I did: I used a specific type of recurrent neural networks, the <a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank">LSTM (Long Short-Term Memory)</a>, to learn a language model for a given text corpus. Because I fed it only one letter at a time, it learned a language model on a character level. This idea is not new at all. It was inspired by Andrej Karpathy's <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/" target="_blank"> blog post</a> about the <i>"Unreasonable Effectiveness of Recurrent Neural Networks"</i>. He also trained character-level networks on Shakespeare, Wikipedia, Linux Source Code etc. The results are amazing.</p>
+<p>Here is the detailed description of what I did: I used a specific type of recurrent neural networks, the <a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank">LSTM (Long Short-Term Memory)</a>, to learn a language model for a given text corpus. Because I fed it only one letter at a time, it learned a language model on a character level. This idea is not new at all. In 2015, Andrej Karpathy wrote a <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/" target="_blank"> blog post</a> about the <i>"Unreasonable Effectiveness of Recurrent Neural Networks"</i>. He also trained character-level networks on Shakespeare, Wikipedia, Linux Source Code etc. The results are amazing.</p>
 
 <p>I decided to try to reproduce his results and make the trained models available via an interactive chat box, so that you can try them out as well.</p>
 
@@ -176,7 +176,7 @@ javascripts: "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/he/1.1.1/he.m
 <p>As training / validation split, I used a 90 / 10 ratio for the three small datasets and a 95 / 5 ratio for the US Congress and the Wikipedia dataset.</p>
 
 <h3>Model</h3>
-<p>I did not do a lot of hyper-parameter tuning and the tuning I did yielded marginal results. Below are the hyper-parameters that I found to work well for each dataset. For all models, I used 90-dimensional one-hot encodings as input and output of the model. The models were trained by minimizing the cross-entropy / <del>bits</del> nats per character using <a href="http://sebastianruder.com/optimizing-gradient-descent/index.html#rmsprop" target="_blank">RMSprop</a>.</p>
+<p>I did not do a lot of hyper-parameter tuning. Below are the hyper-parameters that I found to work well for each dataset. For all models, I used 90-dimensional one-hot encodings as input and output of the model. The models were trained by minimizing the cross-entropy / <del>bits</del> nats per character using <a href="http://sebastianruder.com/optimizing-gradient-descent/index.html#rmsprop" target="_blank">RMSprop</a>.</p>
 
 <ul>
     <li>Number of LSTM layers: 3 (the South Park and the Goethe model only had 2 layers)</li>
