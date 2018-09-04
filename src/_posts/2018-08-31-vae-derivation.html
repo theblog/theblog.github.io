@@ -25,17 +25,21 @@ javascripts: ""
 
 <h3>\(p(x|X,z)\) is easier to model</h3>
 
-<p>We can make modeling \(p(x|X)\) easier by incorporating a prior assumption into the model architecture. The assumption is that the examples \(x\) depend on latent / hidden variables \(z\). This means that there are hidden causes behind the examples in our dataset. This is a natural assumption for many datasets. For example, the latent variables behind images of faces include azimuth, skin color, lighting etc.</p>
+<p>We can make modeling \(p(x|X)\) easier by incorporating a prior assumption into the model architecture. The assumption is that the examples \(x\) depend on latent / hidden variables \(z\). This means that there are hidden causes behind the examples in our dataset. This is a natural assumption for many datasets. For example, the latent variables that images depend on of faces include azimuth, skin color, lighting etc. While these impact the (observable) image, we often don't know the exact values of these latent variables - as their name suggests.</p>
 
-<p>If we know the exact values of \(z\) for every \(x\), modeling \(p(x|X, z)\) will likely be easier than modeling \(p(x|X)\) directly. This is evident for simple datasets, where a few latent variables can completely explain every sample. For example, in the figure above, the elevation and azimuth variables completely determine every image. If we can compute the image \(g\) from these two variables, we can directly model \(p(x|X, z)\) - simply by checking if \(x = g\). But even if there is uncertainty left with respect to \(x\), \(p(x|X, z)\) will likely have fewer regions of high probabiliy mass. Thus, modeling \(p(x|X, z)\) will be easier than modeling \(p(x|X)\) directly. Given that we also know the probability distribution \(p(z)\) of the latent variables themselves, we can now model \(p(x|X)\) via</p>
+<!--TODO: figure with manifold learning josh tenenbaum-->
+
+<p>If we knew the exact values of \(z\) for every \(x\), modeling \(p(x|X, z)\) would likely be easier than modeling \(p(x|X)\) directly. This is evident for simple datasets, where a few latent variables can completely explain every sample. For example, in the figure above, the elevation and azimuth variables completely determine every image. If we can compute the image \(g\) from these two variables \(z\), we can directly model \(p(x|X, z)\) - simply by checking if \(x = g\). But even if there is uncertainty left with respect to \(x\), modeling \(p(x|X, z)\) will likely be easier than modeling \(p(x|X)\) directly. For example, imagine what the probability distribution of handwritten zeros looks like in pixel space. It is easier to model than the probability distribution of handwritten digits in general. There, we are missing the hidden information of what digit is depicted.</p>
+
+<p>Given that we also know the probability distribution \(p(z)\) of the latent variables themselves, we can now model \(p(x|X)\) via</p>
 
 $$p_\theta(x) = \int_z p_\theta(x|z) p_\theta(z) \,dz$$
 
-<p>Here, \(\theta\) consists of all parameters needed to model \(p_(x|X,z)\) and \(p_(z)\). It indirectly also parametrizes  p_\theta(x). In conclusion, knowing the exact values of some latent variables \(z\) for a given \(x\) will probably make modeling \(p(x|X,)\) easier.</p>
+<p>Here, \(\theta\) consists of all parameters needed to model \(p_(x|X,z)\) and \(p_(z)\). It indirectly also parametrizes  p_\theta(x). In conclusion, knowing the exact values of some latent variables \(z\) for a given \(x\) will probably make modeling \(p(x|X)\) easier.</p>
 
 <h3>TODO</h3>
 
-<p>The problem is that we don't know the values of the latent variables. We don't even know what and how many latent variables there are. That is what makes them latent.
+<p>The problem is that we don't know the values of the latent variables. We don't even know what and how many latent variables there are. That is what makes them latent.</p>
 
 <h3>Notes</h3>
 <ul>
