@@ -15,7 +15,7 @@ javascripts: ""
 
 <h3>\(p(x|X)\) is interesting</h3>
 
-<p>We have a dataset, \(X\) consisting of \(N\) examples \(x_1, ..., x_n\). Given \(X\), it would be interesting to know \(p(x|X)\). We could use it to predict if a new \(x\) belongs to the dataset or not. This is helpful for clustering, anomaly detection, data generation and other unsupervised learning tasks.</p>
+<p>We have a dataset, \(X\) consisting of \(N\) examples \(x_1, ..., x_n\). Given \(X\), it would be interesting to know \(p(x|X)\). We could use it to predict if a new \(x\) belongs to the dataset or not. This is helpful for clustering, anomaly detection, data generation and <a href="https://ermongroup.github.io/cs228-notes/preliminaries/applications/">other unsupervised learning tasks.</a></p>
 
 <p>For modeling \(p(x|X)\), we can try to approximate it with a distribution \(p_\theta(x) \approx p(x|X)\). This distribution \(p_\theta(x)\) is parametrized by \(\theta\). \(\theta\) could for example be the parameters of a neural network, which outputs \(p_\theta(x)\), i.e. the prediction for the real and unknown \(p(x|X)\). <!--To find a good approximation of \(p(x|X)\), we could train the neural network using \(X\) and Maximum Likelihood Estimation.--></p>
 
@@ -25,13 +25,17 @@ javascripts: ""
 
 <h3>\(p(x|X,z)\) is easier to model</h3>
 
-<p>We can make modeling \(p(x|X)\) easier by using a generative network, similar to the generator in a Generative Adversarial Network. We introduce a lower-dimensional latent/hidden variable \(z\).</p>
+<p>We can make modeling \(p(x|X)\) easier by incorporating a prior assumption into the model architecture. The assumption is that the examples \(x\) depend on latent / hidden variables \(z\). This means that there are hidden causes behind the examples in our dataset. This is a natural assumption for many datasets. For example, the latent variables behind images of faces include azimuth, skin color, lighting etc.</p>
 
-<p>We can make modeling \(p(x|X)\) easier by introducing a lower-dimensional latent/hidden variable \(z\). This latent variable can follow a simple probability distribution, for example \(z \sim \mathcal{N}(\vec{0}, I)\). The key is that instead of using \(\theta\) for \(p_\theta(x)\), \(\theta\) now contains the parameters of \(p_\theta(z)\) and \(p_\theta(x|z)\). Thus, we are still modeling \(p_\theta(x)\), since we can calculate it at any time via</p>
+<p>If we know the exact values of \(z\) for every \(x\), modeling \(p(x|X, z)\) will likely be easier than modeling \(p(x|X)\) directly. This is evident for simple datasets, where a few latent variables can completely explain every sample. For example, in the figure above, the elevation and azimuth variables completely determine every image. If we can compute the image \(g\) from these two variables, we can directly model \(p(x|X, z)\) - simply by checking if \(x = g\). But even if there is uncertainty left with respect to \(x\), \(p(x|X, z)\) will likely have fewer regions of high probabiliy mass. Thus, modeling \(p(x|X, z)\) will be easier than modeling \(p(x|X)\) directly. Given that we also know the probability distribution \(p(z)\) of the latent variables themselves, we can now model \(p(x|X)\) via</p>
 
 $$p_\theta(x) = \int_z p_\theta(x|z) p_\theta(z) \,dz$$
 
-<p>Now, why is \(p_\theta(x|z) \approx p(x| X, z)\) easier to model than \(p(x|X)\)? We chose a simple and arbitrary \(p_\theta(z) = \mathcal{N}(\vec{0}, I)\), which does not depend on \(\theta\) or \(X\). How would this help in modeling \(p(x|z)\)? Let's say we model \(p_\theta(x|z)\) with a neural network. The idea then is that this network can use \(z\) as a latent code. </p>
+<p>Here, \(\theta\) consists of all parameters needed to model \(p_(x|X,z)\) and \(p_(z)\). It indirectly also parametrizes  p_\theta(x). In conclusion, knowing the exact values of some latent variables \(z\) for a given \(x\) will probably make modeling \(p(x|X,)\) easier.</p>
+
+<h3>TODO</h3>
+
+<p>The problem is that we don't know the values of the latent variables. We don't even know what and how many latent variables there are. That is what makes them latent.
 
 <h3>Notes</h3>
 <ul>
@@ -47,5 +51,6 @@ TODO:
 - Credit to Berthold Bäuml and Paul Bergmann
 - Um p(x|z) zu modeln, müsste der generator x und z als input bekommen und eine zahl als output liefern -> kein generative model!
 - Ganz am Schluss, wenn der Text steht, den Post durchgehen und überall wo sinnvoll Grafiken einfügen, bzw eigene Figures generieren (manifold vs non-manifold)
+- latent variable z or latent variableS z?
 
 Wenn wir p(x|z) modeln wollen, also z als Zusatzinfo haben, dann wird der manifold zwar simpler (falls z Sinn macht), denn für unwahrscheinliche z ists egal, was wir ausgeben und für wahrscheinliche z müssen wir nur die durch z kodierten bilder "erkennen", indem wir ihnen eine hohe wahrscheinlichkeit zuweisen. allerdings haben wir weiterhin das problem von "fast überall 0 und nur manchmal sehr sehr groß". könnten wir über RBF lösen, was exakt auf generator + gaussian noise raus kommt.
