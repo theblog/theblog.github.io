@@ -35,11 +35,21 @@ javascripts: ""
 
 $$p_\theta(x) = \int_z p_\theta(x|z) p_\theta(z) \,dz$$
 
-<p>Here, \(\theta\) consists of all parameters needed to model \(p_(x|X,z)\) and \(p_(z)\). It indirectly also parametrizes  p_\theta(x). In conclusion, knowing the exact values of some latent variables \(z\) for a given \(x\) will probably make modeling \(p(x|X)\) easier.</p>
+<p>Here, \(\theta\) consists of all parameters needed to model \(p(x|X,z)\) and \(p(z)\). It indirectly also parametrizes  p_\theta(x). In conclusion, knowing the exact values of some latent variables \(z\) for a given \(x\) will probably make modeling \(p(x|X)\) easier.</p>
 
-<h3>TODO</h3>
+<h3>Inference</h3>
 
-<p>The problem is that we don't know the values of the latent variables. We don't even know what and how many latent variables there are. That is what makes them latent.</p>
+<p>The problem is that we don't know the values of the latent variables. We don't even know what latent variables there are. That is what makes them latent. We can, however, infer the values of the latent variables from \(x\) via Bayes' rule. Given that we have a model for \(p_\theta(x|z)\) and \(p_\theta(z)\), we can compute the probability of \(z\) given \(x\) as</p>
+
+$$p_\theta(z|x) = \frac{p_\theta(x|z) p_\theta(z)}{p_\theta(x)}  = \frac{p_\theta(x|z) p_\theta(z)}{\int_z p_\theta(x|z) p_\theta(z) \,dz}$$
+
+<p>Via this equation, we can infer the values of the latent variables \(z\), which makes \(p(x|X, z)\) easier to model. There is a cyclic dependency here: being able to model \(p(x|X,z)\) requires good estimates of \(z\). This in turn requires a good model of \(p_\theta(x|z)\) and \(p_\theta(z)\). This cycle, however, also means that the closer our \(p_\theta(x|z)\) gets to the actual \(p(x|X, z)\) the better our estimations of \(z\) get. This improves \(p_\theta(x|z)\) again, which enables us to train the model iteratively, for example using the <a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">Expectation-maximization algorithm</a>.</p>
+
+- waehlen arbitrary number of continuous latent variables
+- prior, da arbitrary anyways
+<p>In conclusion, we start with arbitrary estimates of \(p_\theta(x|z)\) and \(p_\theta(z|x)\). Since we use 
+    - iterative improvement
+    - posterior doesnt have to be trained
 
 <h3>Notes</h3>
 <ul>
