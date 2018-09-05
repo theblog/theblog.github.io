@@ -43,13 +43,18 @@ $$p_\theta(x) = \int_z p_\theta(x|z) p_\theta(z) \,dz$$
 
 $$p_\theta(z|x) = \frac{p_\theta(x|z) p_\theta(z)}{p_\theta(x)}  = \frac{p_\theta(x|z) p_\theta(z)}{\int_z p_\theta(x|z) p_\theta(z) \,dz}$$
 
-<p>Via this equation, we can infer the values of the latent variables \(z\), which makes \(p(x|X, z)\) easier to model. There is a cyclic dependency here: being able to model \(p(x|X,z)\) requires good estimates of \(z\). This in turn requires a good model of \(p_\theta(x|z)\) and \(p_\theta(z)\). This cycle, however, also means that the closer our \(p_\theta(x|z)\) gets to the actual \(p(x|X, z)\) the better our estimations of \(z\) get. This improves \(p_\theta(x|z)\) again, which enables us to train the model iteratively, for example using the <a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">Expectation-maximization algorithm</a>.</p>
+<p>Via this equation, we can infer the values of the latent variables \(z\), which makes \(p(x|X, z)\) easier to model. You might notice the cyclic dependency here: being able to model \(p(x|X,z)\) requires good estimates of \(z\). These in turn require accurate \(p_\theta(x|z)\) and \(p_\theta(z)\), i.e. a good model of \(p(x|X,z)\). This requires us to learning our model iteratively. The closer our \(p_\theta(x|z)\) gets to the actual \(p(x|X, z)\) the better our estimations of \(z\) get, which improves \(p_\theta(x|z)\) again. This iterative learning procedure is analogous to the <a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">Expectation-maximization algorithm</a>.</p>
 
-- waehlen arbitrary number of continuous latent variables
-- prior, da arbitrary anyways
-<p>In conclusion, we start with arbitrary estimates of \(p_\theta(x|z)\) and \(p_\theta(z|x)\). Since we use 
-    - iterative improvement
-    - posterior doesnt have to be trained
+<p>In conclusion, we first choose a number of continuous latent variables. Because they are latent, we don't know anything about their actual distribution. Therefore, we can for example set \(p_\theta(z) = \mathcal{N}(\vec{0}, I)\). This incorporates the strong prior assumption that each latent variable is normally distributed and independent from other latent variables. When learning \(p_\theta(x|z)\), we start with arbitrary estimates \(p_\theta(z|x)\). Since improving \(p_\theta(x|z)\) implies improving these estimates, we iteratively optimize \(p_\theta(x|z)\). Finally, we are able to model \(p(x|X)\) via</p>
+
+$$p_\theta(x) = \int_z p_\theta(x|z) p_\theta(z) \,dz$$
+
+<h3>Intractability</h3>
+
+<p>The training procedure could look as follows:</p>
+<ol>
+    <li></li>
+</ol>
 
 <h3>Notes</h3>
 <ul>
