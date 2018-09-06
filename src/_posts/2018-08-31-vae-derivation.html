@@ -21,11 +21,11 @@ javascripts: ""
 
 <h3>\(p(x|X)\) is hard to model</h3>
 
-<p>The problem with \(p(x|X)\) is that it is almost zero almost everywhere for many interesting datasets. For example, the CIFAR-10 dataset contains 60,000 32x32 images, i.e. points in a 1024-dimensional space, the pixel space. Randomly generating an image in this space will likely not produce an image of an object from one of the 10 classes. Following the manifold hypothesis, we can therefore assume that the data points lie on a lower-dimensional manifold. This means that \(p(x|X) \approx 0\) for \(x\) outside of this manifold. Thus, \(p(x|X)\) has to be very large for \(x\) on the manifold, since \( \int p(x|X) \,d x \overset{!}{=} 1\). Such a function is very hard to model with a neural network.</p>
+<p>The problem with \(p(x|X)\) is that it is almost zero almost everywhere for many interesting datasets. For example, the CIFAR-10 dataset contains 60,000 32x32 images, i.e. points in a 1024-dimensional space, the pixel space. Randomly generating an image in this space will likely not produce an image of an object from one of the 10 classes. Following the manifold hypothesis, we can assume that the data points lie on a lower-dimensional manifold. This means that \(p(x|X) \approx 0\) for all \(x\) outside of this manifold. Thus, \(p(x|X)\) has to be very large for \(x\) on the manifold, since \( \int p(x|X) \,d x = 1\). Such a function is very hard to model with a neural network.</p>
 
 <h3>\(p(x|X,z)\) is easier to model</h3>
 
-<p>We can make modeling \(p(x|X)\) easier by incorporating an assumption into the model architecture. The assumption is that the examples \(x\) depend on latent / hidden variables \(z\). This means that there are hidden causes behind the examples in our dataset. This is a natural assumption for many datasets. For example, the latent variables that images of faces depend on include azimuth, skin color, lighting etc. While these impact the observable image, we often don't know the exact values of these latent variables - as their name suggests. </p>
+<p>We can make modeling \(p(x|X)\) easier by incorporating an assumption into the model architecture. The assumption is that the examples \(x\) depend on latent / hidden variables \(z\). That means there are hidden causes behind the examples in our dataset. This is a natural assumption for many datasets. For example, the latent variables that images of faces depend on include azimuth, skin color, lighting etc. While these impact the observable image, we often don't know the exact values of these latent variables - as their name suggests. </p>
 
 <!--TODO: figure with manifold learning josh tenenbaum-->
 
@@ -39,22 +39,19 @@ $$p_\theta(x) = \int_z p_\theta(x|z) p_\theta(z) \,dz$$
 
 <h3>Inference</h3>
 
-<p>The problem is that we don't know the values of the latent variables. We don't even know what latent variables there are. That is what makes them latent. We can, however, infer the values of the latent variables from \(x\) via Bayes' rule. Using our models \(p_\theta(x|z)\) and \(p_\theta(z)\), we can compute the probability of \(z\) given \(x\) as</p>
+<p>The problem is that we don't know the values of the latent variables. We don't even know what latent variables there are. That is what makes them latent. We can, however, infer the values of the latent variables for a given \(x\) via Bayes' rule. Using our models \(p_\theta(x|z)\) and \(p_\theta(z)\), we can compute the probability of \(z\) given \(x\) as</p>
 
 $$p_\theta(z|x) = \frac{p_\theta(x|z) p_\theta(z)}{p_\theta(x)}  = \frac{p_\theta(x|z) p_\theta(z)}{\int_z p_\theta(x|z) p_\theta(z) \,dz}$$
 
-<p>Via this equation, we can infer the values of the latent variables \(z\), which makes \(p(x|X, z)\) easier to model. You might notice the cyclic dependency here: being able to model \(p(x|X,z)\) requires good estimates of \(z\). These in turn require accurate models \(p_\theta(x|z)\) and \(p_\theta(z)\), i.e. a good model of \(p(x|X,z)\). This cycle requires us to learn our models iteratively. The closer our \(p_\theta(x|z)\) gets to the actual \(p(x|X, z)\) the better our estimations of \(z\) get, which improves \(p_\theta(x|z)\) again. This iterative learning procedure is analogous to the <a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">Expectation-maximization algorithm</a>.</p>
+<p>Via this equation, we can infer the values of the latent variables \(z\), which makes modelin \(p(x|X, z)\) easier. You might  have noticed the cyclic dependency here: being able to model \(p(x|X,z)\) requires good estimates of \(z\). These in turn require accurate models \(p_\theta(x|z)\) and \(p_\theta(z)\), i.e. a good model of \(p(x|X,z)\). This cycle requires us to learn our models iteratively. The closer our \(p_\theta(x|z)\) gets to the actual \(p(x|X, z)\) the better our estimates of \(z\) get, which improves \(p_\theta(x|z)\) again. This iterative learning procedure is analogous to the <a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">Expectation-maximization algorithm</a>.</p>
 
-<p>In conclusion, we first choose a number of continuous latent variables. Because they are latent, we don't know anything about their actual distribution. Therefore, we can for example set \(p_\theta(z) = \mathcal{N}(\vec{0}, I)\), which does not depend on \(\theta\). This incorporates the strong prior assumption that each latent variable is normally distributed and independent from other latent variables. When learning \(p_\theta(x|z)\), we start with arbitrary estimates \(p_\theta(z|x)\). Since improving \(p_\theta(x|z)\) implies improving these estimates, we iteratively optimize \(p_\theta(x|z)\). Finally, we are able to model \(p(x|X)\) via</p>
+<p>In conclusion, we first choose a number of continuous latent variables. Because they are latent, we don't know anything about their actual distribution. Therefore, we can for example set \(p_\theta(z) = \mathcal{N}(\vec{0}, I)\), which does not depend on \(\theta\). This incorporates the strong prior assumption that each latent variable is normally distributed and independent from other latent variables. Since we can compute \(p_\theta(z|x)\) directly from \(p_\theta(x|z)\) and our fixed \(p(z)\), we only need to learn \(p_\theta(x|z)\). To do this, we start with arbitrary \(\theta\), i.e. arbitrary estimates \(p_\theta(z|x)\). At each step, we update \(\theta\) with the objective of maximizing \(p_\theta(X) = p_\theta(x_1) \cdot \ldots cdot p_\theta(x_N)\). This corresponds to Maximum Likelihood Estimation of \(\theta\) based on the current estimates of \(z\). Since improving \(p_\theta(x|z)\) implies improving these estimates, we iteratively optimize \(p_\theta(x|z)\). Finally, we are able to model \(p(x|X)\) via</p>
 
 $$p_\theta(x) = \int_z p_\theta(x|z) p_\theta(z) \,dz$$
 
 <h3>Intractability</h3>
 
-<p>The training procedure could look as follows:</p>
-<ol>
-    <li></li>
-</ol>
+<p>When trying to implement this training procedure, we will immediately face a problem: the integrals.</p>
 
 <h3>Notes</h3>
 <ul>
@@ -71,5 +68,6 @@ TODO:
 - Um p(x|z) zu modeln, müsste der generator x und z als input bekommen und eine zahl als output liefern -> kein generative model!
 - Ganz am Schluss, wenn der Text steht, den Post durchgehen und überall wo sinnvoll Grafiken einfügen, bzw eigene Figures generieren (manifold vs non-manifold)
 - latent variable z or latent variableS z?
+- genaue entscheidung hinter prior = gaussian ohne lernbare parameter
 
 Wenn wir p(x|z) modeln wollen, also z als Zusatzinfo haben, dann wird der manifold zwar simpler (falls z Sinn macht), denn für unwahrscheinliche z ists egal, was wir ausgeben und für wahrscheinliche z müssen wir nur die durch z kodierten bilder "erkennen", indem wir ihnen eine hohe wahrscheinlichkeit zuweisen. allerdings haben wir weiterhin das problem von "fast überall 0 und nur manchmal sehr sehr groß". könnten wir über RBF lösen, was exakt auf generator + gaussian noise raus kommt.
