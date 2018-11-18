@@ -55,7 +55,7 @@ But did you know that you can also define a static final Hashset and populate it
 <h3>5. The correct use of volatile</h3>
 If you already learned about parallel programming in Java, you probably know the <code>synchronized</code> keyword. But what about <code>volatile</code> ? <a href="https://www.ibm.com/developerworks/java/library/j-jtp06197/" target="_blank">Brian Goetz</a> calls it the "Lite-version" of synchronized.
 
-Synchronized statements provide two features: <strong>mutual exclusion</strong> and <strong>visibility.</strong> The former guarantees that only one thread at a time has a certain lock. This may give him sole access to reading or writing a variable, be it reading or writing. Visibility ensures that after the lock is released, the next thread works with the up-to-date versions of all locked variables.
+Synchronized statements provide two features: <strong>mutual exclusion</strong> and <strong>visibility.</strong> The former guarantees that only one thread at a time has a certain lock. This may give him sole access to a variable, be it reading or writing. Visibility ensures that after the lock is released, the next thread works with the up-to-date versions of all locked variables.
 
 Volatile variables only provide <strong>visibility</strong>. Therefore they should not be used for cases where
 <ul>
