@@ -3,11 +3,3 @@ excerpt_separator: <!--more-->
 include: ["_pages"]
 permalink: /post/:title/
 url: http://theblog.github.io
-exclude:
-  - package.json
-  - node_modules
-  - gulpfile.js
-  - src
-  - .eslintrc
-  - README.md
-  - _dist
