@@ -58,7 +58,7 @@ gulp.task('default', ['_javascripts', '_images']);
 
 // Check code style on JS
 gulp.task('eslint', function () {
-    gulp.src(sourcePaths.javascripts, {cwd: bases.frontend})
+    gulp.src(sourcePaths.javascripts, {cwd: 'src/'})
         .pipe(eslint())
         .pipe(eslint.format());
 });
