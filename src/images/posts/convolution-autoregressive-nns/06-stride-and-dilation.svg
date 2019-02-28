@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="2191px" height="692px" viewBox="0 0 2191 692" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>06-stride-and-dilation</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="06-stride-and-dilation" transform="translate(0.000000, 3.000000)">
+            <g id="Input" transform="translate(321.000000, 636.000000)">
+                <g id="Input-dot">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="1" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">1</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(86.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="2" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">2</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(172.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="3" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">3</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(258.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="4" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">4</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(344.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="5" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">5</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(430.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="6" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">6</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(516.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="7" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">7</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(602.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="8" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">8</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(688.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="9" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">9</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(774.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="10" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="7.703125" y="35">10</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(860.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="11" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="8.578125" y="35">11</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(946.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="2" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="7.703125" y="35">12</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(1032.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="13" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="7.703125" y="35">13</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(1118.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="14" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="7.703125" y="35">14</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(1204.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="15" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="7.703125" y="35">15</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(1290.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="16" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="7.703125" y="35">16</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(1376.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="17" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="7.703125" y="35">17</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(1462.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="18" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="7.703125" y="35">18</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="Kernels" transform="translate(0.000000, 481.000000)">
+                <g id="Active-Kernel" transform="translate(1636.000000, 0.000000)" fill="#7C7C7C" fill-rule="nonzero">
+                    <path id="Line" d="M170.5,4.72625996 L164.307363,15.7353919 C163.901218,16.4574287 162.986645,16.713509 162.264608,16.3073633 C161.542571,15.9012176 161.286491,14.986645 161.692637,14.2646081 L170.692637,-1.73539186 L173.307363,-1.73539186 L182.307363,14.2646081 C182.713509,14.986645 182.457429,15.9012176 181.735392,16.3073633 C181.013355,16.713509 180.098782,16.4574287 179.692637,15.7353919 L173.5,4.72625996 L173.5,15 L173.5,148 C173.5,148.828427 172.828427,149.5 172,149.5 C171.171573,149.5 170.5,148.828427 170.5,148 L170.5,15 L170.5,4.72625996 Z"></path>
+                    <path id="Line" d="M167.439081,1.94564853 L155.054942,4.43217985 C154.242725,4.59525966 153.45209,4.06902999 153.289011,3.25681298 C153.125931,2.44459596 153.652161,1.65396167 154.464378,1.49088186 L172.462729,-2.12289091 L174.168163,-0.140899707 L167.910166,17.1170688 C167.62776,17.8958743 166.767477,18.2982853 165.988672,18.0158788 C165.209866,17.7334723 164.807455,16.8731899 165.089862,16.0943844 L169.395806,4.21968116 L161.687749,10.8521958 L0.978362872,149.137016 C0.350406103,149.677351 -0.596681417,149.60632 -1.13701631,148.978363 C-1.6773512,148.350406 -1.60631964,147.403319 -0.978362872,146.862984 L159.731023,8.5781632 L167.439081,1.94564853 Z"></path>
+                </g>
+                <g id="Active-Kernel" transform="translate(1378.000000, 0.000000)" fill="#7C7C7C" fill-rule="nonzero">
+                    <path id="Line" d="M170.5,4.72625996 L164.307363,15.7353919 C163.901218,16.4574287 162.986645,16.713509 162.264608,16.3073633 C161.542571,15.9012176 161.286491,14.986645 161.692637,14.2646081 L170.692637,-1.73539186 L173.307363,-1.73539186 L182.307363,14.2646081 C182.713509,14.986645 182.457429,15.9012176 181.735392,16.3073633 C181.013355,16.713509 180.098782,16.4574287 179.692637,15.7353919 L173.5,4.72625996 L173.5,15 L173.5,148 C173.5,148.828427 172.828427,149.5 172,149.5 C171.171573,149.5 170.5,148.828427 170.5,148 L170.5,15 L170.5,4.72625996 Z"></path>
+                    <path id="Line" d="M167.439081,1.94564853 L155.054942,4.43217985 C154.242725,4.59525966 153.45209,4.06902999 153.289011,3.25681298 C153.125931,2.44459596 153.652161,1.65396167 154.464378,1.49088186 L172.462729,-2.12289091 L174.168163,-0.140899707 L167.910166,17.1170688 C167.62776,17.8958743 166.767477,18.2982853 165.988672,18.0158788 C165.209866,17.7334723 164.807455,16.8731899 165.089862,16.0943844 L169.395806,4.21968116 L161.687749,10.8521958 L0.978362872,149.137016 C0.350406103,149.677351 -0.596681417,149.60632 -1.13701631,148.978363 C-1.6773512,148.350406 -1.60631964,147.403319 -0.978362872,146.862984 L159.731023,8.5781632 L167.439081,1.94564853 Z"></path>
+                </g>
+                <g id="Active-Kernel" transform="translate(1120.000000, 0.000000)" fill="#7C7C7C" fill-rule="nonzero">
+                    <path id="Line" d="M170.5,4.72625996 L164.307363,15.7353919 C163.901218,16.4574287 162.986645,16.713509 162.264608,16.3073633 C161.542571,15.9012176 161.286491,14.986645 161.692637,14.2646081 L170.692637,-1.73539186 L173.307363,-1.73539186 L182.307363,14.2646081 C182.713509,14.986645 182.457429,15.9012176 181.735392,16.3073633 C181.013355,16.713509 180.098782,16.4574287 179.692637,15.7353919 L173.5,4.72625996 L173.5,15 L173.5,148 C173.5,148.828427 172.828427,149.5 172,149.5 C171.171573,149.5 170.5,148.828427 170.5,148 L170.5,15 L170.5,4.72625996 Z"></path>
+                    <path id="Line" d="M167.439081,1.94564853 L155.054942,4.43217985 C154.242725,4.59525966 153.45209,4.06902999 153.289011,3.25681298 C153.125931,2.44459596 153.652161,1.65396167 154.464378,1.49088186 L172.462729,-2.12289091 L174.168163,-0.140899707 L167.910166,17.1170688 C167.62776,17.8958743 166.767477,18.2982853 165.988672,18.0158788 C165.209866,17.7334723 164.807455,16.8731899 165.089862,16.0943844 L169.395806,4.21968116 L161.687749,10.8521958 L0.978362872,149.137016 C0.350406103,149.677351 -0.596681417,149.60632 -1.13701631,148.978363 C-1.6773512,148.350406 -1.60631964,147.403319 -0.978362872,146.862984 L159.731023,8.5781632 L167.439081,1.94564853 Z"></path>
+                </g>
+                <g id="Active-Kernel" transform="translate(862.000000, 0.000000)" fill="#7C7C7C" fill-rule="nonzero">
+                    <path id="Line" d="M170.5,4.72625996 L164.307363,15.7353919 C163.901218,16.4574287 162.986645,16.713509 162.264608,16.3073633 C161.542571,15.9012176 161.286491,14.986645 161.692637,14.2646081 L170.692637,-1.73539186 L173.307363,-1.73539186 L182.307363,14.2646081 C182.713509,14.986645 182.457429,15.9012176 181.735392,16.3073633 C181.013355,16.713509 180.098782,16.4574287 179.692637,15.7353919 L173.5,4.72625996 L173.5,15 L173.5,148 C173.5,148.828427 172.828427,149.5 172,149.5 C171.171573,149.5 170.5,148.828427 170.5,148 L170.5,15 L170.5,4.72625996 Z"></path>
+                    <path id="Line" d="M167.439081,1.94564853 L155.054942,4.43217985 C154.242725,4.59525966 153.45209,4.06902999 153.289011,3.25681298 C153.125931,2.44459596 153.652161,1.65396167 154.464378,1.49088186 L172.462729,-2.12289091 L174.168163,-0.140899707 L167.910166,17.1170688 C167.62776,17.8958743 166.767477,18.2982853 165.988672,18.0158788 C165.209866,17.7334723 164.807455,16.8731899 165.089862,16.0943844 L169.395806,4.21968116 L161.687749,10.8521958 L0.978362872,149.137016 C0.350406103,149.677351 -0.596681417,149.60632 -1.13701631,148.978363 C-1.6773512,148.350406 -1.60631964,147.403319 -0.978362872,146.862984 L159.731023,8.5781632 L167.439081,1.94564853 Z"></path>
+                </g>
+                <g id="Active-Kernel" transform="translate(604.000000, 0.000000)" fill="#7C7C7C" fill-rule="nonzero">
+                    <path id="Line" d="M170.5,4.72625996 L164.307363,15.7353919 C163.901218,16.4574287 162.986645,16.713509 162.264608,16.3073633 C161.542571,15.9012176 161.286491,14.986645 161.692637,14.2646081 L170.692637,-1.73539186 L173.307363,-1.73539186 L182.307363,14.2646081 C182.713509,14.986645 182.457429,15.9012176 181.735392,16.3073633 C181.013355,16.713509 180.098782,16.4574287 179.692637,15.7353919 L173.5,4.72625996 L173.5,15 L173.5,148 C173.5,148.828427 172.828427,149.5 172,149.5 C171.171573,149.5 170.5,148.828427 170.5,148 L170.5,15 L170.5,4.72625996 Z"></path>
+                    <path id="Line" d="M167.439081,1.94564853 L155.054942,4.43217985 C154.242725,4.59525966 153.45209,4.06902999 153.289011,3.25681298 C153.125931,2.44459596 153.652161,1.65396167 154.464378,1.49088186 L172.462729,-2.12289091 L174.168163,-0.140899707 L167.910166,17.1170688 C167.62776,17.8958743 166.767477,18.2982853 165.988672,18.0158788 C165.209866,17.7334723 164.807455,16.8731899 165.089862,16.0943844 L169.395806,4.21968116 L161.687749,10.8521958 L0.978362872,149.137016 C0.350406103,149.677351 -0.596681417,149.60632 -1.13701631,148.978363 C-1.6773512,148.350406 -1.60631964,147.403319 -0.978362872,146.862984 L159.731023,8.5781632 L167.439081,1.94564853 Z"></path>
+                </g>
+                <g id="Active-Kernel" transform="translate(346.000000, 0.000000)" fill="#7C7C7C" fill-rule="nonzero">
+                    <path id="Line" d="M170.5,4.72625996 L164.307363,15.7353919 C163.901218,16.4574287 162.986645,16.713509 162.264608,16.3073633 C161.542571,15.9012176 161.286491,14.986645 161.692637,14.2646081 L170.692637,-1.73539186 L173.307363,-1.73539186 L182.307363,14.2646081 C182.713509,14.986645 182.457429,15.9012176 181.735392,16.3073633 C181.013355,16.713509 180.098782,16.4574287 179.692637,15.7353919 L173.5,4.72625996 L173.5,15 L173.5,148 C173.5,148.828427 172.828427,149.5 172,149.5 C171.171573,149.5 170.5,148.828427 170.5,148 L170.5,15 L170.5,4.72625996 Z"></path>
+                    <path id="Line" d="M167.439081,1.94564853 L155.054942,4.43217985 C154.242725,4.59525966 153.45209,4.06902999 153.289011,3.25681298 C153.125931,2.44459596 153.652161,1.65396167 154.464378,1.49088186 L172.462729,-2.12289091 L174.168163,-0.140899707 L167.910166,17.1170688 C167.62776,17.8958743 166.767477,18.2982853 165.988672,18.0158788 C165.209866,17.7334723 164.807455,16.8731899 165.089862,16.0943844 L169.395806,4.21968116 L161.687749,10.8521958 L0.978362872,149.137016 C0.350406103,149.677351 -0.596681417,149.60632 -1.13701631,148.978363 C-1.6773512,148.350406 -1.60631964,147.403319 -0.978362872,146.862984 L159.731023,8.5781632 L167.439081,1.94564853 Z"></path>
+                </g>
+                <g id="Info" transform="translate(0.000000, 29.000000)">
+                    <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="258" height="88"></rect>
+                    <text id="kernel_size-=-2-stri" font-family="Menlo-Regular, Menlo" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="16.25" y="25.8">kernel_size = 2</tspan>
+                        <tspan x="16.25" y="49.8">strides = 3</tspan>
+                        <tspan x="16.25" y="73.8">dilation_rate = 2</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="Hidden" transform="translate(493.000000, 424.000000)" fill="#DCDCDC" stroke="#ABABAB" stroke-width="5">
+                <g id="Hidden-dot" transform="translate(1032.000000, 0.000000)">
+                    <circle id="Oval" cx="25" cy="25" r="25"></circle>
+                </g>
+                <g id="Hidden-dot" transform="translate(1290.000000, 0.000000)">
+                    <circle id="Oval" cx="25" cy="25" r="25"></circle>
+                </g>
+                <g id="Hidden-dot" transform="translate(774.000000, 0.000000)">
+                    <circle id="Oval" cx="25" cy="25" r="25"></circle>
+                </g>
+                <g id="Hidden-dot" transform="translate(258.000000, 0.000000)">
+                    <circle id="Oval" cx="25" cy="25" r="25"></circle>
+                </g>
+                <g id="Hidden-dot" transform="translate(516.000000, 0.000000)">
+                    <circle id="Oval" cx="25" cy="25" r="25"></circle>
+                </g>
+                <g id="Hidden-dot">
+                    <circle id="Oval" cx="25" cy="25" r="25"></circle>
+                </g>
+            </g>
+            <g id="Kernels" transform="translate(0.000000, 269.000000)">
+                <g id="Active-Kernel" transform="translate(1034.000000, 0.000000)" fill="#7C7C7C" fill-rule="nonzero">
+                    <path id="Line" d="M772.5,4.72625996 L766.307363,15.7353919 C765.901218,16.4574287 764.986645,16.713509 764.264608,16.3073633 C763.542571,15.9012176 763.286491,14.986645 763.692637,14.2646081 L772.692637,-1.73539186 L775.307363,-1.73539186 L784.307363,14.2646081 C784.713509,14.986645 784.457429,15.9012176 783.735392,16.3073633 C783.013355,16.713509 782.098782,16.4574287 781.692637,15.7353919 L775.5,4.72625996 L775.5,15 L775.5,148 C775.5,148.828427 774.828427,149.5 774,149.5 C773.171573,149.5 772.5,148.828427 772.5,148 L772.5,15 L772.5,4.72625996 Z"></path>
+                    <path id="Line" d="M769.076126,-0.585660087 L757.099851,-4.60045396 C756.314384,-4.86376527 755.891093,-5.71396821 756.154404,-6.49943537 C756.417715,-7.28490252 757.267918,-7.70819347 758.053386,-7.44488215 L775.458972,-1.61002591 L775.950049,0.958171722 L761.925075,12.803006 C761.292165,13.3375314 760.345773,13.2577756 759.811247,12.6248664 C759.276722,11.9919571 759.356478,11.0455644 759.989387,10.511039 L769.639561,2.36095501 L759.650053,4.27109352 L0.281717722,149.473308 C-0.531967567,149.628896 -1.31771914,149.095403 -1.47330755,148.281718 C-1.62889595,147.468032 -1.09540301,146.682281 -0.281717722,146.526692 L759.086618,1.32447843 L769.076126,-0.585660087 Z"></path>
+                </g>
+                <g id="Active-Kernel" transform="translate(518.000000, 0.000000)" fill="#7C7C7C" fill-rule="nonzero">
+                    <path id="Line" d="M772.5,4.72625996 L766.307363,15.7353919 C765.901218,16.4574287 764.986645,16.713509 764.264608,16.3073633 C763.542571,15.9012176 763.286491,14.986645 763.692637,14.2646081 L772.692637,-1.73539186 L775.307363,-1.73539186 L784.307363,14.2646081 C784.713509,14.986645 784.457429,15.9012176 783.735392,16.3073633 C783.013355,16.713509 782.098782,16.4574287 781.692637,15.7353919 L775.5,4.72625996 L775.5,15 L775.5,148 C775.5,148.828427 774.828427,149.5 774,149.5 C773.171573,149.5 772.5,148.828427 772.5,148 L772.5,15 L772.5,4.72625996 Z"></path>
+                    <path id="Line" d="M769.076126,-0.585660087 L757.099851,-4.60045396 C756.314384,-4.86376527 755.891093,-5.71396821 756.154404,-6.49943537 C756.417715,-7.28490252 757.267918,-7.70819347 758.053386,-7.44488215 L775.458972,-1.61002591 L775.950049,0.958171722 L761.925075,12.803006 C761.292165,13.3375314 760.345773,13.2577756 759.811247,12.6248664 C759.276722,11.9919571 759.356478,11.0455644 759.989387,10.511039 L769.639561,2.36095501 L759.650053,4.27109352 L0.281717722,149.473308 C-0.531967567,149.628896 -1.31771914,149.095403 -1.47330755,148.281718 C-1.62889595,147.468032 -1.09540301,146.682281 -0.281717722,146.526692 L759.086618,1.32447843 L769.076126,-0.585660087 Z"></path>
+                </g>
+                <g id="Info" transform="translate(0.000000, 29.000000)">
+                    <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="258" height="88"></rect>
+                    <text id="kernel_size-=-2-stri" font-family="Menlo-Regular, Menlo" font-size="19" font-weight="normal" fill="#000000">
+                        <tspan x="16.25" y="25.8">kernel_size = 2</tspan>
+                        <tspan x="16.25" y="47.8">strides = 2</tspan>
+                        <tspan x="16.25" y="69.8">dilation_rate = 3</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="Hidden" transform="translate(1267.000000, 212.000000)" fill="#DCDCDC" stroke="#ABABAB" stroke-width="5">
+                <g id="Hidden-dot" transform="translate(516.000000, 0.000000)">
+                    <circle id="Oval" cx="25" cy="25" r="25"></circle>
+                </g>
+                <g id="Hidden-dot">
+                    <circle id="Oval" cx="25" cy="25" r="25"></circle>
+                </g>
+            </g>
+            <g id="Kernels" transform="translate(0.000000, 57.000000)">
+                <g id="Active-Kernel" transform="translate(1292.000000, 0.000000)" fill="#7C7C7C" fill-rule="nonzero">
+                    <path id="Line" d="M514.5,4.72625996 L508.307363,15.7353919 C507.901218,16.4574287 506.986645,16.713509 506.264608,16.3073633 C505.542571,15.9012176 505.286491,14.986645 505.692637,14.2646081 L514.692637,-1.73539186 L517.307363,-1.73539186 L526.307363,14.2646081 C526.713509,14.986645 526.457429,15.9012176 525.735392,16.3073633 C525.013355,16.713509 524.098782,16.4574287 523.692637,15.7353919 L517.5,4.72625996 L517.5,15 L517.5,148 C517.5,148.828427 516.828427,149.5 516,149.5 C515.171573,149.5 514.5,148.828427 514.5,148 L514.5,15 L514.5,4.72625996 Z"></path>
+                    <path id="Line" d="M511.043362,-0.138809205 L498.753577,-3.05615898 C497.947548,-3.24749414 497.449241,-4.05601734 497.640576,-4.8620461 C497.831911,-5.66807486 498.640434,-6.16638248 499.446463,-5.97504733 L517.307685,-1.73514931 L518.028579,0.778236392 L505.130049,13.840699 C504.547973,14.4301727 503.598245,14.4361698 503.008771,13.854094 C502.419297,13.2720181 502.4133,12.3222896 502.995376,11.7328159 L511.870477,2.74491756 L502.025906,5.56855412 L0.413557715,149.441863 C-0.382761443,149.670265 -1.21346176,149.209877 -1.44186338,148.413558 C-1.670265,147.617239 -1.20987687,146.786538 -0.413557715,146.558137 L501.198791,2.68482736 L511.043362,-0.138809205 Z"></path>
+                </g>
+                <g id="Info" transform="translate(0.000000, 29.000000)">
+                    <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="258" height="88"></rect>
+                    <text id="kernel_size-=-2-stri" font-family="Menlo-Regular, Menlo" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="16.25" y="25.8">kernel_size = 2</tspan>
+                        <tspan x="16.25" y="49.8">strides = 1</tspan>
+                        <tspan x="16.25" y="73.8">dilation_rate = 1</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="Output" transform="translate(1783.000000, 0.000000)">
+                <g id="Output-dot">
+                    <circle id="Oval" stroke="#FF651E" stroke-width="5" fill="#FF9901" cx="25" cy="25" r="25"></circle>
+                    <text id="19" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="7.703125" y="36">19</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="Translation" transform="translate(1931.000000, 86.000000)">
+                <g id="Info" transform="translate(0.000000, 424.000000)">
+                    <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="258" height="88"></rect>
+                    <text id="kernel_size-=-2-stri" font-family="Menlo-Regular, Menlo" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="16.25" y="25.8">kernel_size = 2</tspan>
+                        <tspan x="16.25" y="49.8">strides = 1</tspan>
+                        <tspan x="16.25" y="73.8">dilation_rate = 2</tspan>
+                    </text>
+                </g>
+                <g id="Info" transform="translate(0.000000, 212.000000)">
+                    <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="258" height="88"></rect>
+                    <text id="kernel_size-=-2-stri" font-family="Menlo-Regular, Menlo" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="16.25" y="25.8">kernel_size = 2</tspan>
+                        <tspan x="16.25" y="49.8">strides = 1</tspan>
+                        <tspan x="16.25" y="73.8">dilation_rate = 9</tspan>
+                    </text>
+                </g>
+                <g id="Info">
+                    <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="258" height="88"></rect>
+                    <text id="kernel_size-=-2-stri" font-family="Menlo-Regular, Menlo" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="16.25" y="25.8">kernel_size = 2</tspan>
+                        <tspan x="16.25" y="49.8">strides = 1</tspan>
+                        <tspan x="16.25" y="73.8">dilation_rate = 6</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
