@@ -38,20 +38,21 @@
     margin-bottom: 10px;
 }
 
-.navbar-nav > li {
+.navbar-nav li {
     font-weight: 400;
+    margin-bottom: 20px;
 }
 
-.navbar-nav > li > a {
+.navbar-nav li > a {
     padding: 10px 0;
 }
 
-.navbar-default .navbar-nav > li > a {
+.navbar-default .navbar-nav li > a {
     color: #cccccc;
 }
 
-.navbar-default .navbar-nav > li > a.active, .navbar-default .navbar-nav > li > a:hover,
-.navbar-default .navbar-nav > li > a:focus {
+.navbar-default .navbar-nav li > a.active, .navbar-default .navbar-nav li > a:hover,
+.navbar-default .navbar-nav li > a:focus {
     color: #ffffff;
 }
 
@@ -67,7 +68,7 @@
     color: #FFFFFF;
 }
 
-.navbar-nav > li > a div {
+.navbar-nav li > a div {
     vertical-align: top;
     white-space: normal;
     display: inline-block;
@@ -91,14 +92,24 @@
     float: none;
     overflow-y: auto;
     -ms-overflow-style: none;
-    padding: 0 0 0 15px;
-    list-style: none;
+    padding: 0;
     margin: 0;
     max-height: calc(100vh - 200px);
 }
 
-.navbar h5 {
+.navbar-nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+#navbarCollapse > h5 {
     margin-top: 20px;
+}
+
+.navigation-year {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 10pt;
 }
 
 /* Transform the top navbar to a sidebar */
@@ -125,12 +136,12 @@
         display: none;
     }
 
-    .navbar-nav > li > a div {
+    .navbar-nav li > a div {
         max-width: 120px;
         margin-left: -2px;
     }
 
-    .navbar h5:first-child {
+    #navbarCollapse > h5:first-child {
         margin-top: 100px;
     }
 }
