@@ -319,11 +319,11 @@ h1 a, h1 a:hover, h1 a:active, h1 a:focus {
     white-space: nowrap;
 }
 
-.no-margin{
+.no-margin {
     margin: 0;
 }
 
-.no-padding{
+.no-padding {
     padding: 0;
 }
 
@@ -360,7 +360,20 @@ h1 a, h1 a:hover, h1 a:active, h1 a:focus {
 }
 
 .detail {
-    display:none;
+    display: none;
+}
+
+/* CLAP BUTTON */
+
+applause-button {
+    width: 52px;
+    height: 52px;
+    float: right;
+    margin-left: 20px;
+}
+
+applause-button .count {
+    color: rgb(10, 18, 79);
 }
 
 @media only screen and (max-width: 767px) {
@@ -390,7 +403,7 @@ h1 a, h1 a:hover, h1 a:active, h1 a:focus {
     }
 
     .github-ribbon {
-        display:none;
+        display: none;
     }
 
     .wrapper, footer {
