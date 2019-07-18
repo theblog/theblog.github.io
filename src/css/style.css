@@ -88,6 +88,11 @@ table {
     -ms-overflow-style: none;
 }
 
+.mjx-chtml.MJXc-display {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
 td, th {
     padding: 10px;
 }
