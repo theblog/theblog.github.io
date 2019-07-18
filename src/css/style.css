@@ -82,7 +82,7 @@ table {
     font-weight: 300;
 }
 
-.table-container {
+.scroll-x-container, .mjx-chtml.MJXc-display {
     max-width: 100%;
     overflow-x: auto;
     -ms-overflow-style: none;
@@ -187,6 +187,7 @@ figcaption {
 
 #content {
     max-width: 800px;
+    overflow: hidden;
 }
 
 #post-error {

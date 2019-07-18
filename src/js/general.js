@@ -1,7 +1,7 @@
 $(function () {
-    // Wrap tables to make them responsive.
-    $('table').filter((index, element) => !($(element).parent().hasClass('table-container')))
-        .wrap('<div class="table-container"></div>');
+    // Wrap tables and specific elements to make them responsive.
+    $('table, .scroll-x').filter((index, element) => !($(element).parent().hasClass('scroll-x-container')))
+        .wrap('<div class="scroll-x-container"></div>');
 
     // Bring the bootstrap dropdowns to life
     $('.dropdown-menu li a').off('click').click(function () {
