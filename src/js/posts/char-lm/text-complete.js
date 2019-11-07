@@ -115,9 +115,8 @@ function completeText() {
 
     console.log('Sending request', prime);
     const defaultParams = DATASET_DEFAULTS[selectedDataset];
-    $.get('https://app-1506526767.000webhostapp.com',
+    $.get('https://ec2-01.batzner.io:5000/sample',
         {
-            url: 'http://ec2-18-219-49-194.us-east-2.compute.amazonaws.com:5000/sample',
             prime: prime,
             steps: defaultParams.steps,
             maxSentences: defaultParams.maxSentences,
