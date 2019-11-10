@@ -113,7 +113,7 @@ function completeText() {
     pendingRequestId = requestId;
     animateWaiting(requestId);
 
-    console.log('Sending request', prime);
+    // console.log('Sending request', prime);
     const defaultParams = DATASET_DEFAULTS[selectedDataset];
     $.get('https://ec2-01.batzner.io:5000/sample',
         {
