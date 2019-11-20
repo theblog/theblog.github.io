@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+WORKDIR=$(pwd)
+
 # From: https://unix.stackexchange.com/questions/155046/determine-if-git-working-directory-is-clean-from-a-script
 if ! (output=$(git status --porcelain) && [ -z "$output" ]); then
     # Uncommitted changes
@@ -11,9 +13,9 @@ fi
 # gulp
 
 # Copy all required files into a tmp dir and continue from there
-tmpdir=$(dirname $(mktemp -u))
-cp -r _site $tmpdir
-cp -r util $tmpdir
+TMPDIR=$(dirname $(mktemp -u))
+cp -r _site $TMPDIR
+cp -r util $TMPDIR
 
-$tmpdir/util/_publish.sh
+$TMPDIR/util/_publish.sh $WORKDIR
 echo "First script done"
