@@ -54,6 +54,3 @@ fabric.properties
 .idea
 node_modules
 local
-
-# Directory used in dev mode:
-_dist
