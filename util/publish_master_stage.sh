@@ -17,5 +17,6 @@ cp $TMPDIR/util/master-readme.md $SITEDIR/README.md
 touch $SITEDIR/.nojekyll
 
 git add .
+git commit -m "Gulped"
 
-echo "Second script done"
+echo "Published"
