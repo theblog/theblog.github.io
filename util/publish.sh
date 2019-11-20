@@ -12,10 +12,11 @@ fi
 # Build the site
 # gulp
 
-# Copy all required files into a tmp dir and continue from there
+# Copy all required files into a tmp dir and continue from there to prevent the git reset on master
+# from messing with the bash script executed
 TMPDIR=$(dirname $(mktemp -u))
 cp -r _site $TMPDIR
 cp -r util $TMPDIR
 
-$TMPDIR/util/_publish.sh $WORKDIR
+$TMPDIR/util/_publish.sh $TMPDIR $WORKDIR
 echo "First script done"
