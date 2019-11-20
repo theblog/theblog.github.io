@@ -19,5 +19,6 @@ touch $SITEDIR/.nojekyll
 git add .
 git commit -m "Gulped"
 git push
+git checkout dev
 
 echo "Published"

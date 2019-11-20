@@ -10,7 +10,7 @@ if ! (output=$(git status --porcelain) && [ -z "$output" ]); then
 fi
 
 # Build the site
-# gulp
+gulp
 
 # Copy all required files into a tmp dir and continue from there to prevent the git reset on master
 # from messing with the bash script executed
