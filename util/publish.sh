@@ -1,21 +1,25 @@
 #!/bin/zsh
 
-WORKDIR=$(pwd)
-
-# From: https://unix.stackexchange.com/questions/155046/determine-if-git-working-directory-is-clean-from-a-script
-if ! (output=$(git status --porcelain) && [ -z "$output" ]); then
-    # Uncommitted changes
-    echo "Exiting due to uncommitted changes"
-    exit 1
-fi
+ROOTDIR=$(pwd)
 
 # Build the site
 gulp
 
-# Copy all required files into a tmp dir and continue from there to prevent the git reset on master
-# from messing with the bash script executed
+# Move to a tmp dir and checkout master there to prevent corrupting untracked directories here
 TMPDIR=$(dirname $(mktemp -u))
-cp -r _site $TMPDIR
-cp -r util $TMPDIR
+cd $TMPDIR
+git clone --depth 1 --branch master git@github.com:theblog/theblog.github.io.git theblog.github.io
+cd theblog.github.io
 
-$TMPDIR/util/publish_master_stage.sh $TMPDIR $WORKDIR
+# Copy the files
+cp -r $ROOTDIR/_site/* .
+cp $ROOTDIR/util/master-readme.md README.md
+touch .nojekyll
+
+# Publish
+git add .
+git commit -m "Gulped"
+git push
+echo "Published"
+
+cd $ROOTDIR
