@@ -18,5 +18,5 @@ TMPDIR=$(dirname $(mktemp -u))
 cp -r _site $TMPDIR
 cp -r util $TMPDIR
 
-$TMPDIR/util/_publish.sh $TMPDIR $WORKDIR
+$TMPDIR/util/publish_master_stage.sh $TMPDIR $WORKDIR
 echo "First script done"
