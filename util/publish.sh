@@ -8,6 +8,7 @@ gulp
 # Move to a tmp dir and checkout master there to prevent corrupting untracked directories here
 TMPDIR=$(dirname $(mktemp -u))
 cd $TMPDIR
+rm -rf theblog.github.io
 git clone --depth 1 --branch master git@github.com:theblog/theblog.github.io.git theblog.github.io
 cd theblog.github.io
 
