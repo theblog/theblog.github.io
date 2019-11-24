@@ -11,6 +11,7 @@ cd $TMPDIR
 rm -rf theblog.github.io
 git clone --depth 1 --branch master git@github.com:theblog/theblog.github.io.git theblog.github.io
 cd theblog.github.io
+rm -rf *
 
 # Copy the files
 cp -r $ROOTDIR/_site/* .
