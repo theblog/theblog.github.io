@@ -75,10 +75,15 @@ excerpt: "<p>I let a neural network read long texts one letter at a time. Its ta
 tags: [neural-networks, lstm, nlp]
 stylesheets: "<link rel=\"stylesheet\" href=\"/css/posts/char-lm.css\">"
 javascripts: "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/he/1.1.1/he.min.js\"></script>
+<script src=\"/js/posts/char-lm/query-cache.js\"></script>
 <script src=\"/js/posts/char-lm/text-complete.js\"></script>"
 ---
 <p>I let a neural network read long texts one letter at a time. Its task was to predict the next letter based on those it had seen so far. Over time, it recognized patterns between letters. Find out what it learned by feeding it some letters below. When you click the send button on the right / bottom, it will read your text and auto-complete it.</p>
 <p>You can choose between networks that read a lot of Wikipedia articles, US Congress transcripts etc.</p>
+
+<div class="alert alert-info" role="alert">
+    <strong>Update</strong> (1 Mar 2020) : After three years, I finally ran out of free AWS credits and shut down the instance hosting the five text completion networks. Therefore, the generated texts are now cached results from previous queries. If you enter a query that is not in the cache, I will later run it locally and add it to the cache at some point.
+</div>
 
 <div class="talk-box">
     <table>

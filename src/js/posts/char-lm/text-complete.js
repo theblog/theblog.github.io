@@ -13,7 +13,7 @@ const DATASET_DEFAULTS = {
     southPark: {
         steps: 500,
         maxSentences: 3,
-        prime: 'Oh my God'
+        prime: 'Oh my god'
     },
     sherlock: {
         steps: 500,
@@ -28,6 +28,7 @@ const DATASET_DEFAULTS = {
 };
 
 const SEND_ON_ENTER = false;
+const USE_LOCAL_CACHE = true;
 
 // Pseudo-constant jquery elements (constant within the scope of the post)
 let TEXT_INPUT = $('.text-input');
@@ -113,21 +114,32 @@ function completeText() {
     pendingRequestId = requestId;
     animateWaiting(requestId);
 
-    // console.log('Sending request', prime);
     const defaultParams = DATASET_DEFAULTS[selectedDataset];
-    $.get('https://ec2-01.batzner.io:5000/sample',
-        {
-            prime: prime,
-            steps: defaultParams.steps,
-            maxSentences: defaultParams.maxSentences,
-            datasetName: selectedDataset
-        })
-        .then(sampled => {
-            if (pendingRequestId == requestId) {
-                result = sampled;
-                pendingRequestId = null;
-            }
-        });
+
+    const onCompletion = sampled => {
+        if (pendingRequestId == requestId) {
+            result = sampled;
+            pendingRequestId = null;
+        }
+    };
+
+    if (USE_LOCAL_CACHE) {
+        completeTextWithCache(
+            prime,
+            defaultParams.steps,
+            defaultParams.maxSentences,
+            selectedDataset,
+            onCompletion);
+    } else {
+        $.get('https://ec2-01.batzner.io:5000/sample',
+            {
+                prime: prime,
+                steps: defaultParams.steps,
+                maxSentences: defaultParams.maxSentences,
+                datasetName: selectedDataset
+            })
+            .then(onCompletion);
+    }
 }
 
 function getNumToAdd(textLength) {

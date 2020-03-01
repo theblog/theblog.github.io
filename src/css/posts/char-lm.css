@@ -2,7 +2,6 @@
     width: calc(100% + 40px);
     background: url(/images/posts/char-lm/text-box-background.jpg) no-repeat;
     background-size: cover;
-    background-attachment: fixed;
     padding: 30px 0;
     text-align: center;
     margin: 0 -20px 30px -20px;
