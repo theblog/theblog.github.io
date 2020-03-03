@@ -31,7 +31,9 @@ const SEND_ON_ENTER = false;
 const USE_LOCAL_CACHE = true;
 
 // Pseudo-constant jquery elements (constant within the scope of the post)
-let TEXT_INPUT = $('.text-input');
+let TEXT_INPUTS = $('.text-input');
+let TEXT_INPUT_DESKTOP = $('.talk-box:not(.mobile) .text-input');
+let TEXT_INPUT_MOBILE = $('.talk-box.mobile .text-input');
 let TEXT_OUTPUT = $('.text-output');
 let TEXT_BRIDGE = $('.text-input-output-bridge');
 let TALK_BOX_HEADING = $('.talk-box-heading');
@@ -43,7 +45,9 @@ let result = null;
 
 // MAIN Function
 $(function () {
-    TEXT_INPUT = $('.text-input');
+    TEXT_INPUTS = $('.text-input');
+    TEXT_INPUT_DESKTOP = $('.talk-box:not(.mobile) .text-input');
+    TEXT_INPUT_MOBILE = $('.talk-box.mobile .text-input');
     TEXT_OUTPUT = $('.text-output');
     TEXT_BRIDGE = $('.text-input-output-bridge');
     TALK_BOX_HEADING = $('.talk-box-heading');
@@ -69,7 +73,7 @@ function selectDataset(name) {
     let dropdownItem = DATASET_DROPDOWN.find('a[data-value="' + selectedDataset + '"]');
     selectDropdownItem(dropdownItem, false);
 
-    TEXT_INPUT.html(DATASET_DEFAULTS[selectedDataset].prime);
+    TEXT_INPUTS.html(DATASET_DEFAULTS[selectedDataset].prime);
     TEXT_OUTPUT.html('');
     focusOnInput();
 }
@@ -77,9 +81,10 @@ function selectDataset(name) {
 function onInput() {
     // Interpret an enter stroke at the end as a send click.
     let input = getCleanInput();
+    getTextInputElem(visible = false).html(input);
     if (SEND_ON_ENTER && input.indexOf('\n') >= 0) {
         // Remove the new lines
-        TEXT_INPUT.html(input.replace('\n', ''));
+        TEXT_INPUTS.html(input.replace('\n', ''));
         completeText();
     } else if (TEXT_OUTPUT.html().length) {
         // If we didn't start a new request and the TEXT_OUTPUT contains text, erase it.
@@ -93,7 +98,7 @@ function onInput() {
 }
 
 function getCleanInput() {
-    let input = TEXT_INPUT.html();
+    let input = getTextInputElem().html();
     // Replace divs without a br tag with new lines
     input = input.replace(/<div>(?!<br)/g, '<div><br/>');
     // Replace new lines and
@@ -236,5 +241,18 @@ function refreshAnimateWaiting(requestId) {
 }
 
 function focusOnInput() {
-    if (!TEXT_INPUT.is(":focus")) PostUtil.placeCaretAtEnd(TEXT_INPUT.get(0));
+    let textInput = getTextInputElem();
+    if (!textInput.is(":focus")) {
+        PostUtil.placeCaretAtEnd(textInput.get(0));
+    }
+}
+
+function getTextInputElem(visible = true) {
+    // Return the mobile or the desktop input element depending on which one is visible
+    let mobileVisible = TEXT_INPUT_MOBILE.is(":visible");
+    if (visible && mobileVisible || !visible && !mobileVisible) {
+        return TEXT_INPUT_MOBILE;
+    } else {
+        return TEXT_INPUT_DESKTOP;
+    }
 }
