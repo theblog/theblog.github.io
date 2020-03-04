@@ -7,8 +7,7 @@ const gulp = require('gulp');
 
 // Include plug-ins
 const eslint = require('gulp-eslint');
-const babel = require('gulp-babel');
-const uglify = require('gulp-uglify');
+const uglify = require('gulp-uglify-es').default;
 const imagemin = require('gulp-imagemin');
 const htmlmin = require('gulp-htmlmin');
 const minifyCSS = require('gulp-minify-css');
@@ -26,49 +25,40 @@ const sourcePaths = {
     css: ['css/**/*.css']
 };
 
-function waitForCommand(command, gulpCallBack) {
+function waitForCommand(command, gulpCallback) {
     command.on('exit', function (code) {
-        gulpCallBack(code === 0 ? null : 'ERROR: command exited with code: ' + code);
+        gulpCallback(code === 0 ? null : 'ERROR: command exited with code: ' + code);
     });
 }
 
 // Delete the build directory
-gulp.task('jekyll-clean', function (gulpCallBack) {
+gulp.task('_jekyll-clean', function (gulpCallback) {
     let command = spawn('jekyll', ['clean'], {stdio: 'inherit'});
-    waitForCommand(command, gulpCallBack);
+    waitForCommand(command, gulpCallback);
 });
 
 // Let Jekyll build the raw site
-gulp.task('jekyll-build', ['jekyll-clean'], function (gulpCallBack) {
+gulp.task('_jekyll-build', ['_jekyll-clean'], function (gulpCallback) {
     let command = spawn('jekyll', ['build'], {stdio: 'inherit'});
-    waitForCommand(command, gulpCallBack);
-});
-
-// Let Jekyll serve the raw site
-gulp.task('jekyll-serve', ['jekyll-clean'], function (gulpCallBack) {
-    let command = spawn('jekyll', ['serve'], {stdio: 'inherit'});
-    waitForCommand(command, gulpCallBack);
+    waitForCommand(command, gulpCallback);
 });
 
 // Transpile the javascript files to ES5.
-gulp.task('_javascripts', ['jekyll-build'], function () {
+gulp.task('_javascripts', ['_jekyll-build'], function () {
     return gulp.src(sourcePaths.javascripts, {base: buildDir, cwd: buildDir})
-        .pipe(babel({
-            presets: ['es2015']
-        }))
         .pipe(uglify())
         .pipe(gulp.dest(buildDir));
 });
 
 // Minify the images
-gulp.task('_images', ['jekyll-build'], function () {
+gulp.task('_images', ['_jekyll-build'], function () {
     return gulp.src(sourcePaths.images, {base: buildDir, cwd: buildDir})
         .pipe(imagemin())
         .pipe(gulp.dest(buildDir));
 });
 
 // Minify html
-gulp.task('_html', ['jekyll-build'], function () {
+gulp.task('_html', ['_jekyll-build'], function () {
     return gulp.src(sourcePaths.html, {base: buildDir, cwd: buildDir})
         .pipe(htmlmin({
             collapseWhitespace: true,
@@ -79,14 +69,14 @@ gulp.task('_html', ['jekyll-build'], function () {
 });
 
 // Minify css
-gulp.task('_css', ['jekyll-build'], function () {
+gulp.task('_css', ['_jekyll-build'], function () {
     return gulp.src(sourcePaths.css, {base: buildDir, cwd: buildDir})
         .pipe(minifyCSS())
         .pipe(gulp.dest(buildDir));
 });
 
 // Default task producing a ready-to-ship frontend in the build folder
-gulp.task('default', ['jekyll-build', '_javascripts', '_images', '_html', '_css']);
+gulp.task('default', ['_jekyll-build', '_javascripts', '_images', '_html', '_css']);
 
 // Check code style on JS
 gulp.task('eslint', function () {
