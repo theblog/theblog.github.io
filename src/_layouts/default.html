@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 {% capture url_path %}{{site.url}}{{page.url}}{% endcapture %}
 
@@ -10,15 +10,15 @@
 
     <!-- SEO start -->
     <meta name="description" content="{{page.meta_description | default: 'A Random Walk Through Computer Science'}}">
-    <meta property="og:locale" content="en_US"/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:title" content="{{page.html_title | default: 'A Random Walk Through Computer Science'}}" />
-    <meta property="og:description" content="{{page.meta_description | default: 'A Random Walk Through Computer Science'}}" />
-    <meta property="og:url" content="https://theblog.github.io"/>
-    <meta property="og:site_name" content="The Blog"/>
-    <meta name="twitter:card" content="summary"/>
-    <meta name="twitter:description" content="{{page.meta_description | default: 'A Random Walk Through Computer Science'}}" />
-    <meta name="twitter:title" content="{{page.html_title | default: 'A Random Walk Through Computer Science'}}" />
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{page.html_title | default: 'A Random Walk Through Computer Science'}}">
+    <meta property="og:description" content="{{page.meta_description | default: 'A Random Walk Through Computer Science'}}">
+    <meta property="og:url" content="https://theblog.github.io">
+    <meta property="og:site_name" content="The Blog">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:description" content="{{page.meta_description | default: 'A Random Walk Through Computer Science'}}">
+    <meta name="twitter:title" content="{{page.html_title | default: 'A Random Walk Through Computer Science'}}">
     <!-- SEO end -->
 
     <!-- Favicons start -->
@@ -36,7 +36,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/favicons/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
     <link rel="manifest" href="/favicons/manifest.json">
-    <meta name="msapplication-config" content="/favicons/browserconfig.xml" />
+    <meta name="msapplication-config" content="/favicons/browserconfig.xml">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/favicons/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
@@ -44,13 +44,10 @@
 
     <!-- Stylesheets start -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.1.6/css/ion.rangeSlider.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.1.6/css/ion.rangeSlider.min.css">
     <link rel="stylesheet" href="/css/lib/ion.rangeSlider/css/ion.rangeSlider.skinFlat.css">
     <link rel="stylesheet" href="/css/lib/highlight.css">
     <link rel="stylesheet" href="/css/style.css">
@@ -98,7 +95,7 @@
         </button>
         <div class="navbar-brand">
             <a href="{{site.url}}">
-                <div id="logo-title"><img src="/images/logo.png"/></div>
+                <div id="logo-title"><img src="/images/logo.png" alt="Site logo"/></div>
                 <div id="logo-subtitle">A Random Walk Through Computer Science</div>
             </a>
         </div>
@@ -119,7 +116,7 @@
             {% endif %}
 
             <li>
-                <a {% if page.url== post.url %} class="active" {% endif %} href="{{post.url}}">{{ post.title }}</a>
+                <a {% if page.url == post.url %} class="active" {% endif %} href="{{post.url}}">{{ post.title }}</a>
             </li>
             {% assign prev_year = year %}
             {% endfor %}
@@ -130,7 +127,7 @@
     </div>
 </nav>
 
-<!-- Page Content -->
+<!-- Page Content start -->
 <section class="wrapper">
     <div id="content" class="container-fluid">
         {{ content }}
@@ -141,8 +138,7 @@
     <br/>
     <a href="https://www.iubenda.com/privacy-policy/63560500/legal" class="no-highlight">Imprint and Privacy Policy</a>
 </footer>
-<!-- /#page-content-wrapper -->
-<!-- /#wrapper -->
+<!-- Page Content end -->
 
 <!-- jQuery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -152,7 +148,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script> -->
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.1.6/js/ion.rangeSlider.min.js"></script> -->
-
 <script src="/js/lib/highlight.min.js"></script>
 
 <script src="/js/general.js"></script>

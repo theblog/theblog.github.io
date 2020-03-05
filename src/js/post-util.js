@@ -7,7 +7,7 @@ class PostUtil {
         const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             const r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
-            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
         return uuid;
     }
@@ -76,7 +76,7 @@ class PostUtil {
         result.epochs.forEach((epoch, step) => {
             let min = epochRanges[epoch].min;
             let max = epochRanges[epoch].max;
-            let progress = max != min ? (step - min) / (max - min) : 0;
+            let progress = max !== min ? (step - min) / (max - min) : 0;
             result.epochs.set(step, epoch + progress);
         });
 
@@ -119,14 +119,14 @@ class PostUtil {
         el.focus();
         if (typeof window.getSelection != "undefined"
             && typeof document.createRange != "undefined") {
-            var range = document.createRange();
+            let range = document.createRange();
             range.selectNodeContents(el);
             range.collapse(false);
-            var sel = window.getSelection();
+            let sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
         } else if (typeof document.body.createTextRange != "undefined") {
-            var textRange = document.body.createTextRange();
+            let textRange = document.body.createTextRange();
             textRange.moveToElementText(el);
             textRange.collapse(false);
             textRange.select();

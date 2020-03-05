@@ -1,6 +1,10 @@
+// MAIN Function
 $(function () {
     // Wrap tables and specific elements to make them responsive.
-    $('table, .scroll-x').filter((index, element) => !($(element).parent().hasClass('scroll-x-container')))
+    $('table, .scroll-x')
+        .filter((index, element) => {
+            return !($(element).parent().hasClass('scroll-x-container'));
+        })
         .wrap('<div class="scroll-x-container"></div>');
 
     // Bring the bootstrap dropdowns to life
@@ -23,7 +27,7 @@ $(function () {
     runHighlighting();
 });
 
-function selectDropdownItem(elem, triggerOnChange=true) {
+function selectDropdownItem(elem, triggerOnChange = true) {
     const buttonElem = elem.closest('.btn-group').find('button').first();
     const choiceElem = buttonElem.find('.choice');
     // Set the text on the span

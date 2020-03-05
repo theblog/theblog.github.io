@@ -1,4 +1,7 @@
-processPageElements();
+// MAIN Function
+$(function () {
+    processPageElements();
+});
 
 function processPageElements() {
     // Wrap each chart with siblings in a div to be able to safely clear the chart.js iframe

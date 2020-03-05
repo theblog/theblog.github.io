@@ -7,9 +7,10 @@ html_title: "Convolutions in Autoregressive Neural Networks"
 meta_description: "This post explains how to use one-dimensional causal and dilated convolutions in autoregressive neural networks such as WaveNet."
 focus_keyword: "Wavenet"
 summary: "This post explains how to use one-dimensional causal and dilated convolutions in autoregressive neural networks such as WaveNet."
-stylesheets: "<link rel=\"stylesheet\" href=\"/css/posts/convolution-autoregressive-nns.css\">"
+tags: []
+stylesheets: |+2
+    <link rel="stylesheet" href="/css/posts/convolution-autoregressive-nns.css">
 javascripts: ""
-published: true
 ---
 
 <p>This post explains how to use one-dimensional causal and dilated convolutions in autoregressive neural networks such as WaveNet. For implementation details, I will use the notation of the <code>tensorflow.keras.layers</code> package, although the concepts themselves are framework-independent.</p>
@@ -23,7 +24,7 @@ published: true
 </p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/01-simple-concept.svg" width="154px" height="131px"/>
+    <img src="/images/posts/convolution-autoregressive-nns/01-simple-concept.svg" width="154px" height="131px"/>
 </figure>
 
 <!--more-->
@@ -42,7 +43,7 @@ published: true
 </p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/01-simple.svg" width="530px" height="131px"/>
+    <img src="/images/posts/convolution-autoregressive-nns/01-simple.svg" width="530px" height="131px"/>
 </figure>
 
 <p>So, training a fully connected layer in theory corresponds to training a convolutional layer in practice. Note that the final trained model is still a fully connected layer. We just train it efficiently by converting it to a convolutional layer without changing the number or shape of the weights.</p>
@@ -50,7 +51,7 @@ published: true
 <p>At this point, we are already using causal convolutions. This might be surprising, because we just defined a simple convolutional layer without specifying something like <code>causal=True</code>. But whether a convolution is causal or not is rather a matter of perspective than of the architecture. By using it in a causal way, i.e. giving the model appropriate input and target values, we make it a causal convolution. We could also decide to use the same convolutional layer in a non-causal way, for example for processing an image. Then, our view of it would look like this:</p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/01-simple-image-equivalent.svg" width="530px" height="131px"/>
+    <img src="/images/posts/convolution-autoregressive-nns/01-simple-image-equivalent.svg" width="530px" height="131px"/>
 </figure>
 
 <p>This causal interpretation also works for a neural network with multiple layers. We only have to make sure that the time step given as the target value comes after the final layer's receptive field. Thus, the model never has access to future time steps when predicting the value of the next one.</p>
@@ -60,7 +61,7 @@ published: true
 <p>One thing that <code>Conv1D</code> does allow us to specify is <code>padding="causal"</code>. This simply pads the layer's input with zeros in the front so that we can also predict the values of early time steps in the frame:</p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/02-causal-padding.svg" width="615px" height="131px"/>
+    <img src="/images/posts/convolution-autoregressive-nns/02-causal-padding.svg" width="615px" height="131px"/>
 </figure>
 
 <p>This doesn't change the architecture of our model (it's still a fully connected layer with four weights). But it allows us to train the model on incomplete inputs. Thus, it also learns how to start a sequence (sentence, song etc.) and not just how to continue it. A convenient consequence of causal padding is that the output of a layer has the same width as its input. This is helpful when implementing skip connections between layers, which we will cover below.</p>
@@ -72,13 +73,13 @@ published: true
 <p>Above, we have seen that a fully connected layer in theory corresponds to training a convolutional layer in practice. But what does a convolutional layer in theory correspond to? For example, this convolutional neural network:</p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/03-two-layers-concept.svg" width="400px" height="237px"/>
+    <img src="/images/posts/convolution-autoregressive-nns/03-two-layers-concept.svg" width="400px" height="237px"/>
 </figure>
 
 <p>The lower layer is a convolutional layer. The upper layer can be seen as a fully connected layer or as a convolutional layer with a feature map of size one. Now, when drawing the computations for the other time steps with dashed arrows, we see that we can use convolutional layers in practice as well:</p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/03-two-layers.svg" width="615px" height="237px"/>
+    <img src="/images/posts/convolution-autoregressive-nns/03-two-layers.svg" width="615px" height="237px"/>
 </figure>
 
 <h3>Dilated convolutions</h3>
@@ -86,19 +87,19 @@ published: true
 <p>When a convolutional layer in our conceptual architecture has a stride that is larger than one</p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/04-stride-concept.svg" width="400px" height="237px"/>
+    <img src="/images/posts/convolution-autoregressive-nns/04-stride-concept.svg" width="400px" height="237px"/>
 </figure>
 
 <p>the subsequent layers in practice must compensate for this by leaving out the corresponding weights:</p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/04-stride.svg" width="615px" height="237px"/>
+    <img src="/images/posts/convolution-autoregressive-nns/04-stride.svg" width="615px" height="237px"/>
 </figure>
 
 <p>This is precisely what a dilated convolution does. It is equivalent to a convolution with a stride of greater than one in the previous layers. At the same time, it allows us to perform the actual convolution with a stride of one. This is necessary, since we want to apply our model to every time step in one feed-forward pass without skipping time steps. When taking a look at the WaveNet architecture (<a href="http://www.gabormelli.com/RKB/WaveNet_Neural_Network">source</a>), we can see that it theoretically also corresponds to a simple stack of convolutions with stride two:</p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/wavenet.png"/>
+    <img src="/images/posts/convolution-autoregressive-nns/wavenet.png"/>
 </figure>
 
 <p>This figure shows how a stride greater than one affects the dilation rates of all subsequent layers in practice, not just the next one. For example, the dilation rate in the output layer is <code>2 * 2 * 2 = 8</code>, caused by the "conceptual strides" in the previous layers. If we set the conceptual stride in the layer before the output layer to one, the output layer would still need a dilation rate of 4. The rule for computing the dilation rate in a specific layer is to multiply all conceptual strides of the previous layers (more on the equivalence of strides and dilation rates below).
@@ -109,13 +110,13 @@ published: true
 <p>Pooling is problematic when we perform it on the output of a convolutional layer with a stride larger than one. In theory, that would look like this:</p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/05-pooling-concept.svg" width="487px" height="343px"/>
+    <img src="/images/posts/convolution-autoregressive-nns/05-pooling-concept.svg" width="487px" height="343px"/>
 </figure>
 
 <p>When drawing the arrows for the computation of the previous time step, we can see that a problem arises in the neurons marked with exclamation marks.</p>
 
 <figure>
-<img src="/images/posts/convolution-autoregressive-nns/05-pooling.svg" width="572px" height="343px"/>
+    <img src="/images/posts/convolution-autoregressive-nns/05-pooling.svg" width="572px" height="343px"/>
 </figure>
 
 <p>These neurons don't appear in the conceptual computation of the tenth time step, yet they are included in the pooling windows and thus will influence the computation in practice. What we need to circumvent this is a pooling layer with dilation; just like in the convolutional layers. Unfortunately, the pooling layers <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/AvgPool1D"><code>AvgPool1D</code></a> and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/MaxPool1D"><code>MaxPool1D</code></a> neither support dilation rates nor specifying <code>padding="causal"</code>. We can, however, use <a href="https://www.tensorflow.org/api_docs/python/tf/nn/pool"><code>tf.nn.pool</code></a>, which supports specifying a dilation rate. As for the causal padding, we can take a look at Keras' <a href="https://github.com/keras-team/keras/issues/8751#issuecomment-377784644">implementation</a> to verify that we can really just pad the input on the left and then carry on with "valid" padding:</p>

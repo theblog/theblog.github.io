@@ -4,20 +4,21 @@ title: "Intuitive Explanation of the Gini Coefficient"
 post_id: "gini-coefficient-intuitive-explanation"
 category: "general"
 html_title: "Intuitive Explanation of the Gini Coefficient"
-meta_description: "Two intuitive ways of looking at the Gini Coefficient as an evaluation metric."
+meta_description: "Two intuitive ways of looking at the Gini coefficient as an evaluation metric."
 focus_keyword: "Gini"
-summary: "Two intuitive ways of looking at the Gini Coefficient as an evaluation metric."
+summary: "Two intuitive ways of looking at the Gini coefficient as an evaluation metric."
+tags: []
 stylesheets: ""
 javascripts: ""
-excerpt: "
-<p>The Gini Coefficient is a popular metric on Kaggle, especially for imbalanced class values. But googling \"Gini Coefficient\" gives you mostly economic explanations. Here is a descriptive explanation with regard to using it as an evaluation metric in classification. The Jupyter Notebook for this post is <a href=\"https://www.kaggle.com/batzner/gini-coefficient-an-intuitive-explanation\">here</a>.</p>
-<p><strong>TL;DR:</strong> The Gini coefficients are the orange areas. The normalized Gini coefficient is the left one divided by the right one.</p>
-<figure>
-    <img src=\"/images/posts/gini-coefficient/excerpt-figure.png\">
-</figure>"
+excerpt: |+2
+    <p>The Gini coefficient is a popular metric on Kaggle, especially for imbalanced class values. But googling "Gini coefficient" gives you mostly economic explanations. Here is a descriptive explanation with regard to using it as an evaluation metric in classification. The Jupyter Notebook for this post is <a href="https://www.kaggle.com/batzner/gini-coefficient-an-intuitive-explanation">here</a>.</p>
+    <p><strong>TL;DR:</strong> The Gini coefficients are the orange areas. The normalized Gini coefficient is the left one divided by the right one.</p>
+    <figure>
+        <img src="/images/posts/gini-coefficient/excerpt-figure.png" alt="Visualization of the normalized gini coefficient">
+    </figure>
 ---
 
-<p>The Gini Coefficient is a popular metric on Kaggle, especially for imbalanced class values. But googling "Gini Coefficient" gives you mostly economic explanations. Here is a descriptive explanation with regard to using it as an evaluation metric in classification. The Jupyter Notebook for this post is <a href="https://www.kaggle.com/batzner/gini-coefficient-an-intuitive-explanation">here</a>.</p>
+<p>The Gini coefficient is a popular metric on Kaggle, especially for imbalanced class values. But googling "Gini coefficient" gives you mostly economic explanations. Here is a descriptive explanation with regard to using it as an evaluation metric in classification. The Jupyter Notebook for this post is <a href="https://www.kaggle.com/batzner/gini-coefficient-an-intuitive-explanation">here</a>.</p>
 
 <p>First, let's define our predictions and their actual values:</p>
 
@@ -62,13 +63,13 @@ print('Gini: %.3f, Max. Gini: %.3f, Normalized Gini: %.3f' % (gini_predictions, 
 
 <h3>Economic Explanation</h3>
 
-<p>The first figure in the <a href="https://en.wikipedia.org/wiki/Gini_coefficient">Gini Coefficient</a> Wikipedia article is this one:</p>
+<p>The first figure in the <a href="https://en.wikipedia.org/wiki/Gini_coefficient">Gini coefficient</a> Wikipedia article is this one:</p>
 
 <figure>
-    <img width="400" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Economics_Gini_coefficient.svg/500px-Economics_Gini_coefficient.svg.png">
+    <img width="400" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Economics_Gini_coefficient.svg/500px-Economics_Gini_coefficient.svg.png" alt="First figure in the Wikipedia article about the Gini coefficient">
 </figure>
 
-<p>They go through the population from poorest to richest and plot the running total / cumulative share of income, which gives them the Lorenz Curve. The Gini Coefficient is then defined as the blue area divided by the total area of the triangle.</p>
+<p>They go through the population from poorest to richest and plot the running total / cumulative share of income, which gives them the Lorenz Curve. The Gini coefficient is then defined as the blue area divided by the total area of the triangle.</p>
 
 <h3>Application to Machine Learning</h3>
 
@@ -92,7 +93,7 @@ plt.ylabel('Cumulative Actual Values')
 plt.show()</code></pre>
 
 <figure>
-    <img src="/images/posts/gini-coefficient/simple-lorenz-curve.png">
+    <img src="/images/posts/gini-coefficient/simple-lorenz-curve.png" alt="Visualization of the Lorenz Curve">
 </figure>
 
 <p>This corresponds to the Lorenz Curve in the diagram above.</p>
@@ -115,7 +116,7 @@ plt.ylabel('Cumulative Share of Actual Values')
 plt.show()</code></pre>
 
 <figure>
-    <img src="/images/posts/gini-coefficient/predictions-diagram.png">
+    <img src="/images/posts/gini-coefficient/predictions-diagram.png" alt="Cumulative share of predictions vs. the cumulative share of actual values">
 </figure>
 
 <p>Now, we calculate the orange area by integrating the curve function:</p>
@@ -127,7 +128,7 @@ print('Orange Area: %.3f' % orange_area)</code></pre>
 
 <pre><code class="no-highlight">Orange Area: 0.189</code></pre>
 
-<p>So, the orange area is equal to the Gini Coefficient calculated above with the <code>gini</code> function. We can do the same using the actual values as predictions to get the maximum possible Gini Coefficient.</p>
+<p>So, the orange area is equal to the Gini coefficient calculated above with the <code>gini</code> function. We can do the same using the actual values as predictions to get the maximum possible Gini coefficient.</p>
 
 <pre><code>cumulative_actual_shares_perfect = np.cumsum(sorted(actual)) / sum(actual)
 y_values_perfect = [0] + list(cumulative_actual_shares_perfect)
@@ -147,18 +148,18 @@ orange_area = 0.5 - blue_area
 print('Orange Area: %.3f' % orange_area)</code></pre>
 
 <figure>
-    <img src="/images/posts/gini-coefficient/perfect-diagram.png">
+    <img src="/images/posts/gini-coefficient/perfect-diagram.png" alt="Visualization of the perfect Gini coefficient">
 </figure>
 
 <pre><code class="no-highlight">Orange Area: 0.300</code></pre>
 
-<p>Dividing both orange areas gives us the Normalized Gini Coefficient:</p>
+<p>Dividing both orange areas gives us the Normalized Gini coefficient:</p>
 
 <p>0.189 / 0.3 = 0.630</p>
 
 <h3>Alternative Explanation</h3>
 
-<p>I also found another interpretation of the Gini Coefficient <a href="http://www.rhinorisk.com/Publications/Gini%20Coefficients.pdf">here</a>. Again, we take the predictions and actual values from above and sort them in descending order:</p>
+<p>I also found another interpretation of the Gini coefficient <a href="http://www.rhinorisk.com/Publications/Gini%20Coefficients.pdf">here</a>. Again, we take the predictions and actual values from above and sort them in descending order:</p>
 
 <pre><code>print('Predictions', predictions)
 print('Actual Values', actual)
@@ -174,7 +175,7 @@ Sorted Actual [1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0]</code></pre>
 
 $$\frac{6 \cdot 9}{2} = 27$$ swaps.
 
-The Normalized Gini-Coefficient is how far away we are with our sorted actual values from a random state measured in number of swaps:
+The Normalized Gini coefficient is how far away we are with our sorted actual values from a random state measured in number of swaps:
 
 $$NGini = \frac{swaps_{random} - swaps_{sorted}}{swaps_{random}} = \frac{27 - 10}{27} = 63\%$$
 

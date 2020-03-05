@@ -1,4 +1,5 @@
 ---
+published: false
 layout: post
 title: "Yet another Derivation of the Variational Autoencoder"
 post_id: "vae-derivation"
@@ -7,9 +8,9 @@ html_title: "Yet another Derivation of the Variational Autoencoder"
 meta_description: ""
 focus_keyword: "VAE"
 summary: ""
+tags: []
 stylesheets: ""
 javascripts: ""
-published: false
 ---
 
 <p><i>"How can we perform efficient approximate inference and learning with directed probabilistic models whose continuous latent variables and/or parameters have intractable posterior distributions?"</i> - the Auto-Encoding Variational Bayes paper by Kingma and Welling [1] starts off with several terms that require knowledge of probabilistic modeling. This can be a challenge for people coming from a Deep Learning background. Luckily, there are several good blog posts [TODO] that introduce Variational Autoencoders in a simplified manner. After reading these, I still had some open questions regarding small details that these posts omitted. So, in this blog post I provide <i>yet another</i> derivation of the Variational Autoencoder aimed at readers with open questions. I will start at zero and define the terms used by Kingma and Welling [1] step by step.</p>

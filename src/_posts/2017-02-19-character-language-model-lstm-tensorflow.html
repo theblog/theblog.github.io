@@ -2,75 +2,81 @@
 layout: post
 title: "An Interactive Character-Level Language Model"
 post_id: "char-lm"
-pinned: false
-github_url: https://github.com/batzner/tensorlm
 category: "general"
 html_title: "An Interactive Character-Level Language Model built with LSTMs in TensorFlow"
 meta_description: "I let an LSTM read texts one character at a time. Find out, what it learned, by feeding it some letters in this interactive post."
 focus_keyword: "Language Model"
 summary: "I let a neural network read long texts one letter at a time. Its task was to predict the next letter based on those it had seen so far. Over time, it recognized patterns between letters. Find out what it learned by feeding it some letters."
-excerpt: "<p>I let a neural network read long texts one letter at a time. Its task was to predict the next letter based on those it had seen so far. Over time, it recognized patterns between letters. Find out what it learned by feeding it some letters below. When you click the send button on the right, it will read your text and auto-complete it.</p>
-<p>You can choose between networks that read a lot of Wikipedia articles, US Congress transcripts etc.</p>
-<a href=\"/post/character-language-model-lstm-tensorflow\" style=\"color:white\"><div class=\"talk-box\" >
-    <table>
-        <tr class=\"talk-box-heading\">
-            <td></td>
-            <td class=\"no-stretch\">
-                <div>Generate text from</div>
-                <div class=\"btn-group\" role=\"group\" aria-label=\"Dataset choice\">
-                    <button type=\"button\" value=\"congress\" class=\"btn btn-default dark\">US Congress</button>
-                    <button type=\"button\" value=\"wiki\" class=\"btn btn-default dark\">Wikipedia</button>
-                    <button type=\"button\" value=\"sherlock\" class=\"btn btn-default dark\">Sherlock Holmes</button>
-                    <button type=\"button\" value=\"southPark\" class=\"btn btn-default dark\">South Park</button>
-                    <button type=\"button\" value=\"goethe\" class=\"btn btn-default dark\">Goethe</button>
-                </div>
-            </td>
-            <td></td>
-        </tr>
-        <tr class=\"talk-box-body\">
-            <td></td>
-            <td>
-                <div class=\"talk-box-input\">
-                    <div class=\"text-input\" contentEditable=\"true\"></div>
-                    <div class=\"text-input-output-bridge\">...</div>
-                    <span class=\"text-output\"></span>
-                </div>
-            </td>
-            <td>
-                <button type=\"button\" class=\"send-button btn btn-default round btn-icon\">
-                    <span class=\"fa fa-paper-plane\"></span>
-                </button>
-            </td>
-        </tr>
-    </table>
-</div>
-
-<div class=\"talk-box mobile\">
-    <div class=\"talk-box-heading\">
-        <div>Generate text from</div>
-        <div id=\"talk-box-dataset-dropdown\" class=\"btn-group dropdown-full-width\">
-            <button type=\"button\" value=\"congress\" class=\"btn btn-default dropdown-toggle dark\">
-                <span class=\"choice\">US Congress</span> <span class=\"caret\"></span>
-            </button>
-        </div>
-    </div>
-    <div class=\"talk-box-body\">
-        <div class=\"talk-box-input\">
-            <div class=\"text-input\" contentEditable=\"true\"></div>
-            <div class=\"text-input-output-bridge\">...</div>
-            <span class=\"text-output\"></span>
-        </div>
-        <button type=\"button\" class=\"send-button btn btn-default dark\">
-            Send
-        </button>
-    </div>
-</div></a>"
 tags: [neural-networks, lstm, nlp]
-stylesheets: "<link rel=\"stylesheet\" href=\"/css/posts/char-lm.css\">"
-javascripts: "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/he/1.1.1/he.min.js\"></script>
-<script src=\"/js/posts/char-lm/query-cache.js\"></script>
-<script src=\"/js/posts/char-lm/text-complete.js\"></script>"
+stylesheets: |+2
+    <link rel="stylesheet" href="/css/posts/char-lm.css">
+javascripts: |+2
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/he/1.1.1/he.min.js"></script>
+    <script src="/js/posts/char-lm/query-cache.js"></script>
+    <script src="/js/posts/char-lm/text-complete.js"></script>
+github_url: https://github.com/batzner/tensorlm
+excerpt: |+2
+    <p>I let a neural network read long texts one letter at a time. Its task was to predict the next letter based on those it had seen so far. Over time, it recognized patterns between letters. Find out what it learned by feeding it some letters below. When you click the send button on the right, it will read your text and auto-complete it.</p>
+    <p>You can choose between networks that read a lot of Wikipedia articles, US Congress transcripts etc.</p>
+    <a href="/post/character-language-model-lstm-tensorflow" style="color:white">
+        <div class="talk-box" >
+            <table>
+                <tr class="talk-box-heading">
+                    <td></td>
+                    <td class="no-stretch">
+                        <div>Generate text from</div>
+                        <div class="btn-group" role="group" aria-label="Dataset choice">
+                        <button type="button" value="congress" class="btn btn-default dark">US Congress</button>
+                        <button type="button" value="wiki" class="btn btn-default dark">Wikipedia</button>
+                        <button type="button" value="sherlock" class="btn btn-default dark">Sherlock Holmes</button>
+                        <button type="button" value="southPark" class="btn btn-default dark">South Park</button>
+                        <button type="button" value="goethe" class="btn btn-default dark">Goethe</button>
+        </div>
+            </td>
+            <td></td>
+            </tr>
+            <tr class="talk-box-body">
+                <td></td>
+                <td>
+                    <div class="talk-box-input">
+                        <div class="text-input" contentEditable="true"></div>
+                        <div class="text-input-output-bridge">...</div>
+                        <span class="text-output"></span>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="send-button btn btn-default round btn-icon">
+                    <span class="fa fa-paper-plane"></span>
+                    </button>
+                </td>
+            </tr>
+            </table>
+        </div>
+
+        <div class="talk-box mobile">
+            <div class="talk-box-heading">
+                <div>Generate text from</div>
+                <!--suppress XmlDuplicatedId -->
+                <div id="talk-box-dataset-dropdown" class="btn-group dropdown-full-width">
+                <button type="button" value="congress" class="btn btn-default dropdown-toggle dark">
+                <span class="choice">US Congress</span> <span class="caret"></span>
+                </button>
+            </div>
+            </div>
+            <div class="talk-box-body">
+                <div class="talk-box-input">
+                    <div class="text-input" contentEditable="true"></div>
+                    <div class="text-input-output-bridge">...</div>
+                    <span class="text-output"></span>
+                </div>
+                <button type="button" class="send-button btn btn-default dark">
+                Send
+                </button>
+            </div>
+        </div>
+    </a>
 ---
+
 <p>I let a neural network read long texts one letter at a time. Its task was to predict the next letter based on those it had seen so far. Over time, it recognized patterns between letters. Find out what it learned by feeding it some letters below. When you click the send button on the right / bottom, it will read your text and auto-complete it.</p>
 <p>You can choose between networks that read a lot of Wikipedia articles, US Congress transcripts etc.</p>
 
@@ -115,6 +121,7 @@ javascripts: "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/he/1.1.1/he.m
 <div class="talk-box mobile">
     <div class="talk-box-heading">
         <div>Generate text from</div>
+        <!--suppress XmlDuplicatedId -->
         <div id="talk-box-dataset-dropdown" class="btn-group dropdown-full-width">
             <button type="button" value="congress" class="btn btn-default dropdown-toggle dark" onchange="selectDataset(null)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="choice">US Congress</span> <span class="caret"></span>

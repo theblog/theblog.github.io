@@ -66,8 +66,12 @@ function selectDataset(name) {
     selectedDataset = name == null ? DATASET_DROPDOWN.find('.dropdown-toggle').val() : name;
 
     // Update the normal talk box
-    TALK_BOX_HEADING.find('button.active').removeClass('active');
-    TALK_BOX_HEADING.find('button[value="' + selectedDataset + '"]').addClass('active');
+    TALK_BOX_HEADING
+        .find('button.active')
+        .removeClass('active');
+    TALK_BOX_HEADING
+        .find('button[value="' + selectedDataset + '"]')
+        .addClass('active');
 
     // Update the mobile talk box
     let dropdownItem = DATASET_DROPDOWN.find('a[data-value="' + selectedDataset + '"]');
@@ -81,7 +85,7 @@ function selectDataset(name) {
 function onInput() {
     // Interpret an enter stroke at the end as a send click.
     let input = getCleanInput();
-    getTextInputElem(visible = false).html(input);
+    getTextInputElem(false).html(input);
     if (SEND_ON_ENTER && input.indexOf('\n') >= 0) {
         // Remove the new lines
         TEXT_INPUTS.html(input.replace('\n', ''));
@@ -122,7 +126,7 @@ function completeText() {
     const defaultParams = DATASET_DEFAULTS[selectedDataset];
 
     const onCompletion = sampled => {
-        if (pendingRequestId == requestId) {
+        if (pendingRequestId === requestId) {
             result = sampled;
             pendingRequestId = null;
         }
@@ -166,7 +170,7 @@ function getRandomChange(text) {
 
     // Change some characters
     return text.split('').map(c => {
-        if (c == ' ') return c;
+        if (c === ' ') return c;
         else if (Math.random() <= 0.2) {
             // Change every 10th character on average.
             return PostUtil.getRandomCharacter();
@@ -202,7 +206,7 @@ function animateResult(result, deadline) {
     // Get the wrong characters
     const wrongIndices = [];
     Array.from(newOutput).forEach((char, index) => {
-        if (index < result.length && char != result[index]) {
+        if (index < result.length && char !== result[index]) {
             wrongIndices.push(index);
         }
     });
@@ -228,7 +232,7 @@ function animateWaiting(requestId) {
 }
 
 function refreshAnimateWaiting(requestId) {
-    if (pendingRequestId == requestId) {
+    if (pendingRequestId === requestId) {
         // Animate the text
         TEXT_OUTPUT.html(getRandomChange(TEXT_OUTPUT.html()));
 
