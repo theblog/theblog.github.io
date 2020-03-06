@@ -24,7 +24,7 @@ The iCloud key-value storage is like the <code>UserDefaults</code> but synced ac
 <h3>Add iCloud to your App ID</h3>
 
 <ol>
-    <li>Go to <a href="https://developer.apple.com/account/#/welcome">https://developer.apple.com/account/</a> -> Certificates, Identifiers & Profiles</li>
+    <li>Go to <a href="https://developer.apple.com/account/#/welcome">https://developer.apple.com/account/</a> -> Certificates, Identifiers & Profiles.</li>
     <li>Under <strong>Identifiers -> App IDs</strong>, edit your App ID and <strong>check the iCloud box</strong>. For Key-Value storage "Compatible with Xcode 5" suffices. CloudKit is for documents, large files and Core Data. Click Done.</li>
     <li>Go to your <strong>Provisioning Profiles</strong>. You will see that they turned invalid. For each of them, click edit and then generate to regenerate them. By opening the downloaded Provisioning Profiles, Xcode will automatically update them.</li>
 </ol>
