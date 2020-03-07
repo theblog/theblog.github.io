@@ -59,28 +59,23 @@ let DISTANCE_MATRIX_SERVICE;
 
 // MAIN Function
 $(function () {
-    try {
-        const state = {
-            cities: [],
-            cityMarkers: [],
-            mdsMarkers: [],
-        };
+    const state = {
+        cities: [],
+        cityMarkers: [],
+        mdsMarkers: [],
+    };
 
-        GEOCODER = new google.maps.Geocoder();
-        DISTANCE_MATRIX_SERVICE = new google.maps.DistanceMatrixService();
+    GEOCODER = new google.maps.Geocoder();
+    DISTANCE_MATRIX_SERVICE = new google.maps.DistanceMatrixService();
 
-        initMaps(state);
-        getCities(INITIAL_CITY_NAMES)
-            .then((cities) => {
-                addCitiesToState(state, ...cities);
-            })
-            .catch((reason) => {
-                displayError('Error: ' + reason);
-            });
-    } catch (e) {
-        // Display the error below the interactive google maps
-        displayError(e);
-    }
+    initMaps(state);
+    getCities(INITIAL_CITY_NAMES)
+        .then((cities) => {
+            addCitiesToState(state, ...cities);
+        })
+        .catch((reason) => {
+            displayError('Error: ' + reason);
+        });
 });
 
 function displayError(message) {
@@ -166,7 +161,7 @@ function drawCities(cities, existingMarkers) {
     for (let i = 0; i < cities.length; i++) {
         distanceMatrix[i] = [];
         for (let j = 0; j < cities.length; j++) {
-            distanceMatrix[i][j] = getDistanceFromLatLngInKm(
+            distanceMatrix[i][j] = getDistanceFromLatLonInKm(
                 cities[i].location.lat(),
                 cities[i].location.lng(),
                 cities[j].location.lat(),
@@ -196,7 +191,7 @@ function getMdsCities(cities, durationsMatrix) {
     }
 
     // TODO: normalize the matrix, as we need to convert the units anyways
-    const coordinatesRaw = getMdsCoordinatesSvd(durationsMatrix);
+    const coordinatesRaw = getMdsCoordinatesClassic(durationsMatrix);
     const coordinatesFit = fitCoordinatesToCities(coordinatesRaw, cities);
 
     // scale the coordinates to google maps
@@ -247,32 +242,6 @@ function reduceMean(array) {
     return numeric.div(numeric.add.apply(null, array), array.length);
 }
 
-function getMdsCoordinatesSvd(distances) {
-    // Following http://www.benfrederickson.com/multidimensional-scaling/
-
-    // square distances
-    let M = numeric.mul(-.5, numeric.pow(distances, 2));
-
-    // double centre the rows/columns
-    let rowMeans = reduceMean(M);
-    let colMeans = reduceMean(numeric.transpose(M));
-    let totalMean = reduceMean(rowMeans);
-
-    for (let i = 0; i < M.length; ++i) {
-        for (let j = 0; j < M[0].length; ++j) {
-            M[i][j] += totalMean - rowMeans[i] - colMeans[j];
-        }
-    }
-
-    // take the SVD of the double centred matrix, and return the
-    // points from it
-    let ret = numeric.svd(M);
-    let eigenValues = numeric.sqrt(ret.S);
-    return ret.U.map(function (row) {
-        return numeric.mul(row, eigenValues).splice(0, 2);
-    });
-}
-
 function getDurationsMatrix(cities) {
     const origins = cities.map((city) => {
         return city.name;
@@ -285,7 +254,8 @@ function getDurationsMatrix(cities) {
             travelMode: google.maps.TravelMode.TRANSIT
         }, (response, status) => {
             if (status !== google.maps.DistanceMatrixStatus.OK) {
-                reject('GoogleMaps could not compute the travel times between all cities.')
+                reject('GoogleMaps could not compute the travel times between all cities.');
+                return;
             }
 
             // Build the distance matrix
@@ -301,6 +271,7 @@ function getDurationsMatrix(cities) {
                     if (element.status !== google.maps.DistanceMatrixElementStatus.OK) {
                         reject('GoogleMaps could not find a public transport connection' +
                             ' between ' + cities[i].name + ' and ' + cities[j].name + '.');
+                        return;
                     }
                     row.push(element.duration.value);
                 }
@@ -309,41 +280,6 @@ function getDurationsMatrix(cities) {
             resolve(matrix);
         });
     });
-}
-
-/* from https://stackoverflow.com/a/39343864/2628369 */
-function getMaxOfArray(a) {
-    // Return the maximum of a multi-dimensional array
-    return Math.max(...a.map(e => Array.isArray(e) ? getMaxOfArray(e) : e));
-}
-
-/* from https://stackoverflow.com/a/39343864/2628369 */
-function getMinOfArray(a) {
-    // Return the minimum of a multi-dimensional array
-    return Math.min(...a.map(e => Array.isArray(e) ? getMinOfArray(e) : e));
-}
-
-function getDistanceFromLatLngInKm(lat1, lng1, lat2, lng2) {
-    // From https://stackoverflow.com/a/27943/2628369
-    // Radius of the earth in km
-    const earthRadius = 6371;
-    const dLat = degToRad(lat2 - lat1);
-    const dLng = degToRad(lng2 - lng1);
-
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(degToRad(lat1)) * Math.cos(degToRad(lat2)) *
-        Math.sin(dLng / 2) * Math.sin(dLng / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    // noinspection UnnecessaryLocalVariableJS
-    const d = earthRadius * c;
-    // Distance in km
-    return d;
-}
-
-function degToRad(deg) {
-    return deg * (Math.PI / 180)
 }
 
 function fillTable(id, cities, matrix, unit) {
@@ -521,7 +457,6 @@ function addSearchBox(onEnter) {
     // Listen for the event fired when the user selects a prediction and retrieve
     // more details for that place.
     searchBox.addListener('places_changed', function () {
-        console.log('Places changed');
         const places = searchBox.getPlaces();
         if (places.length === 0) {
             return;
