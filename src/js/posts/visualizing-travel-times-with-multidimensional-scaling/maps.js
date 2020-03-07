@@ -1,19 +1,82 @@
-var cityMap;
-var coordinateMap;
-var geocoder;
-var cities;
-var cityNames = [];
-var cityMarkers = [];
-var coordinateMarkers = [];
+const INITIAL_CITY_NAMES = ['San Francisco', 'Sacramento', 'Los Angeles', 'Las Vegas'];
+
+const CITY_MAP_ID = 'city-map';
+const COORDINATE_MAP_ID = 'coordinate-map';
+const DISTANCE_TABLE_ID = 'distance-table';
+const DURATION_TABLE_ID = 'duration-table';
+
+const CUSTOM_MAP_TYPE_ID = 'customStyle';
+const CUSTOM_MAP_TYPE = new google.maps.StyledMapType([{
+    stylers: [{
+        visibility: 'simplified'
+    }]
+}, {
+    featureType: 'road',
+    stylers: [{
+        visibility: 'off'
+    }]
+}, {
+    featureType: 'administrative',
+    stylers: [{
+        visibility: 'off'
+    }]
+}, {
+    featureType: 'poi',
+    stylers: [{
+        visibility: 'off'
+    }]
+}, {
+    featureType: 'administrative.country',
+    elementType: 'geometry.stroke',
+    stylers: [{
+        visibility: 'on'
+    }]
+}], {
+    name: 'Custom Style'
+});
+
+const MAP_OPTIONS = {
+    center: {
+        lat: 36.1141105,
+        lng: -116.4614945
+    },
+    zoom: 3,
+    navigationControl: false,
+    mapTypeControl: false,
+    scrollwheel: false,
+    streetViewControl: false,
+    disableDefaultUI: true
+};
+
+const UNIT_SECONDS = 'seconds';
+const UNIT_KILOMETERS = 'km';
+
+// Pseudo-constant variables that are initialized only once
+let CITY_MAP;
+let COORDINATE_MAP;
+let GEOCODER;
+let DISTANCE_MATRIX_SERVICE;
 
 // MAIN Function
 $(function () {
-    cityNames = ["San Francisco", "Sacramento", "Los Angeles", "Las Vegas"];
-    cityMarkers = [];
-    coordinateMarkers = [];
-
     try {
-        initMap();
+        const state = {
+            cities: [],
+            cityMarkers: [],
+            mdsMarkers: [],
+        };
+
+        GEOCODER = new google.maps.Geocoder();
+        DISTANCE_MATRIX_SERVICE = new google.maps.DistanceMatrixService();
+
+        initMaps(state);
+        getCities(INITIAL_CITY_NAMES)
+            .then((cities) => {
+                addCitiesToState(state, ...cities);
+            })
+            .catch((reason) => {
+                displayError('Error: ' + reason);
+            });
     } catch (e) {
         // Display the error below the interactive google maps
         displayError(e);
@@ -21,292 +84,322 @@ $(function () {
 });
 
 function displayError(message) {
-    message = message || "Something went wrong with the Google Maps API. Please try reloading" +
-        " the page";
-    $("#post-error").show().html(message);
+    if (message == null) {
+        message = 'Something went wrong with the Google Maps API. Please try reloading the page';
+    }
+    $('#post-error').show().html(message);
     console.error(message);
 }
 
-function getCityCoordinates(cityNames, callback) {
-    var result = [];
-    cityNames.forEach(function(city) {
-        geocoder.geocode({
-            'address': city
-        }, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                result.push({
-                    name: city,
-                    location: results[0].geometry.location
-                });
-                if (result.length == cityNames.length && callback) {
-                    callback(result);
-                }
+function initMaps(state) {
+    CITY_MAP = new google.maps.Map(document.getElementById(CITY_MAP_ID), MAP_OPTIONS);
+    CITY_MAP.mapTypes.set(CUSTOM_MAP_TYPE_ID, CUSTOM_MAP_TYPE);
+    CITY_MAP.setMapTypeId(CUSTOM_MAP_TYPE_ID);
+
+    COORDINATE_MAP = new google.maps.Map(document.getElementById(COORDINATE_MAP_ID), MAP_OPTIONS);
+    COORDINATE_MAP.mapTypes.set(CUSTOM_MAP_TYPE_ID, CUSTOM_MAP_TYPE);
+    COORDINATE_MAP.setMapTypeId(CUSTOM_MAP_TYPE_ID);
+
+    // Set up a search box for the city map
+    addSearchBox((city) => {
+        addCitiesToState(state, city);
+    });
+
+    addRemoveCitiesControl(() => {
+        clearState(state);
+    });
+}
+
+function addCitiesToState(state, ...cities) {
+    // Hide the potential previous error message
+    $('#post-error').hide();
+
+    state.cities.push(...cities);
+    onStateUpdated(state)
+        .catch((reason) => {
+            displayError('Error: ' + reason);
+            // Undo the update
+            if (state.cities.length === cities.length) {
+                clearState(state);
             } else {
-                displayError();
+                // Remove the last cities from the state
+                state.cities = _.initial(state.cities, cities.length);
+                // Redraw the maps and tables
+                onStateUpdated(state);
             }
-        })
-    });
-}
-
-function drawCities() {
-    clearMarkers(cityMarkers);
-
-    var bounds = new google.maps.LatLngBounds();
-    for (var i = 0; i < cities.length; i++) {
-        setMarker(cityMap, cities[i].name, cities[i].location);
-        bounds.extend(cities[i].location);
-    }
-    cityMap.fitBounds(bounds);
-
-    // fill the distance table
-    var distanceRange = {
-        min: Number.MAX_VALUE,
-        max: 0
-    };
-    var distances = [];
-    for (var i = 0; i < cities.length; i++) {
-        distances[i] = [];
-        for (var j = 0; j < cities.length; j++) {
-            // set the distance
-            distances[i][j] = getDistanceFromLatLonInKm(cities[i].location.lat(), cities[i].location.lng(), cities[j].location.lat(), cities[j].location.lng());
-
-            if (i != j) {
-                // update the distance range (ignore zero values for coloring)
-                if (distances[i][j] < distanceRange.min)
-                    distanceRange.min = distances[i][j];
-                if (distances[i][j] > distanceRange.max)
-                    distanceRange.max = distances[i][j];
-            }
-        }
-    }
-    fillTable("distance-table", distances, " km", distanceRange);
-}
-
-function drawGraph(geocoder) {
-    getDurations(geocoder, function(matrix) {
-        var coordinates = getMdsCoordinates(matrix);
-
-        // scale the coordinates to google maps
-        coordinates = fitCoordinates(coordinates);
-        var cityCoordinates = cities.map(function(city) {
-            return [city.location.lat(), city.location.lng()];
         });
-        var error = getMeanEuclideanError(coordinates, cityCoordinates);
-
-        clearMarkers(coordinateMarkers);
-
-        var bounds = new google.maps.LatLngBounds();
-        // iterate through the cities and display the calculated coordinates
-        for (var i = 0; i < cities.length; i++) {
-            var position = new google.maps.LatLng(coordinates[i][0], coordinates[i][1]);
-            // set the marker
-            setMarker(coordinateMap, cities[i].name, position);
-            bounds.extend(position);
-        }
-        coordinateMap.fitBounds(bounds);
-    });
 }
 
-function setMarker(map, name, position) {
-    var marker = new MarkerWithLabel({
-        position: position,
-        draggable: false,
-        raiseOnDrag: false,
-        map: map,
-        labelContent: name,
-        labelAnchor: new google.maps.Point(22, 0),
-        labelClass: "labels" // the CSS class for the label
+function onStateUpdated(state) {
+    state.cityMarkers = drawCities(state.cities, state.cityMarkers);
+
+    return getDurationsMatrix(state.cities)
+        .then((matrix) => {
+            fillTable(DURATION_TABLE_ID, state.cities, matrix, UNIT_SECONDS);
+            state.mdsMarkers = drawMds(state.cities, state.mdsMarkers, matrix);
+        });
+}
+
+function clearState(state) {
+    // Clears the cities, markers and tables
+    state.cityMarkers.forEach((marker) => {
+        marker.setMap(null)
     });
-    if (map == cityMap)
-        cityMarkers.push(marker);
-    else
-        coordinateMarkers.push(marker);
+    state.mdsMarkers.forEach((marker) => {
+        marker.setMap(null)
+    });
+    state.cities = [];
+    state.cityMarkers = [];
+    state.mdsMarkers = [];
+    clearTable(DISTANCE_TABLE_ID);
+    clearTable(DURATION_TABLE_ID);
+}
+
+function drawCities(cities, existingMarkers) {
+    existingMarkers.forEach((marker) => {
+        marker.setMap(null)
+    });
+    const markers = setMarkers(CITY_MAP, cities);
+
+    // Fill the distance table
+    const distanceMatrix = [];
+    for (let i = 0; i < cities.length; i++) {
+        distanceMatrix[i] = [];
+        for (let j = 0; j < cities.length; j++) {
+            distanceMatrix[i][j] = getDistanceFromLatLngInKm(
+                cities[i].location.lat(),
+                cities[i].location.lng(),
+                cities[j].location.lat(),
+                cities[j].location.lng());
+        }
+    }
+    fillTable(DISTANCE_TABLE_ID, cities, distanceMatrix, UNIT_KILOMETERS);
+    return markers;
+}
+
+function drawMds(cities, existingMarkers, durationsMatrix) {
+    let mdsCities = getMdsCities(cities, durationsMatrix);
+
+    existingMarkers.forEach((marker) => {
+        marker.setMap(null)
+    });
+
+    // Update the mds markers
+    return setMarkers(COORDINATE_MAP, mdsCities);
+}
+
+function getMdsCities(cities, durationsMatrix) {
+    if (cities.length <= 2) {
+        return cities.map((city) => {
+            return {name: city.name, location: city.location};
+        });
+    }
+
+    // TODO: normalize the matrix, as we need to convert the units anyways
+    const coordinatesRaw = getMdsCoordinatesSvd(durationsMatrix);
+    const coordinatesFit = fitCoordinatesToCities(coordinatesRaw, cities);
+
+    // scale the coordinates to google maps
+    return cities.map((city, cityIndex) => {
+        // TODO: Let the MDS function return gmaps.LatLng directly
+        const location = new google.maps.LatLng(
+            coordinatesFit[cityIndex][0],
+            coordinatesFit[cityIndex][1]
+        );
+        return {name: city.name, location: location};
+    });
 }
 
 /** http://stackoverflow.com/questions/13432805/finding-translation-and-scale-on-two-sets-of-points-to-get-least-square-error-in **/
-function fitCoordinates(coordinates) {
-    var cityCoordinates = cities.map(function(city) {
+function fitCoordinatesToCities(coordinates, cities) {
+    const cityCoordinates = cities.map(function (city) {
         return [city.location.lat(), city.location.lng()];
     });
 
     // center both coordinates
-    var cityCenter = mean(cityCoordinates);
-    center(coordinates);
-    center(cityCoordinates);
+    const cityCenter = reduceMean(cityCoordinates);
+    const coordinatesCentered = getCenteredCoordinates(coordinates);
+    const cityCoordinatesCentered = getCenteredCoordinates(cityCoordinates);
 
-    var X = numeric.dot(numeric.transpose(coordinates), coordinates);
+    let X = numeric.dot(numeric.transpose(coordinatesCentered), coordinatesCentered);
+    // TODO: NEVER USE THE INVERSE!!!!!
     X = numeric.inv(X);
-    X = numeric.dot(X, numeric.transpose(coordinates));
-    X = numeric.dot(X, cityCoordinates);
+    X = numeric.dot(X, numeric.transpose(coordinatesCentered));
+    X = numeric.dot(X, cityCoordinatesCentered);
 
-    coordinates = numeric.dot(coordinates, X);
+    const coordinatesCenteredFit = numeric.dot(coordinatesCentered, X);
 
-    // translate the coordinates to the center of the cities
-    for (var i = 0; i < coordinates.length; i++) {
-        coordinates[i] = numeric.add(coordinates[i], cityCenter);
-    }
-    return coordinates;
+    // Move the coordinates to the center of the cities
+    return coordinatesCenteredFit.map((coordinate) => {
+        return numeric.add(coordinate, cityCenter);
+    });
 }
 
-function getMeanEuclideanError(pointsA, pointsB) {
-    var diffs = numeric.sub(pointsA, pointsB);
-    var error = 0;
-    for (var i = 0; i < diffs.length; i++) {
-        error += numeric.norm2Squared(diffs[i]);
-    }
-    return error / diffs.length;
+function getCenteredCoordinates(coordinates) {
+    let center = reduceMean(coordinates);
+    return coordinates.map((coordinate) => {
+        return numeric.sub(coordinate, center);
+    });
 }
 
-function center(points) {
-    var centroid = mean(points);
-    for (var i = 0; i < points.length; i++) {
-        points[i] = numeric.sub(points[i], centroid);
-    }
+function reduceMean(array) {
+    // Computes the mean over the first axis of array
+    return numeric.div(numeric.add.apply(null, array), array.length);
 }
 
-function mean(A) {
-    return numeric.div(numeric.add.apply(null, A), A.length);
-}
+function getMdsCoordinatesSvd(distances) {
+    // Following http://www.benfrederickson.com/multidimensional-scaling/
 
-/** from http://www.benfrederickson.com/multidimensional-scaling/ */
-function getMdsCoordinates(distances) {
     // square distances
-    var M = numeric.mul(-.5, numeric.pow(distances, 2));
+    let M = numeric.mul(-.5, numeric.pow(distances, 2));
 
     // double centre the rows/columns
-    var rowMeans = mean(M),
-        colMeans = mean(numeric.transpose(M)),
-        totalMean = mean(rowMeans);
+    let rowMeans = reduceMean(M);
+    let colMeans = reduceMean(numeric.transpose(M));
+    let totalMean = reduceMean(rowMeans);
 
-    for (var i = 0; i < M.length; ++i) {
-        for (var j = 0; j < M[0].length; ++j) {
+    for (let i = 0; i < M.length; ++i) {
+        for (let j = 0; j < M[0].length; ++j) {
             M[i][j] += totalMean - rowMeans[i] - colMeans[j];
         }
     }
 
     // take the SVD of the double centred matrix, and return the
     // points from it
-    var ret = numeric.svd(M),
-        eigenValues = numeric.sqrt(ret.S);
-    return ret.U.map(function(row) {
+    let ret = numeric.svd(M);
+    let eigenValues = numeric.sqrt(ret.S);
+    return ret.U.map(function (row) {
         return numeric.mul(row, eigenValues).splice(0, 2);
     });
 }
 
-function getDurations(geocoder, callback) {
-    var service = new google.maps.DistanceMatrixService();
-    var matrix = [];
-    var origins = [];
-    for (var i = 0; i < cities.length; i++) {
-        origins.push(cities[i].name);
-        matrix[i] = new Array(cities.length);
-    }
-    var durationRange = {
-        min: Number.MAX_VALUE,
-        max: 0
-    };
+function getDurationsMatrix(cities) {
+    const origins = cities.map((city) => {
+        return city.name;
+    });
 
-    service.getDistanceMatrix({
-        origins: origins,
-        destinations: origins,
-        travelMode: google.maps.TravelMode.TRANSIT,
-        drivingOptions: {
-            departureTime: getNextMonday(),
-        }
-    }, function(response, status) {
-        if (status == google.maps.DistanceMatrixStatus.OK) {
+    return new Promise((resolve, reject) => {
+        DISTANCE_MATRIX_SERVICE.getDistanceMatrix({
+            origins: origins,
+            destinations: origins,
+            travelMode: google.maps.TravelMode.TRANSIT
+        }, (response, status) => {
+            if (status !== google.maps.DistanceMatrixStatus.OK) {
+                reject('GoogleMaps could not compute the travel times between all cities.')
+            }
 
-            for (var i = 0; i < response.rows.length; i++) {
-                var row = response.rows[i];
-                for (var j = 0; j < row.elements.length; j++) {
-                    if (i == j) {
-                        matrix[i][j] = 0;
+            // Build the distance matrix
+            const matrix = [];
+            for (let i = 0; i < response.rows.length; i++) {
+                const row = [];
+                for (let j = 0; j < response.rows[i].elements.length; j++) {
+                    if (i === j) {
+                        row.push(0);
                         continue;
                     }
-
-                    var element = row.elements[j];
-                    if (element.status == google.maps.DistanceMatrixStatus.OK) {
-                        matrix[i][j] = element.duration.value;
-                        // update the duration range (ignore zero values for coloring)
-                        if (element.duration.value < durationRange.min)
-                            durationRange.min = element.duration.value;
-                        if (element.duration.value > durationRange.max)
-                            durationRange.max = element.duration.value;
-                    } else {
-                        displayError("GoogleMaps could not find a public transport connection" +
-                            " between " + cities[i].name + " and " + cities[j].name + ".");
-                        // remove the city that was last added and redraw everything
-                        cities.pop();
-                        drawCities();
-                        drawGraph();
+                    const element = response.rows[i].elements[j];
+                    if (element.status !== google.maps.DistanceMatrixElementStatus.OK) {
+                        reject('GoogleMaps could not find a public transport connection' +
+                            ' between ' + cities[i].name + ' and ' + cities[j].name + '.');
                     }
+                    row.push(element.duration.value);
                 }
+                matrix.push(row);
             }
-            fillTable("duration-table", matrix, "seconds", durationRange);
-            callback(matrix);
-        }
+            resolve(matrix);
+        });
     });
 }
 
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-    var R = 6371;
+/* from https://stackoverflow.com/a/39343864/2628369 */
+function getMaxOfArray(a) {
+    // Return the maximum of a multi-dimensional array
+    return Math.max(...a.map(e => Array.isArray(e) ? getMaxOfArray(e) : e));
+}
+
+/* from https://stackoverflow.com/a/39343864/2628369 */
+function getMinOfArray(a) {
+    // Return the minimum of a multi-dimensional array
+    return Math.min(...a.map(e => Array.isArray(e) ? getMinOfArray(e) : e));
+}
+
+function getDistanceFromLatLngInKm(lat1, lng1, lat2, lng2) {
+    // From https://stackoverflow.com/a/27943/2628369
     // Radius of the earth in km
-    var dLat = deg2rad(lat2 - lat1);
-    // deg2rad below
-    var dLon = deg2rad(lon2 - lon1);
-    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c;
+    const earthRadius = 6371;
+    const dLat = degToRad(lat2 - lat1);
+    const dLng = degToRad(lng2 - lng1);
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(degToRad(lat1)) * Math.cos(degToRad(lat2)) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    // noinspection UnnecessaryLocalVariableJS
+    const d = earthRadius * c;
     // Distance in km
     return d;
 }
 
-function deg2rad(deg) {
+function degToRad(deg) {
     return deg * (Math.PI / 180)
 }
 
-function deepCloneTwoDimensionalArray(array) {
-    return array.map(function(arr) {
-        return arr.slice();
-    });
-}
-
-function clearTable(id) {
-    var table = document.getElementById(id);
-    // empty the table
-    while (table.firstChild) {
-        table.removeChild(table.firstChild);
-    }
-}
-
-function fillTable(id, matrix, measurement, range) {
+function fillTable(id, cities, matrix, unit) {
     clearTable(id);
-    var table = document.getElementById(id);
 
-    // create the header
-    var headerRow = document.createElement('TR');
-    // add the empty upper left cell
-    headerRow.appendChild(document.createElement('TH'));
-    for (var i = 0; i < cities.length; i++) {
-        var th = document.createElement('TH');
-        th.appendChild(document.createTextNode(cities[i].name));
+    // Compute the range of values for coloring the cells correspondingly.
+    const range = {
+        min: getMinOfArray(matrix),
+        max: getMaxOfArray(matrix)
+    };
+
+    // Create the table
+    const table = document.getElementById(id);
+
+    // Create the header
+    const headerRow = document.createElement('tr');
+
+    // Add the empty upper left cell to the header
+    headerRow.appendChild(document.createElement('th'));
+
+    // Add each city to the header
+    for (const city of cities) {
+        const th = document.createElement('th');
+        th.appendChild(document.createTextNode(city.name));
         headerRow.appendChild(th);
     }
     table.appendChild(headerRow);
 
-    for (var i = 0; i < matrix.length; i++) {
-        var tr = document.createElement('TR');
-        // add the city name
-        var td = document.createElement('TH');
+    // Add the table rows
+    for (let i = 0; i < matrix.length; i++) {
+        const tr = document.createElement('tr');
+
+        // Add the city name to the left of the row
+        const td = document.createElement('th');
         td.appendChild(document.createTextNode(cities[i].name));
         tr.appendChild(td);
 
-        for (var j = 0; j < matrix[i].length; j++) {
-            var td = document.createElement('TD');
-            var text = "-";
-            if (i != j)
-                text = measurement == "seconds" ? secondsToText(matrix[i][j]) : Math.round(matrix[i][j]) + " " + measurement;
-            td.style.backgroundColor = getWeightedColor(matrix[i][j], range);
+        // Add the row values
+        for (let j = 0; j < matrix[i].length; j++) {
+            const cellValue = matrix[i][j];
+            const td = document.createElement('td');
+
+            // Set the text depending on the position and unit
+            let text = '-';
+            if (i !== j) {
+                if (unit === UNIT_SECONDS) {
+                    text = secondsToString(cellValue);
+                } else if (unit === UNIT_KILOMETERS) {
+                    text = Math.round(cellValue) + ' km';
+                } else {
+                    throw Error('Unknown unit ' + unit);
+                }
+            }
+
+            // Append the cell to the row
+            td.style.backgroundColor = getCellColor(matrix[i][j], range);
             td.appendChild(document.createTextNode(text));
             tr.appendChild(td);
         }
@@ -314,24 +407,13 @@ function fillTable(id, matrix, measurement, range) {
     }
 }
 
-function getWeightedColor(value, range) {
-    var progress = Math.max(0, (value - range.min) / (range.max - range.min));
-    return "rgba(255,200,200," + progress + ")";
-}
-
-function secondsToText(d) {
-    if (d < 60)
-        return "-";
-    d = Number(d);
-    var h = Math.floor(d / 3600);
-    var m = Math.floor(d % 3600 / 60);
-    return ((h > 0 ? h + " h " : "") + m + " min");
-}
-
+// noinspection JSUnusedGlobalSymbols
 function getNextMonday() {
-    var dayOfWeek = 1;
-    var resultDate = new Date();
-    resultDate.setDate(resultDate.getDate() + (7 + dayOfWeek - resultDate.getDay()) % 7);
+    // Following https://stackoverflow.com/a/33078673/2628369
+    const dayOfWeek = 1;
+    const now = new Date();
+    const resultDate = new Date();
+    resultDate.setDate(resultDate.getDate() + (dayOfWeek + 7 - now.getDay()) % 7);
     resultDate.setHours(12);
     resultDate.setMinutes(0);
     resultDate.setSeconds(0);
@@ -339,136 +421,129 @@ function getNextMonday() {
     return resultDate;
 }
 
-function initMap() {
-    var customMapType = new google.maps.StyledMapType([{
-        stylers: [{
-            visibility: 'simplified'
-        }]
-    }, {
-        featureType: 'road',
-        stylers: [{
-            visibility: 'off'
-        }]
-    }, {
-        "featureType": "administrative",
-        "stylers": [{
-            "visibility": "off"
-        }]
-    }, {
-        "featureType": "poi",
-        "stylers": [{
-            "visibility": "off"
-        }]
-    }, {
-        "featureType": "administrative.country",
-        "elementType": "geometry.stroke",
-        "stylers": [{
-            "visibility": "on"
-        }]
-    }], {
-        name: 'Custom Style'
-    });
-    var customMapTypeId = 'custom_style';
+function getCellColor(value, range) {
+    let progress = (value - range.min) / (range.max - range.min);
+    // Clip the progress
+    progress = Math.max(0, Math.min(1, progress));
+    return 'rgba(255,200,200,' + progress + ')';
+}
 
-    var mapOptions = {
-        center: {
-            lat: 36.1141105,
-            lng: -116.4614945
-        },
-        zoom: 3,
-        navigationControl: false,
-        mapTypeControl: false,
-        scrollwheel: false,
-        streetViewControl: false,
-				disableDefaultUI: true
-    };
+function secondsToString(seconds) {
+    if (seconds < 60)
+        return '-';
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor(seconds % 3600 / 60);
+    return ((hours > 0 ? hours + ' h ' : '') + minutes + ' min');
+}
 
-    cityMap = new google.maps.Map(document.getElementById('city-map'), mapOptions);
-    cityMap.mapTypes.set(customMapTypeId, customMapType);
-    cityMap.setMapTypeId(customMapTypeId);
+function clearTable(id) {
+    let table = document.getElementById(id);
+    while (table.firstChild != null) {
+        table.removeChild(table.firstChild);
+    }
+}
 
-    // set up a search box for the city map
-    addSearchBox();
-    addRemoveCitiesControl();
+function setMarkers(map, cities, fitBounds = true) {
+    // Set a marker for each city while extending the bounds
+    const bounds = new google.maps.LatLngBounds();
+    const markers = [];
+    for (const city of cities) {
+        const marker = setMarker(map, city.name, city.location);
+        markers.push(marker);
+        bounds.extend(city.location);
+    }
 
-    coordinateMap = new google.maps.Map(document.getElementById('coordinate-map'), mapOptions);
+    if (fitBounds) {
+        map.fitBounds(bounds);
+    }
 
-    coordinateMap.mapTypes.set(customMapTypeId, customMapType);
-    coordinateMap.setMapTypeId(customMapTypeId);
+    return markers;
+}
 
-    geocoder = new google.maps.Geocoder();
-
-    getCityCoordinates(cityNames, function(result) {
-        cities = result;
-        drawCities();
-        drawGraph();
+function setMarker(map, name, position) {
+    return new MarkerWithLabel({
+        position: position,
+        draggable: false,
+        raiseOnDrag: false,
+        map: map,
+        labelContent: name,
+        labelAnchor: new google.maps.Point(22, 0),
+        labelClass: 'labels' // the CSS class for the label
     });
 }
 
-function clearMarkers(markers) {
-    for (var i = 0; i < markers.length; i++)
-        markers[i].setMap(null);
-    markers = [];
-}
-
-// Deletes all markers and the cities
-function removeCities() {
-    clearMarkers(cityMarkers);
-    clearMarkers(coordinateMarkers);
-    cities = [];
-    // clear the tables
-    clearTable("distance-table");
-    clearTable("duration-table");
-}
-
-function addSearchBox() {
-    var input = document.getElementById('pac-input');
-    var searchBox = new google.maps.places.SearchBox(input);
-    cityMap.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-    // Listen for the event fired when the user selects a prediction and retrieve
-    // more details for that place.
-    searchBox.addListener('places_changed', function() {
-        var place = searchBox.getPlaces()[0];
-        if (place) {
-            // Hide the potential previous error message
-            $("#post-error").hide();
-
-            cities.push({
-                name: getCityForPlace(place),
-                location: place.geometry.location
-            });
-            drawCities();
-            if (cities.length >= 3)
-                drawGraph();
+function getCityNameForPlace(place) {
+    // Iterate the address components until one is of type 'locality'
+    for (const component of place.address_components) {
+        if (component.types[0] === 'locality') {
+            return component.long_name;
         }
-    });
-}
-
-function getCityForPlace(place) {
-    // iterate the address components
-    for (var i = 0; i < place.address_components.length; i++) {
-        var types = place.address_components[i].types;
-        if (types[0] == "locality")
-            return place.address_components[i].long_name;
     }
     return place.address_components[0].long_name;
 }
 
-function addRemoveCitiesControl() {
-    // Create the DIV to hold the control and call the CenterControl() constructor
-    // passing in this DIV.
-    var controlDiv = document.createElement('div');
-    var control = new RemoveCitiesControl(controlDiv, cityMap);
+function getCities(cityNames) {
+    const geocodePromises = [];
+    for (const cityName of cityNames) {
+        const promise = new Promise((resolve, reject) => {
+            GEOCODER.geocode({
+                'address': cityName
+            }, (results, status) => {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    const city = {
+                        name: cityName,
+                        location: results[0].geometry.location
+                    };
+                    resolve(city);
+                } else {
+                    reject('GoogleMaps could not geocode all city names.');
+                }
+            })
+        });
+        geocodePromises.push(promise);
+    }
 
-    controlDiv.index = 1;
-    cityMap.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+    return Promise.all(geocodePromises);
 }
 
-function RemoveCitiesControl(controlDiv, map) {
+function addSearchBox(onEnter) {
+    const input = document.getElementById('pac-input');
+
+    // noinspection JSCheckFunctionSignatures
+    const searchBox = new google.maps.places.SearchBox(input);
+    CITY_MAP.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    // Only show the search box, when the map has loaded.
+    google.maps.event.addListenerOnce(CITY_MAP, 'idle', () => {
+        input.style.display = 'block';
+    });
+
+    // Listen for the event fired when the user selects a prediction and retrieve
+    // more details for that place.
+    searchBox.addListener('places_changed', function () {
+        console.log('Places changed');
+        const places = searchBox.getPlaces();
+        if (places.length === 0) {
+            return;
+        }
+
+        const place = places[0];
+        if (place != null && place.address_components != null) {
+            const city = {
+                name: getCityNameForPlace(place),
+                location: place.geometry.location
+            };
+            onEnter(city);
+        }
+    });
+}
+
+function addRemoveCitiesControl(onClick) {
+    // Create the DIV to hold the control
+    const controlDiv = document.createElement('div');
 
     // Set CSS for the control border.
-    var controlUI = document.createElement('div');
+    const controlUI = document.createElement('div');
     controlUI.style.backgroundColor = '#fff';
     controlUI.style.border = '2px solid #fff';
     controlUI.style.borderRadius = '3px';
@@ -482,7 +557,7 @@ function RemoveCitiesControl(controlDiv, map) {
     controlDiv.appendChild(controlUI);
 
     // Set CSS for the control interior.
-    var controlText = document.createElement('div');
+    const controlText = document.createElement('div');
     controlText.style.color = 'rgb(25,25,25)';
     controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
     controlText.style.fontSize = '13px';
@@ -492,9 +567,9 @@ function RemoveCitiesControl(controlDiv, map) {
     controlText.innerHTML = 'Remove Cities';
     controlUI.appendChild(controlText);
 
-    // Setup the click event listeners: simply set the map to Chicago.
-    controlUI.addEventListener('click', function() {
-        removeCities();
-    });
+    // Setup the click event listener
+    controlUI.addEventListener('click', onClick);
 
+    controlDiv.index = 1;
+    CITY_MAP.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
 }
