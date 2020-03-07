@@ -190,13 +190,22 @@ function getMdsCities(cities, durationsMatrix) {
         });
     }
 
-    // TODO: normalize the matrix, as we need to convert the units anyways
-    const coordinatesRaw = getMdsCoordinatesClassic(durationsMatrix);
+    // Normalize the matrix to [0, 1], as there is no useful conversion between public transport
+    // time and geographic coordinates anyways.
+    const maxDistance = getMaxOfArray(durationsMatrix);
+    const minDistance = getMinOfArray(durationsMatrix);
+    const matrixNormalized = numeric.div(
+        numeric.sub(durationsMatrix, minDistance),
+        maxDistance - minDistance);
+
+    getMdsCoordinatesWithGradientDescent(matrixNormalized);
+    const coordinatesRaw = getMdsCoordinatesClassic(matrixNormalized);
+    console.log(getMdsLoss(matrixNormalized, coordinatesRaw));
+
     const coordinatesFit = fitCoordinatesToCities(coordinatesRaw, cities);
 
-    // scale the coordinates to google maps
+    // Convert the coordinates to google maps LatLng objects
     return cities.map((city, cityIndex) => {
-        // TODO: Let the MDS function return gmaps.LatLng directly
         const location = new google.maps.LatLng(
             coordinatesFit[cityIndex][0],
             coordinatesFit[cityIndex][1]
@@ -205,13 +214,112 @@ function getMdsCities(cities, durationsMatrix) {
     });
 }
 
-/** http://stackoverflow.com/questions/13432805/finding-translation-and-scale-on-two-sets-of-points-to-get-least-square-error-in **/
+function getMdsCoordinatesWithGradientDescent(distances,
+                                              lr = 0.1,
+                                              maxSteps = 200,
+                                              minImprovement = 1e-6,
+                                              logEvery = 20) {
+    // TODO: Second order optimization
+    // TODO: Use TensorFlow to ensure that gradients are correct
+
+    const numCoords = distances.length;
+    let coordinates = getInitialMdsCoordinates(numCoords);
+
+    let lossPrev = null;
+
+    for (let step = 0; step < maxSteps; step++) {
+        const loss = getMdsLoss(distances, coordinates);
+
+        // Check if we should early stop.
+        if (lossPrev != null && lossPrev - loss < minImprovement) {
+            return coordinates;
+        }
+
+        if (logEvery > 0 && step % logEvery === 0) {
+            console.log(`Step: ${step}, loss: ${loss}`);
+        }
+
+        // Apply the gradient for each coordinate.
+        for (let coordIndex = 0; coordIndex < numCoords; coordIndex++) {
+            const gradient = getGradientForCoordinate(distances, coordinates, coordIndex);
+            const update = numeric.mul(-lr, gradient);
+            coordinates[coordIndex] = numeric.add(coordinates[coordIndex], update);
+        }
+
+        lossPrev = loss;
+    }
+
+    return coordinates;
+}
+
+function getInitialMdsCoordinates(numCoordinates, dimensions = 2) {
+    // Initialize the solution by sampling from a uniform distribution, which only allows distances
+    // in [0, 1].
+    const coordinates = [];
+    for (let coordinateIndex = 0; coordinateIndex < numCoordinates; coordinateIndex++) {
+        const coordinate = [];
+        for (let dimensionIndex = 0; dimensionIndex < dimensions; dimensionIndex++) {
+            coordinate.push(Math.random() / Math.sqrt(dimensions));
+        }
+        coordinates.push(coordinate);
+    }
+    return coordinates;
+}
+
+function getMdsLoss(distances, coordinates) {
+    // Average the squared differences of actual distances and computed distances
+    let loss = 0;
+    for (let coordIndex1 = 0; coordIndex1 < coordinates.length; coordIndex1++) {
+        for (let coordIndex2 = 0; coordIndex2 < coordinates.length; coordIndex2++) {
+            if (coordIndex1 === coordIndex2) continue;
+
+            const coord1 = coordinates[coordIndex1];
+            const coord2 = coordinates[coordIndex2];
+            const target = distances[coordIndex1][coordIndex2];
+            const actual = numeric.norm2(numeric.sub(coord1, coord2));
+            loss += Math.pow(target - actual, 2) / coordinates.length;
+        }
+    }
+    return loss;
+}
+
+function getGradientForCoordinate(distances, coordinates, coordIndex) {
+    const coord = coordinates[coordIndex];
+    let gradient = [0, 0];
+
+    for (let otherCoordIndex = 0; otherCoordIndex < coordinates.length; otherCoordIndex++) {
+        if (coordIndex === otherCoordIndex) continue;
+
+        const otherCoord = coordinates[otherCoordIndex];
+        const squaredDifferenceSum = numeric.sum(numeric.pow(numeric.sub(coord, otherCoord), 2));
+        const actual = Math.sqrt(squaredDifferenceSum);
+        const targets = [
+            distances[coordIndex][otherCoordIndex],
+            distances[otherCoordIndex][coordIndex]
+        ];
+
+        for (const target of targets) {
+            const lossWrtActual = -2 * (target - actual) / coordinates.length;
+            const actualWrtSquaredDifferenceSum = 0.5 / Math.sqrt(squaredDifferenceSum);
+            const squaredDifferenceSumWrtCoord = numeric.mul(2, numeric.sub(coord, otherCoord));
+            const lossWrtCoord = numeric.mul(
+                lossWrtActual * actualWrtSquaredDifferenceSum,
+                squaredDifferenceSumWrtCoord
+            );
+            gradient = numeric.add(gradient, lossWrtCoord);
+        }
+    }
+
+    return gradient;
+}
+
 function fitCoordinatesToCities(coordinates, cities) {
+    // Following http://stackoverflow.com/questions/13432805/finding-translation-and-scale-on-two-sets-of-points-to-get-least-square-error-in
     const cityCoordinates = cities.map(function (city) {
         return [city.location.lat(), city.location.lng()];
     });
 
-    // center both coordinates
+    // Center both coordinates
     const cityCenter = reduceMean(cityCoordinates);
     const coordinatesCentered = getCenteredCoordinates(coordinates);
     const cityCoordinatesCentered = getCenteredCoordinates(cityCoordinates);
@@ -397,6 +505,7 @@ function setMarkers(map, cities, fitBounds = true) {
 }
 
 function setMarker(map, name, position) {
+    // noinspection JSCheckFunctionSignatures
     return new MarkerWithLabel({
         position: position,
         draggable: false,
