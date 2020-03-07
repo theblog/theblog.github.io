@@ -198,7 +198,15 @@ function getMdsCities(cities, durationsMatrix) {
         numeric.sub(durationsMatrix, minDistance),
         maxDistance - minDistance);
 
-    getMdsCoordinatesWithGradientDescent(matrixNormalized);
+    const coordinatesGd = getMdsCoordinatesWithGradientDescent(matrixNormalized);
+    const coordinatesMomentum = getMdsCoordinatesWithGradientDescent(matrixNormalized, {
+        lr: 0.1,
+        momentum: 0.5
+    });
+
+    console.log('Final GD loss: ' + getMdsLoss(matrixNormalized, coordinatesGd));
+    console.log('Final Momentum loss: ' + getMdsLoss(matrixNormalized, coordinatesMomentum));
+
     const coordinatesRaw = getMdsCoordinatesClassic(matrixNormalized);
     console.log(getMdsLoss(matrixNormalized, coordinatesRaw));
 
@@ -215,10 +223,22 @@ function getMdsCities(cities, durationsMatrix) {
 }
 
 function getMdsCoordinatesWithGradientDescent(distances,
-                                              lr = 0.1,
-                                              maxSteps = 200,
-                                              minImprovement = 1e-6,
-                                              logEvery = 20) {
+                                              {
+                                                  lr = 0.1,
+                                                  maxSteps = 200,
+                                                  minLossDifference = 1e-6,
+                                                  momentum = 0.,
+                                                  logEvery = 10
+                                              } = {}) {
+    /*
+    * If momentum is != 0, the update is:
+    *
+    * accumulation = momentum * accumulation + gradient
+    * parameters -= learning_rate * accumulation
+    *
+    * like in TensorFlow and PyTorch
+    *
+    */
     // TODO: Second order optimization
     // TODO: Use TensorFlow to ensure that gradients are correct
 
@@ -226,12 +246,13 @@ function getMdsCoordinatesWithGradientDescent(distances,
     let coordinates = getInitialMdsCoordinates(numCoords);
 
     let lossPrev = null;
+    let accumulation = null;
 
     for (let step = 0; step < maxSteps; step++) {
         const loss = getMdsLoss(distances, coordinates);
 
         // Check if we should early stop.
-        if (lossPrev != null && lossPrev - loss < minImprovement) {
+        if (lossPrev != null && Math.abs(lossPrev - loss) < minLossDifference) {
             return coordinates;
         }
 
@@ -242,8 +263,16 @@ function getMdsCoordinatesWithGradientDescent(distances,
         // Apply the gradient for each coordinate.
         for (let coordIndex = 0; coordIndex < numCoords; coordIndex++) {
             const gradient = getGradientForCoordinate(distances, coordinates, coordIndex);
-            const update = numeric.mul(-lr, gradient);
-            coordinates[coordIndex] = numeric.add(coordinates[coordIndex], update);
+            if (momentum === 0 || accumulation == null) {
+                accumulation = gradient;
+            } else {
+                accumulation = numeric.add(
+                    numeric.mul(momentum, accumulation),
+                    gradient
+                );
+            }
+            const update = numeric.mul(lr, accumulation);
+            coordinates[coordIndex] = numeric.sub(coordinates[coordIndex], update);
         }
 
         lossPrev = loss;
