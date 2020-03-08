@@ -200,12 +200,14 @@ function getMdsCities(cities, durationsMatrix) {
         Matrix.sub(durationsMatrix, durationsMatrix.min()),
         durationsMatrix.max() - durationsMatrix.min());
 
+    const coordinatesGaussNewton = getMdsCoordinatesWithGaussNewton(matrixNormalized);
     const coordinatesGd = getMdsCoordinatesWithGradientDescent(matrixNormalized);
     const coordinatesMomentum = getMdsCoordinatesWithGradientDescent(matrixNormalized, {
         lr: 0.5,
         momentum: 0.5
     });
 
+    console.log('Final Gauss-Newton loss: ' + getMdsLoss(matrixNormalized, coordinatesGaussNewton));
     console.log('Final GD loss: ' + getMdsLoss(matrixNormalized, coordinatesGd));
     console.log('Final Momentum loss: ' + getMdsLoss(matrixNormalized, coordinatesMomentum));
 
@@ -213,7 +215,7 @@ function getMdsCities(cities, durationsMatrix) {
     const coordinatesRaw = new Matrix(coordinatesRawArray);
     console.log(getMdsLoss(matrixNormalized, coordinatesRaw));
 
-    const coordinatesFit = fitCoordinatesToCities(coordinatesRaw, cities);
+    const coordinatesFit = fitCoordinatesToCities(coordinatesGd, cities);
 
     // Convert the coordinates to google maps LatLng objects
     return cities.map((city, cityIndex) => {
@@ -225,12 +227,55 @@ function getMdsCities(cities, durationsMatrix) {
     });
 }
 
+function getMdsCoordinatesWithGaussNewton(distances,
+                                          {
+                                              lr = 0.1,
+                                              maxSteps = 200,
+                                              minLossDifference = 1e-7,
+                                              logEvery = 10
+                                          } = {}) {
+    const numCoordinates = distances.rows;
+    let coordinates = getInitialMdsCoordinates(numCoordinates);
+    const dimensions = coordinates.columns;
+
+    let lossPrev = null;
+
+    for (let step = 0; step < maxSteps; step++) {
+        const loss = getMdsLoss(distances, coordinates);
+
+        // Check if we should early stop.
+        if (lossPrev != null && Math.abs(lossPrev - loss) < minLossDifference) {
+            return coordinates;
+        }
+
+        if (logEvery > 0 && step % logEvery === 0) {
+            console.log(`Step: ${step}, loss: ${loss}`);
+        }
+
+        // Apply the update
+        const {residuals, jacobian} = getResidualsWithJacobian(distances, coordinates);
+        const update = mlMatrix.pseudoInverse(jacobian).mmul(residuals);
+        for (let coordIndex = 0; coordIndex < numCoordinates; coordIndex++) {
+            for (let dimension = 0; dimension < dimensions; dimension++) {
+                const updateIndex = coordIndex * dimensions + dimension;
+                const paramValue = coordinates.get(coordIndex, dimension);
+                const updatedValue = paramValue - lr * update.get(updateIndex, 0);
+                coordinates.set(coordIndex, dimension, updatedValue);
+            }
+        }
+
+        lossPrev = loss;
+    }
+
+    return coordinates;
+}
+
 function getMdsCoordinatesWithGradientDescent(distances,
                                               {
-                                                  lr = 1.,
+                                                  lr = 1,
                                                   maxSteps = 200,
                                                   minLossDifference = 1e-7,
-                                                  momentum = 0.,
+                                                  momentum = 0,
                                                   logEvery = 10
                                               } = {}) {
     /*
@@ -242,13 +287,9 @@ function getMdsCoordinatesWithGradientDescent(distances,
     * like in TensorFlow and PyTorch
     *
     */
-    // TODO: Second order optimization
 
-    // TODO: https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm
-    //  -> implement toy example for practice first
-
-    const numCoords = distances.rows;
-    let coordinates = getInitialMdsCoordinates(numCoords);
+    const numCoordinates = distances.rows;
+    let coordinates = getInitialMdsCoordinates(numCoordinates);
 
     let lossPrev = null;
     let accumulation = null;
@@ -266,7 +307,7 @@ function getMdsCoordinatesWithGradientDescent(distances,
         }
 
         // Apply the gradient for each coordinate.
-        for (let coordIndex = 0; coordIndex < numCoords; coordIndex++) {
+        for (let coordIndex = 0; coordIndex < numCoordinates; coordIndex++) {
             const gradient = getGradientForCoordinate(distances, coordinates, coordIndex);
             if (momentum === 0 || accumulation == null) {
                 accumulation = gradient;
@@ -277,8 +318,8 @@ function getMdsCoordinatesWithGradientDescent(distances,
                 );
             }
             const update = Matrix.mul(accumulation, lr);
-            const updatedCoords = Matrix.sub(coordinates.getRowVector(coordIndex), update);
-            coordinates.setRow(coordIndex, updatedCoords);
+            const updatedCoordinates = Matrix.sub(coordinates.getRowVector(coordIndex), update);
+            coordinates.setRow(coordIndex, updatedCoordinates);
         }
 
         lossPrev = loss;
@@ -294,7 +335,7 @@ function getInitialMdsCoordinates(numCoordinates, dimensions = 2) {
 }
 
 function getMdsLoss(distances, coordinates) {
-    // Average the squared differences of actual distances and computed distances
+    // Average the squared differences of target distances and predicted distances
     let loss = 0;
     for (let coordIndex1 = 0; coordIndex1 < coordinates.rows; coordIndex1++) {
         for (let coordIndex2 = 0; coordIndex2 < coordinates.rows; coordIndex2++) {
@@ -303,11 +344,67 @@ function getMdsLoss(distances, coordinates) {
             const coord1 = coordinates.getRowVector(coordIndex1);
             const coord2 = coordinates.getRowVector(coordIndex2);
             const target = distances.get(coordIndex1, coordIndex2);
-            const actual = Matrix.sub(coord1, coord2).norm();
-            loss += Math.pow(target - actual, 2) / Math.pow(coordinates.rows, 2);
+            const predicted = Matrix.sub(coord1, coord2).norm();
+            loss += Math.pow(target - predicted, 2) / Math.pow(coordinates.rows, 2);
         }
     }
     return loss;
+}
+
+function getResidualsWithJacobian(distances, coordinates) {
+    // The residuals are returned in a flattened vector as (target - predicted) / numCoordinates.
+    // The flattened vector is ordered based on iterating the matrix given by distances
+    // in row-major order.
+    // We divide by coordinates.rows, so that the sum of squared residuals equals the MDS loss,
+    // which involves a division by coordinates.rows ** 2.
+    const residuals = [];
+
+    // The element of the Jacobian at row i and column j should contain the partial derivative
+    // of the i-th residual w.r.t. the j-th coordinate. The coordinates are indexed in
+    // row-major order, such that in two dimensions, the 5th zero-based index corresponds to the
+    // second coordinate of the third point.
+    const numCoordinates = coordinates.rows;
+    const dimensions = coordinates.columns;
+    const jacobian = Matrix.zeros(numCoordinates * numCoordinates, numCoordinates * dimensions);
+
+    for (let coordIndex1 = 0; coordIndex1 < numCoordinates; coordIndex1++) {
+        for (let coordIndex2 = 0; coordIndex2 < numCoordinates; coordIndex2++) {
+            if (coordIndex1 === coordIndex2) {
+                residuals.push(0);
+                // The gradient for all coordinates is zero, so we can skip this row of the
+                // jacobian.
+                continue;
+            }
+
+            const coord1 = coordinates.getRowVector(coordIndex1);
+            const coord2 = coordinates.getRowVector(coordIndex2);
+            const squaredDifferenceSum = Matrix.sub(coord1, coord2).pow(2).sum();
+            const predicted = Math.sqrt(squaredDifferenceSum);
+            const target = distances.get(coordIndex1, coordIndex2);
+            const residual = (target - predicted) / numCoordinates;
+            residuals.push(residual);
+
+            // Compute the gradient w.r.t. the first coordinate only. The second coordinate is
+            // seen as a constant.
+            const residualWrtPredicted = -1 / numCoordinates;
+            const predictedWrtSquaredDifferenceSum = 0.5 / Math.sqrt(squaredDifferenceSum);
+            const squaredDifferenceSumWrtCoord1 = Matrix.mul(Matrix.sub(coord1, coord2), 2);
+            const residualWrtCoord1 = Matrix.mul(
+                squaredDifferenceSumWrtCoord1,
+                residualWrtPredicted * predictedWrtSquaredDifferenceSum
+            );
+
+            // Set the corresponding indices in the jacobian
+            const rowIndex = numCoordinates * coordIndex1 + coordIndex2;
+            for (let dimension = 0; dimension < dimensions; dimension++) {
+                const columIndex = dimensions * coordIndex1 + dimension;
+                const jacobianEntry = jacobian.get(rowIndex, columIndex);
+                const entryUpdated = jacobianEntry + residualWrtCoord1.get(0, dimension);
+                jacobian.set(rowIndex, columIndex, entryUpdated);
+            }
+        }
+    }
+    return {residuals: Matrix.columnVector(residuals), jacobian: jacobian};
 }
 
 function getGradientForCoordinate(distances, coordinates, coordIndex) {
@@ -319,19 +416,19 @@ function getGradientForCoordinate(distances, coordinates, coordIndex) {
 
         const otherCoord = coordinates.getRowVector(otherCoordIndex);
         const squaredDifferenceSum = Matrix.sub(coord, otherCoord).pow(2).sum();
-        const actual = Math.sqrt(squaredDifferenceSum);
+        const predicted = Math.sqrt(squaredDifferenceSum);
         const targets = [
             distances.get(coordIndex, otherCoordIndex),
             distances.get(otherCoordIndex, coordIndex)
         ];
 
         for (const target of targets) {
-            const lossWrtActual = -2 * (target - actual) / Math.pow(coordinates.rows, 2);
-            const actualWrtSquaredDifferenceSum = 0.5 / Math.sqrt(squaredDifferenceSum);
+            const lossWrtPredicted = -2 * (target - predicted) / Math.pow(coordinates.rows, 2);
+            const predictedWrtSquaredDifferenceSum = 0.5 / Math.sqrt(squaredDifferenceSum);
             const squaredDifferenceSumWrtCoord = Matrix.mul(Matrix.sub(coord, otherCoord), 2);
             const lossWrtCoord = Matrix.mul(
                 squaredDifferenceSumWrtCoord,
-                lossWrtActual * actualWrtSquaredDifferenceSum
+                lossWrtPredicted * predictedWrtSquaredDifferenceSum
             );
             gradient = Matrix.add(gradient, lossWrtCoord);
         }
