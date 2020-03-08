@@ -1,26 +1,14 @@
 {
   "name": "theblog.github.io",
   "version": "1.0.0",
-  "description": "A Random Walk Through Computer Science",
+  "description": "",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/theblog/theblog.github.io.git"
-  },
-  "keywords": [
-    "computer",
-    "science",
-    "blog",
-    "jekyll"
-  ],
-  "author": "Kilian Batzner",
+  "keywords": [],
+  "author": "",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/theblog/theblog.github.io/issues"
-  },
-  "homepage": "https://github.com/theblog/theblog.github.io#readme",
   "devDependencies": {
     "gulp": "~3.9.1",
     "gulp-clean": "~0.3.2",
@@ -30,5 +18,6 @@
     "gulp-minify-css": "~1.2.4",
     "gulp-minify-inline": "~1.1.0",
     "gulp-uglify-es": "~2.0.0"
-  }
+  },
+  "dependencies": {}
 }
