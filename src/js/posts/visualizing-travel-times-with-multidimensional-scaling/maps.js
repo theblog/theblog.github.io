@@ -202,7 +202,7 @@ function getMdsCities(cities, durationsMatrix) {
 
     const coordinatesGd = getMdsCoordinatesWithGradientDescent(matrixNormalized);
     const coordinatesMomentum = getMdsCoordinatesWithGradientDescent(matrixNormalized, {
-        lr: 0.1,
+        lr: 0.5,
         momentum: 0.5
     });
 
@@ -227,7 +227,7 @@ function getMdsCities(cities, durationsMatrix) {
 
 function getMdsCoordinatesWithGradientDescent(distances,
                                               {
-                                                  lr = 0.1,
+                                                  lr = 1.,
                                                   maxSteps = 200,
                                                   minLossDifference = 1e-7,
                                                   momentum = 0.,
@@ -244,8 +244,7 @@ function getMdsCoordinatesWithGradientDescent(distances,
     */
     // TODO: Second order optimization
 
-    // TODO: Use TensorFlow to ensure that gradients are correct
-    //  https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm
+    // TODO: https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm
     //  -> implement toy example for practice first
 
     const numCoords = distances.rows;
@@ -327,7 +326,7 @@ function getGradientForCoordinate(distances, coordinates, coordIndex) {
         ];
 
         for (const target of targets) {
-            const lossWrtActual = -2 * (target - actual) / coordinates.rows;
+            const lossWrtActual = -2 * (target - actual) / Math.pow(coordinates.rows, 2);
             const actualWrtSquaredDifferenceSum = 0.5 / Math.sqrt(squaredDifferenceSum);
             const squaredDifferenceSumWrtCoord = Matrix.mul(Matrix.sub(coord, otherCoord), 2);
             const lossWrtCoord = Matrix.mul(
