@@ -1,3 +1,5 @@
+const Matrix = mlMatrix.Matrix;
+
 const INITIAL_CITY_NAMES = ['San Francisco', 'Sacramento', 'Los Angeles', 'Las Vegas'];
 
 const CITY_MAP_ID = 'city-map';
@@ -190,13 +192,13 @@ function getMdsCities(cities, durationsMatrix) {
         });
     }
 
+    durationsMatrix = new Matrix(durationsMatrix);
+
     // Normalize the matrix to [0, 1], as there is no useful conversion between public transport
     // time and geographic coordinates anyways.
-    const maxDistance = getMaxOfArray(durationsMatrix);
-    const minDistance = getMinOfArray(durationsMatrix);
-    const matrixNormalized = numeric.div(
-        numeric.sub(durationsMatrix, minDistance),
-        maxDistance - minDistance);
+    const matrixNormalized = Matrix.div(
+        Matrix.sub(durationsMatrix, durationsMatrix.min()),
+        durationsMatrix.max() - durationsMatrix.min());
 
     const coordinatesGd = getMdsCoordinatesWithGradientDescent(matrixNormalized);
     const coordinatesMomentum = getMdsCoordinatesWithGradientDescent(matrixNormalized, {
@@ -207,7 +209,8 @@ function getMdsCities(cities, durationsMatrix) {
     console.log('Final GD loss: ' + getMdsLoss(matrixNormalized, coordinatesGd));
     console.log('Final Momentum loss: ' + getMdsLoss(matrixNormalized, coordinatesMomentum));
 
-    const coordinatesRaw = getMdsCoordinatesClassic(matrixNormalized);
+    const coordinatesRawArray = getMdsCoordinatesClassic(matrixNormalized.to2DArray());
+    const coordinatesRaw = new Matrix(coordinatesRawArray);
     console.log(getMdsLoss(matrixNormalized, coordinatesRaw));
 
     const coordinatesFit = fitCoordinatesToCities(coordinatesRaw, cities);
@@ -226,7 +229,7 @@ function getMdsCoordinatesWithGradientDescent(distances,
                                               {
                                                   lr = 0.1,
                                                   maxSteps = 200,
-                                                  minLossDifference = 1e-6,
+                                                  minLossDifference = 1e-7,
                                                   momentum = 0.,
                                                   logEvery = 10
                                               } = {}) {
@@ -240,9 +243,12 @@ function getMdsCoordinatesWithGradientDescent(distances,
     *
     */
     // TODO: Second order optimization
-    // TODO: Use TensorFlow to ensure that gradients are correct
 
-    const numCoords = distances.length;
+    // TODO: Use TensorFlow to ensure that gradients are correct
+    //  https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm
+    //  -> implement toy example for practice first
+
+    const numCoords = distances.rows;
     let coordinates = getInitialMdsCoordinates(numCoords);
 
     let lossPrev = null;
@@ -266,13 +272,14 @@ function getMdsCoordinatesWithGradientDescent(distances,
             if (momentum === 0 || accumulation == null) {
                 accumulation = gradient;
             } else {
-                accumulation = numeric.add(
-                    numeric.mul(momentum, accumulation),
+                accumulation = Matrix.add(
+                    Matrix.mul(accumulation, momentum),
                     gradient
                 );
             }
-            const update = numeric.mul(lr, accumulation);
-            coordinates[coordIndex] = numeric.sub(coordinates[coordIndex], update);
+            const update = Matrix.mul(accumulation, lr);
+            const updatedCoords = Matrix.sub(coordinates.getRowVector(coordIndex), update);
+            coordinates.setRow(coordIndex, updatedCoords);
         }
 
         lossPrev = loss;
@@ -284,99 +291,82 @@ function getMdsCoordinatesWithGradientDescent(distances,
 function getInitialMdsCoordinates(numCoordinates, dimensions = 2) {
     // Initialize the solution by sampling from a uniform distribution, which only allows distances
     // in [0, 1].
-    const coordinates = [];
-    for (let coordinateIndex = 0; coordinateIndex < numCoordinates; coordinateIndex++) {
-        const coordinate = [];
-        for (let dimensionIndex = 0; dimensionIndex < dimensions; dimensionIndex++) {
-            coordinate.push(Math.random() / Math.sqrt(dimensions));
-        }
-        coordinates.push(coordinate);
-    }
-    return coordinates;
+    return Matrix.div(Matrix.rand(numCoordinates, dimensions), Math.sqrt(dimensions));
 }
 
 function getMdsLoss(distances, coordinates) {
     // Average the squared differences of actual distances and computed distances
     let loss = 0;
-    for (let coordIndex1 = 0; coordIndex1 < coordinates.length; coordIndex1++) {
-        for (let coordIndex2 = 0; coordIndex2 < coordinates.length; coordIndex2++) {
+    for (let coordIndex1 = 0; coordIndex1 < coordinates.rows; coordIndex1++) {
+        for (let coordIndex2 = 0; coordIndex2 < coordinates.rows; coordIndex2++) {
             if (coordIndex1 === coordIndex2) continue;
 
-            const coord1 = coordinates[coordIndex1];
-            const coord2 = coordinates[coordIndex2];
-            const target = distances[coordIndex1][coordIndex2];
-            const actual = numeric.norm2(numeric.sub(coord1, coord2));
-            loss += Math.pow(target - actual, 2) / coordinates.length;
+            const coord1 = coordinates.getRowVector(coordIndex1);
+            const coord2 = coordinates.getRowVector(coordIndex2);
+            const target = distances.get(coordIndex1, coordIndex2);
+            const actual = Matrix.sub(coord1, coord2).norm();
+            loss += Math.pow(target - actual, 2) / Math.pow(coordinates.rows, 2);
         }
     }
     return loss;
 }
 
 function getGradientForCoordinate(distances, coordinates, coordIndex) {
-    const coord = coordinates[coordIndex];
-    let gradient = [0, 0];
+    const coord = coordinates.getRowVector(coordIndex);
+    let gradient = Matrix.zeros(1, coord.columns);
 
-    for (let otherCoordIndex = 0; otherCoordIndex < coordinates.length; otherCoordIndex++) {
+    for (let otherCoordIndex = 0; otherCoordIndex < coordinates.rows; otherCoordIndex++) {
         if (coordIndex === otherCoordIndex) continue;
 
-        const otherCoord = coordinates[otherCoordIndex];
-        const squaredDifferenceSum = numeric.sum(numeric.pow(numeric.sub(coord, otherCoord), 2));
+        const otherCoord = coordinates.getRowVector(otherCoordIndex);
+        const squaredDifferenceSum = Matrix.sub(coord, otherCoord).pow(2).sum();
         const actual = Math.sqrt(squaredDifferenceSum);
         const targets = [
-            distances[coordIndex][otherCoordIndex],
-            distances[otherCoordIndex][coordIndex]
+            distances.get(coordIndex, otherCoordIndex),
+            distances.get(otherCoordIndex, coordIndex)
         ];
 
         for (const target of targets) {
-            const lossWrtActual = -2 * (target - actual) / coordinates.length;
+            const lossWrtActual = -2 * (target - actual) / coordinates.rows;
             const actualWrtSquaredDifferenceSum = 0.5 / Math.sqrt(squaredDifferenceSum);
-            const squaredDifferenceSumWrtCoord = numeric.mul(2, numeric.sub(coord, otherCoord));
-            const lossWrtCoord = numeric.mul(
-                lossWrtActual * actualWrtSquaredDifferenceSum,
-                squaredDifferenceSumWrtCoord
+            const squaredDifferenceSumWrtCoord = Matrix.mul(Matrix.sub(coord, otherCoord), 2);
+            const lossWrtCoord = Matrix.mul(
+                squaredDifferenceSumWrtCoord,
+                lossWrtActual * actualWrtSquaredDifferenceSum
             );
-            gradient = numeric.add(gradient, lossWrtCoord);
+            gradient = Matrix.add(gradient, lossWrtCoord);
         }
     }
 
     return gradient;
 }
 
-function fitCoordinatesToCities(coordinates, cities) {
+function fitCoordinatesToCities(coordinatesArray, cities) {
     // Following http://stackoverflow.com/questions/13432805/finding-translation-and-scale-on-two-sets-of-points-to-get-least-square-error-in
-    const cityCoordinates = cities.map(function (city) {
+    const cityCoordinatesArray = cities.map(function (city) {
         return [city.location.lat(), city.location.lng()];
     });
 
+    const coordinates = new Matrix(coordinatesArray);
+    const cityCoordinates = new Matrix(cityCoordinatesArray);
+
     // Center both coordinates
-    const cityCenter = reduceMean(cityCoordinates);
-    const coordinatesCentered = getCenteredCoordinates(coordinates);
-    const cityCoordinatesCentered = getCenteredCoordinates(cityCoordinates);
+    const coordinatesCenter = coordinates.mean('column');
+    const cityCenter = cityCoordinates.mean('column');
+    const coordinatesCenterMatrix = Matrix.rowVector(coordinatesCenter)
+        .repeat({rows: coordinates.rows});
+    const cityCenterMatrix = Matrix.rowVector(cityCenter)
+        .repeat({rows: cityCoordinates.rows});
+    const coordinatesCentered = Matrix.sub(coordinates, coordinatesCenterMatrix);
+    const cityCoordinatesCentered = Matrix.sub(cityCoordinates, cityCenterMatrix);
 
-    let X = numeric.dot(numeric.transpose(coordinatesCentered), coordinatesCentered);
-    // TODO: NEVER USE THE INVERSE!!!!!
-    X = numeric.inv(X);
-    X = numeric.dot(X, numeric.transpose(coordinatesCentered));
-    X = numeric.dot(X, cityCoordinatesCentered);
-
-    const coordinatesCenteredFit = numeric.dot(coordinatesCentered, X);
+    // Rotate and scale the centered coordinates
+    const rot = mlMatrix.pseudoInverse(coordinatesCentered).mmul(cityCoordinatesCentered);
+    const coordinatesCenteredFit = coordinatesCentered.mmul(rot);
 
     // Move the coordinates to the center of the cities
-    return coordinatesCenteredFit.map((coordinate) => {
-        return numeric.add(coordinate, cityCenter);
-    });
-}
-
-function getCenteredCoordinates(coordinates) {
-    let center = reduceMean(coordinates);
-    return coordinates.map((coordinate) => {
-        return numeric.sub(coordinate, center);
-    });
-}
-
-function reduceMean(array) {
-    // Computes the mean over the first axis of array
-    return numeric.div(numeric.add.apply(null, array), array.length);
+    const coordinatesFit = Matrix.add(coordinatesCenteredFit, cityCenterMatrix);
+    return coordinatesFit.to2DArray();
 }
 
 function getDurationsMatrix(cities) {
