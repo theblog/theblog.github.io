@@ -130,7 +130,10 @@ function addCitiesToState(state, ...cities) {
 function onStateUpdated(state) {
     state.cityMarkers = drawCities(state.cities, state.cityMarkers);
 
-    return getDurationsMatrix(state.cities)
+    return getNextMondayAt(state.cities[0].location)
+        .then((departureTime) => {
+            return getDurationsMatrix(state.cities, departureTime);
+        })
         .then((matrix) => {
             fillTable(DURATION_TABLE_ID, state.cities, matrix, UNIT_SECONDS);
             state.mdsMarkers = drawMds(state.cities, state.mdsMarkers, matrix);
@@ -438,7 +441,7 @@ function getGradientForCoordinate(distances, coordinates, coordIndex) {
 }
 
 function fitCoordinatesToCities(coordinatesArray, cities) {
-    // Following http://stackoverflow.com/questions/13432805/finding-translation-and-scale-on-two-sets-of-points-to-get-least-square-error-in
+    // TODO: https://stackoverflow.com/q/13432805/2628369
     const cityCoordinatesArray = cities.map(function (city) {
         return [city.location.lat(), city.location.lng()];
     });
@@ -465,7 +468,7 @@ function fitCoordinatesToCities(coordinatesArray, cities) {
     return coordinatesFit.to2DArray();
 }
 
-function getDurationsMatrix(cities) {
+function getDurationsMatrix(cities, departureTime) {
     const origins = cities.map((city) => {
         return city.name;
     });
@@ -474,26 +477,33 @@ function getDurationsMatrix(cities) {
         DISTANCE_MATRIX_SERVICE.getDistanceMatrix({
             origins: origins,
             destinations: origins,
-            travelMode: google.maps.TravelMode.TRANSIT
+            travelMode: google.maps.TravelMode.TRANSIT,
+            drivingOptions: {
+                departureTime: departureTime,
+            },
+            transitOptions: {
+                departureTime: departureTime,
+            }
         }, (response, status) => {
             if (status !== google.maps.DistanceMatrixStatus.OK) {
                 reject('GoogleMaps could not compute the travel times between all cities.');
                 return;
             }
 
-            // Build the distance matrix
+            // Build the distance matrix. Rows in the response correspond to the cities in origins.
             const matrix = [];
-            for (let i = 0; i < response.rows.length; i++) {
+            for (let rowIndex = 0; rowIndex < response.rows.length; rowIndex++) {
                 const row = [];
-                for (let j = 0; j < response.rows[i].elements.length; j++) {
-                    if (i === j) {
+                const numColumns = response.rows[rowIndex].elements.length;
+                for (let columnIndex = 0; columnIndex < numColumns; columnIndex++) {
+                    if (rowIndex === columnIndex) {
                         row.push(0);
                         continue;
                     }
-                    const element = response.rows[i].elements[j];
+                    const element = response.rows[rowIndex].elements[columnIndex];
                     if (element.status !== google.maps.DistanceMatrixElementStatus.OK) {
-                        reject('GoogleMaps could not find a public transport connection' +
-                            ' between ' + cities[i].name + ' and ' + cities[j].name + '.');
+                        reject(`GoogleMaps could not find a public transport connection from` +
+                            ` ${cities[rowIndex].name} to ${cities[columnIndex].name}.`);
                         return;
                     }
                     row.push(element.duration.value);
@@ -520,34 +530,36 @@ function fillTable(id, cities, matrix, unit) {
     // Create the header
     const headerRow = document.createElement('tr');
 
-    // Add the empty upper left cell to the header
-    headerRow.appendChild(document.createElement('th'));
+    // Add the upper left cell to the header
+    const upperLeftCell = document.createElement('th');
+    upperLeftCell.appendChild(document.createTextNode('From \\ To'));
+    headerRow.appendChild(upperLeftCell);
 
     // Add each city to the header
     for (const city of cities) {
-        const th = document.createElement('th');
-        th.appendChild(document.createTextNode(city.name));
-        headerRow.appendChild(th);
+        const dataColumnHeader = document.createElement('th');
+        dataColumnHeader.appendChild(document.createTextNode(city.name));
+        headerRow.appendChild(dataColumnHeader);
     }
     table.appendChild(headerRow);
 
     // Add the table rows
-    for (let i = 0; i < matrix.length; i++) {
-        const tr = document.createElement('tr');
+    for (let rowIndex = 0; rowIndex < matrix.length; rowIndex++) {
+        const dataRow = document.createElement('tr');
 
         // Add the city name to the left of the row
-        const td = document.createElement('th');
-        td.appendChild(document.createTextNode(cities[i].name));
-        tr.appendChild(td);
+        const dataRowHeader = document.createElement('th');
+        dataRowHeader.appendChild(document.createTextNode(cities[rowIndex].name));
+        dataRow.appendChild(dataRowHeader);
 
         // Add the row values
-        for (let j = 0; j < matrix[i].length; j++) {
-            const cellValue = matrix[i][j];
-            const td = document.createElement('td');
+        for (let columnIndex = 0; columnIndex < matrix[rowIndex].length; columnIndex++) {
+            const cellValue = matrix[rowIndex][columnIndex];
+            const dataCell = document.createElement('td');
 
             // Set the text depending on the position and unit
             let text = '-';
-            if (i !== j) {
+            if (rowIndex !== columnIndex) {
                 if (unit === UNIT_SECONDS) {
                     text = secondsToString(cellValue);
                 } else if (unit === UNIT_KILOMETERS) {
@@ -558,33 +570,52 @@ function fillTable(id, cities, matrix, unit) {
             }
 
             // Append the cell to the row
-            td.style.backgroundColor = getCellColor(matrix[i][j], range);
-            td.appendChild(document.createTextNode(text));
-            tr.appendChild(td);
+            dataCell.style.backgroundColor = getCellColor(matrix[rowIndex][columnIndex], range);
+            dataCell.appendChild(document.createTextNode(text));
+            dataRow.appendChild(dataCell);
         }
-        table.appendChild(tr);
+        table.appendChild(dataRow);
     }
 }
 
-// noinspection JSUnusedGlobalSymbols
-function getNextMonday() {
-    // Following https://stackoverflow.com/a/33078673/2628369
+function getNextMondayAt(latLng) {
+    // Get monday 12 pm in the time zone of the given location, but converted to UTC.
     const dayOfWeek = 1;
     const now = new Date();
-    const resultDate = new Date();
-    resultDate.setDate(resultDate.getDate() + (dayOfWeek + 7 - now.getDay()) % 7);
-    resultDate.setHours(12);
-    resultDate.setMinutes(0);
-    resultDate.setSeconds(0);
-    resultDate.setMilliseconds(0);
-    return resultDate;
+
+    // Get the UTC offset at the location on Monday 12 pm UTC. It would be better to get it
+    // at 12 pm in the time zone of the given location, but the Google Time Zone API expects a
+    // UTC time stamp and we don't know yet how to convert the time zone of the given location to
+    // UTC. So, if on exactly that Monday, the daylight savings time changes in the given location,
+    // the result might be off by 1 hour.
+    const mondayUTC = new Date();
+    // The -1 and +1 ensure that we go to the next monday, even if now's UTC day is monday.
+    const dayDelta = (dayOfWeek + 7 - now.getUTCDay() - 1) % 7 + 1;
+    mondayUTC.setUTCDate(mondayUTC.getUTCDate() + dayDelta);
+    mondayUTC.setUTCHours(12, 0, 0, 0);
+
+    return $.get('https://maps.googleapis.com/maps/api/timezone/json',
+        {
+            location: `${latLng.lat()},${latLng.lng()}`,
+            timestamp: (mondayUTC.getTime() / 1000).toString(),
+            key: 'AIzaSyDZl5Gnv4_UUuWRvaGcjo_sn-XIKwCSHnA'
+        })
+        .then((result) => {
+            if (result.status !== 'OK') {
+                // noinspection JSUnresolvedVariable
+                throw Error(result.errorMessage);
+            }
+            // noinspection JSUnresolvedVariable
+            const offsetMillis = 1000 * (result.rawOffset + result.dstOffset);
+            return new Date(mondayUTC.getTime() - offsetMillis);
+        });
 }
 
 function getCellColor(value, range) {
     let progress = (value - range.min) / (range.max - range.min);
     // Clip the progress
     progress = Math.max(0, Math.min(1, progress));
-    return 'rgba(255,200,200,' + progress + ')';
+    return 'rgba(255,170,170,' + progress + ')';
 }
 
 function secondsToString(seconds) {
