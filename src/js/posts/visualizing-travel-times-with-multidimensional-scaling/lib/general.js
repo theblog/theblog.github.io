@@ -33,6 +33,10 @@ function getMinOfArray(a) {
 /* From http://www.benfrederickson.com/multidimensional-scaling/ */
 
 function getMdsCoordinatesClassic(distances, dimensions) {
+    return new mlMatrix.Matrix(getMdsCoordinatesClassicRaw(distances.to2DArray(), dimensions));
+}
+
+function getMdsCoordinatesClassicRaw(distances, dimensions) {
     dimensions = dimensions || 2;
 
     // square distances

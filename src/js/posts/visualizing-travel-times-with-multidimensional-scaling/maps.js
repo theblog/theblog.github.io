@@ -1,6 +1,5 @@
-const Matrix = mlMatrix.Matrix;
-
 const INITIAL_CITY_NAMES = ['San Francisco', 'Sacramento', 'Los Angeles', 'Las Vegas'];
+// const INITIAL_CITY_NAMES = ['San Francisco', 'Sacramento', 'Los Angeles'];
 
 const CITY_MAP_ID = 'city-map';
 const COORDINATE_MAP_ID = 'coordinate-map';
@@ -195,12 +194,12 @@ function getMdsCities(cities, durationsMatrix) {
         });
     }
 
-    durationsMatrix = new Matrix(durationsMatrix);
+    durationsMatrix = new mlMatrix.Matrix(durationsMatrix);
 
     // Normalize the matrix to [0, 1], as there is no useful conversion between public transport
     // time and geographic coordinates anyways.
-    const matrixNormalized = Matrix.div(
-        Matrix.sub(durationsMatrix, durationsMatrix.min()),
+    const matrixNormalized = mlMatrix.Matrix.div(
+        mlMatrix.Matrix.sub(durationsMatrix, durationsMatrix.min()),
         durationsMatrix.max() - durationsMatrix.min());
 
     const coordinatesGaussNewton = getMdsCoordinatesWithGaussNewton(matrixNormalized);
@@ -209,22 +208,20 @@ function getMdsCities(cities, durationsMatrix) {
         lr: 0.5,
         momentum: 0.5
     });
+    const coordinatesClassic = getMdsCoordinatesClassic(matrixNormalized);
 
     console.log('Final Gauss-Newton loss: ' + getMdsLoss(matrixNormalized, coordinatesGaussNewton));
     console.log('Final GD loss: ' + getMdsLoss(matrixNormalized, coordinatesGd));
     console.log('Final Momentum loss: ' + getMdsLoss(matrixNormalized, coordinatesMomentum));
-
-    const coordinatesRawArray = getMdsCoordinatesClassic(matrixNormalized.to2DArray());
-    const coordinatesRaw = new Matrix(coordinatesRawArray);
-    console.log(getMdsLoss(matrixNormalized, coordinatesRaw));
+    console.log('Final classic loss:' + getMdsLoss(matrixNormalized, coordinatesClassic));
 
     const coordinatesFit = fitCoordinatesToCities(coordinatesGd, cities);
 
     // Convert the coordinates to google maps LatLng objects
     return cities.map((city, cityIndex) => {
         const location = new google.maps.LatLng(
-            coordinatesFit[cityIndex][0],
-            coordinatesFit[cityIndex][1]
+            coordinatesFit.get(cityIndex, 0),
+            coordinatesFit.get(cityIndex, 1)
         );
         return {name: city.name, location: location};
     });
@@ -315,13 +312,15 @@ function getMdsCoordinatesWithGradientDescent(distances,
             if (momentum === 0 || accumulation == null) {
                 accumulation = gradient;
             } else {
-                accumulation = Matrix.add(
-                    Matrix.mul(accumulation, momentum),
+                accumulation = mlMatrix.Matrix.add(
+                    mlMatrix.Matrix.mul(accumulation, momentum),
                     gradient
                 );
             }
-            const update = Matrix.mul(accumulation, lr);
-            const updatedCoordinates = Matrix.sub(coordinates.getRowVector(coordIndex), update);
+            const update = mlMatrix.Matrix.mul(accumulation, lr);
+            const updatedCoordinates = mlMatrix.Matrix.sub(
+                coordinates.getRowVector(coordIndex),
+                update);
             coordinates.setRow(coordIndex, updatedCoordinates);
         }
 
@@ -334,7 +333,9 @@ function getMdsCoordinatesWithGradientDescent(distances,
 function getInitialMdsCoordinates(numCoordinates, dimensions = 2) {
     // Initialize the solution by sampling from a uniform distribution, which only allows distances
     // in [0, 1].
-    return Matrix.div(Matrix.rand(numCoordinates, dimensions), Math.sqrt(dimensions));
+    return mlMatrix.Matrix.div(
+        mlMatrix.Matrix.rand(numCoordinates, dimensions),
+        Math.sqrt(dimensions));
 }
 
 function getMdsLoss(distances, coordinates) {
@@ -347,7 +348,7 @@ function getMdsLoss(distances, coordinates) {
             const coord1 = coordinates.getRowVector(coordIndex1);
             const coord2 = coordinates.getRowVector(coordIndex2);
             const target = distances.get(coordIndex1, coordIndex2);
-            const predicted = Matrix.sub(coord1, coord2).norm();
+            const predicted = mlMatrix.Matrix.sub(coord1, coord2).norm();
             loss += Math.pow(target - predicted, 2) / Math.pow(coordinates.rows, 2);
         }
     }
@@ -368,7 +369,7 @@ function getResidualsWithJacobian(distances, coordinates) {
     // second coordinate of the third point.
     const numCoordinates = coordinates.rows;
     const dimensions = coordinates.columns;
-    const jacobian = Matrix.zeros(numCoordinates * numCoordinates, numCoordinates * dimensions);
+    const jacobian = mlMatrix.Matrix.zeros(numCoordinates * numCoordinates, numCoordinates * dimensions);
 
     for (let coordIndex1 = 0; coordIndex1 < numCoordinates; coordIndex1++) {
         for (let coordIndex2 = 0; coordIndex2 < numCoordinates; coordIndex2++) {
@@ -381,7 +382,7 @@ function getResidualsWithJacobian(distances, coordinates) {
 
             const coord1 = coordinates.getRowVector(coordIndex1);
             const coord2 = coordinates.getRowVector(coordIndex2);
-            const squaredDifferenceSum = Matrix.sub(coord1, coord2).pow(2).sum();
+            const squaredDifferenceSum = mlMatrix.Matrix.sub(coord1, coord2).pow(2).sum();
             const predicted = Math.sqrt(squaredDifferenceSum);
             const target = distances.get(coordIndex1, coordIndex2);
             const residual = (target - predicted) / numCoordinates;
@@ -391,8 +392,9 @@ function getResidualsWithJacobian(distances, coordinates) {
             // seen as a constant.
             const residualWrtPredicted = -1 / numCoordinates;
             const predictedWrtSquaredDifferenceSum = 0.5 / Math.sqrt(squaredDifferenceSum);
-            const squaredDifferenceSumWrtCoord1 = Matrix.mul(Matrix.sub(coord1, coord2), 2);
-            const residualWrtCoord1 = Matrix.mul(
+            const squaredDifferenceSumWrtCoord1 = mlMatrix.Matrix.mul(
+                mlMatrix.Matrix.sub(coord1, coord2), 2);
+            const residualWrtCoord1 = mlMatrix.Matrix.mul(
                 squaredDifferenceSumWrtCoord1,
                 residualWrtPredicted * predictedWrtSquaredDifferenceSum
             );
@@ -407,18 +409,18 @@ function getResidualsWithJacobian(distances, coordinates) {
             }
         }
     }
-    return {residuals: Matrix.columnVector(residuals), jacobian: jacobian};
+    return {residuals: mlMatrix.Matrix.columnVector(residuals), jacobian: jacobian};
 }
 
 function getGradientForCoordinate(distances, coordinates, coordIndex) {
     const coord = coordinates.getRowVector(coordIndex);
-    let gradient = Matrix.zeros(1, coord.columns);
+    let gradient = mlMatrix.Matrix.zeros(1, coord.columns);
 
     for (let otherCoordIndex = 0; otherCoordIndex < coordinates.rows; otherCoordIndex++) {
         if (coordIndex === otherCoordIndex) continue;
 
         const otherCoord = coordinates.getRowVector(otherCoordIndex);
-        const squaredDifferenceSum = Matrix.sub(coord, otherCoord).pow(2).sum();
+        const squaredDifferenceSum = mlMatrix.Matrix.sub(coord, otherCoord).pow(2).sum();
         const predicted = Math.sqrt(squaredDifferenceSum);
         const targets = [
             distances.get(coordIndex, otherCoordIndex),
@@ -428,44 +430,79 @@ function getGradientForCoordinate(distances, coordinates, coordIndex) {
         for (const target of targets) {
             const lossWrtPredicted = -2 * (target - predicted) / Math.pow(coordinates.rows, 2);
             const predictedWrtSquaredDifferenceSum = 0.5 / Math.sqrt(squaredDifferenceSum);
-            const squaredDifferenceSumWrtCoord = Matrix.mul(Matrix.sub(coord, otherCoord), 2);
-            const lossWrtCoord = Matrix.mul(
+            const squaredDifferenceSumWrtCoord = mlMatrix.Matrix.mul(
+                mlMatrix.Matrix.sub(coord, otherCoord), 2);
+            const lossWrtCoord = mlMatrix.Matrix.mul(
                 squaredDifferenceSumWrtCoord,
                 lossWrtPredicted * predictedWrtSquaredDifferenceSum
             );
-            gradient = Matrix.add(gradient, lossWrtCoord);
+            gradient = mlMatrix.Matrix.add(gradient, lossWrtCoord);
         }
     }
 
     return gradient;
 }
 
-function fitCoordinatesToCities(coordinatesArray, cities) {
+function fitCoordinatesToCities(coordinates, cities) {
     // TODO: https://stackoverflow.com/q/13432805/2628369
+
+    // TODO: We should map the coordinates to 3D to account for the earth being round!!!!
+    //  Otherwise, we will have problems near the poles and at the 180° -> -180° transition
+    //  On the other hand - we cannot just arbitrarily rotate, scale or translate the points in 3D
+
+    /*
+    * Control Flow:
+    * 1. We are given the matrix of travel duration times.
+    * 2. We compute points in 2-D whose Euclidean distances approximate the given matrix.
+    *      - Should we compute points in Euclidean 3-D instead?
+    *          - No, because then the algorithm will have three degrees of freedom per point, but
+    *            on earth you only have two.
+    *      - Should we compute points on earth whose aerial distances approximate the given matrix
+    *       instead?
+    *          - Yes, this would work with gradient descent, but the classic MDS algorithm uses the
+    *            Euclidean distance for points in the solution. So, to get comparable results,
+    *            we use the Euclidean distance for the other methods as well.
+    * 3. We now need to map the 2-D points in Euclidean space to geographic coordinates.
+    *      - Should we project the target geographic coordinates onto 2-D (using the Mercator
+    *        projection for example) to find the optimal mapping there?
+    *          - No, because that would make matching cities far north / far south more important
+    *            than it actually is. This has to be considered before using projections to convert
+    *            between 2-D points and geographic coordinates.
+    * 4. As with the Mercator projection, we need to be careful with distortions during the mapping
+    *    from 2-D to geographic coordinates. So far, we don't have distortions, even though we're
+    *    in 2-D because the set of points is neither north or south, it is in a virtual Euclidean
+    *    space. The only distortion we have is the one introduced by not computing points on Earth
+    *    during the MDS computation phase.
+    * 5. We define a function that maps from 2-D onto earth coordinates and optimize the aerial
+    *    distances.
+    *      - The question is: how should we parametrize this function. We cannot simply
+    *        scale the 2-D coordinates to earth coordinates, as this would introduce even worse
+    *        distortions
+    *
+    * TODO: Let some geodesic person review these thoughts.
+    */
+
     const cityCoordinatesArray = cities.map(function (city) {
         return [city.location.lat(), city.location.lng()];
     });
+    const cityCoordinates = new mlMatrix.Matrix(cityCoordinatesArray);
 
-    const coordinates = new Matrix(coordinatesArray);
-    const cityCoordinates = new Matrix(cityCoordinatesArray);
+    // coordinates = new mlMatrix.Matrix([[0, 0], [1, 0], [0, 2]]);
+    // const cityCoordinates = new mlMatrix.Matrix([[0, 0], [-1, 0], [0, 2]]);
 
-    // Center both coordinates
-    const coordinatesCenter = coordinates.mean('column');
-    const cityCenter = cityCoordinates.mean('column');
-    const coordinatesCenterMatrix = Matrix.rowVector(coordinatesCenter)
-        .repeat({rows: coordinates.rows});
-    const cityCenterMatrix = Matrix.rowVector(cityCenter)
-        .repeat({rows: cityCoordinates.rows});
-    const coordinatesCentered = Matrix.sub(coordinates, coordinatesCenterMatrix);
-    const cityCoordinatesCentered = Matrix.sub(cityCoordinates, cityCenterMatrix);
+    const coordinatesT = coordinates.transpose();
+    const cityCoordinatesT = cityCoordinates.transpose();
 
-    // Rotate and scale the centered coordinates
-    const rot = mlMatrix.pseudoInverse(coordinatesCentered).mmul(cityCoordinatesCentered);
-    const coordinatesCenteredFit = coordinatesCentered.mmul(rot);
+    const errorBefore = getSimilarityTransformationError(coordinatesT, cityCoordinatesT);
+    console.log(errorBefore);
+    const errorBound = getSimilarityTransformationErrorBound(coordinatesT, cityCoordinatesT);
+    console.log(errorBound);
+    const coordinatesFitT = getSimilarityTransformation(coordinatesT, cityCoordinatesT);
+    console.log(coordinatesFitT);
+    const errorAfter = getSimilarityTransformationError(coordinatesFitT, cityCoordinatesT);
+    console.log(errorAfter);
 
-    // Move the coordinates to the center of the cities
-    const coordinatesFit = Matrix.add(coordinatesCenteredFit, cityCenterMatrix);
-    return coordinatesFit.to2DArray();
+    return coordinatesFitT.transpose();
 }
 
 function getDurationsMatrix(cities, departureTime) {
