@@ -33,7 +33,7 @@ function getSimilarityTransformationError(transformedPoints, toPoints) {
         / numPoints);
 }
 
-function getSimilarityTransformationErrorBound(fromPoints, toPoints) {
+function getSimilarityTransformationErrorBound(fromPoints, toPoints, allowReflection = false) {
     // Computes equation 33 in umeyama_1991
     // Expects two mlMatrix.Matrix instances of the same shape (m, n), where n is the number of
     // points and m is the number of dimensions. This is the shape used by umeyama_1991.
@@ -52,9 +52,7 @@ function getSimilarityTransformationErrorBound(fromPoints, toPoints) {
     const {
         svd,
         mirrorIdentityForErrorBound
-    } = getSimilarityTransformationSvdWithMirrorIdentities(
-        covarianceMatrix
-    );
+    } = getSimilarityTransformationSvdWithMirrorIdentities(covarianceMatrix, allowReflection);
 
     let trace = 0;
     for (let dimension = 0; dimension < dimensions; dimension++) {
@@ -63,25 +61,22 @@ function getSimilarityTransformationErrorBound(fromPoints, toPoints) {
     return toVariance - Math.pow(trace, 2) / fromVariance;
 }
 
-function getSimilarityTransformation(fromPoints, toPoints) {
+function getSimilarityTransformation(fromPoints, toPoints, allowReflection = false) {
     // Computes equation 40, 41 and 42 in umeyama_1991
     // Expects two mlMatrix.Matrix instances of the same shape (m, n), where n is the number of
     // points and m is the number of dimensions. This is the shape used by umeyama_1991.
     // The only restriction on the shape is that n and m are not zero.
-
-    // TODO: Check for rank-deficiency
 
     const dimensions = fromPoints.rows;
     const numPoints = fromPoints.columns;
 
     // 1. Compute the rotation
     const covarianceMatrix = getSimilarityTransformationCovariance(fromPoints, toPoints);
+
     const {
         svd,
         mirrorIdentityForSolution
-    } = getSimilarityTransformationSvdWithMirrorIdentities(
-        covarianceMatrix
-    );
+    } = getSimilarityTransformationSvdWithMirrorIdentities(covarianceMatrix, allowReflection);
     const rotation = svd.U
         .mmul(mlMatrix.Matrix.diag(mirrorIdentityForSolution))
         .mmul(svd.V.transpose());
@@ -139,27 +134,30 @@ function getSimilarityTransformationCovariance(fromPoints, toPoints) {
     return covariance;
 }
 
-function getSimilarityTransformationSvdWithMirrorIdentities(covarianceMatrix) {
+function getSimilarityTransformationSvdWithMirrorIdentities(covarianceMatrix, allowReflection) {
+    const dimensions = covarianceMatrix.rows;
     const svd = new mlMatrix.SVD(covarianceMatrix);
 
-    // Compute equation 39 in umeyama_1991
-    const mirrorIdentityForErrorBound = Array(svd.diagonal.length).fill(1);
-    if (mlMatrix.determinant(covarianceMatrix) < 0) {
-        const lastIndex = mirrorIdentityForErrorBound.length - 1;
-        mirrorIdentityForErrorBound[lastIndex] = -1;
+    let mirrorIdentityForErrorBound = Array(svd.diagonal.length).fill(1);
+    let mirrorIdentityForSolution = Array(svd.diagonal.length).fill(1);
+    if (!allowReflection) {
+        // Compute equation 39 in umeyama_1991
+        if (mlMatrix.determinant(covarianceMatrix) < 0) {
+            const lastIndex = mirrorIdentityForErrorBound.length - 1;
+            mirrorIdentityForErrorBound[lastIndex] = -1;
+        }
+
+        // Check the rank condition mentioned directly after equation 43
+        mirrorIdentityForSolution = mirrorIdentityForErrorBound;
+        if (svd.rank === dimensions - 1) {
+            // Compute equation 43 in umeyama_1991
+            mirrorIdentityForSolution = Array(svd.diagonal.length).fill(1);
+            if (mlMatrix.determinant(svd.U) * mlMatrix.determinant(svd.V) < 0) {
+                const lastIndex = mirrorIdentityForSolution.length - 1;
+                mirrorIdentityForSolution[lastIndex] = -1;
+            }
+        }
     }
-
-    // Compute equation 43 in umeyama_1991
-    // TODO: Check the rank condition mentioned directly after equation 43
-    const mirrorIdentityForSolutionAlternative = Array(svd.diagonal.length).fill(1);
-
-    if (mlMatrix.determinant(svd.U) * mlMatrix.determinant(svd.V) < 0) {
-
-        const lastIndex = mirrorIdentityForSolutionAlternative.length - 1;
-        mirrorIdentityForSolutionAlternative[lastIndex] = -1;
-    }
-
-    const mirrorIdentityForSolution = mirrorIdentityForErrorBound;
 
     return {
         svd: svd,

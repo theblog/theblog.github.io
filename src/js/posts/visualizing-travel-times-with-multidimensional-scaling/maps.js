@@ -1,5 +1,5 @@
 const INITIAL_CITY_NAMES = ['San Francisco', 'Sacramento', 'Los Angeles', 'Las Vegas'];
-// const INITIAL_CITY_NAMES = ['San Francisco', 'Sacramento', 'Los Angeles'];
+// const INITIAL_CITY_NAMES = ['Berlin', 'Munich', 'Stuttgart', 'Illertissen'];
 
 const CITY_MAP_ID = 'city-map';
 const COORDINATE_MAP_ID = 'coordinate-map';
@@ -444,61 +444,19 @@ function getGradientForCoordinate(distances, coordinates, coordIndex) {
 }
 
 function fitCoordinatesToCities(coordinates, cities) {
-    // TODO: https://stackoverflow.com/q/13432805/2628369
-
-    // TODO: We should map the coordinates to 3D to account for the earth being round!!!!
-    //  Otherwise, we will have problems near the poles and at the 180° -> -180° transition
-    //  On the other hand - we cannot just arbitrarily rotate, scale or translate the points in 3D
-
-    /*
-    * Control Flow:
-    * 1. We are given the matrix of travel duration times.
-    * 2. We compute points in 2-D whose Euclidean distances approximate the given matrix.
-    *      - Should we compute points in Euclidean 3-D instead?
-    *          - No, because then the algorithm will have three degrees of freedom per point, but
-    *            on earth you only have two.
-    *      - Should we compute points on earth whose aerial distances approximate the given matrix
-    *       instead?
-    *          - Yes, this would work with gradient descent, but the classic MDS algorithm uses the
-    *            Euclidean distance for points in the solution. So, to get comparable results,
-    *            we use the Euclidean distance for the other methods as well.
-    * 3. We now need to map the 2-D points in Euclidean space to geographic coordinates.
-    *      - Should we project the target geographic coordinates onto 2-D (using the Mercator
-    *        projection for example) to find the optimal mapping there?
-    *          - No, because that would make matching cities far north / far south more important
-    *            than it actually is. This has to be considered before using projections to convert
-    *            between 2-D points and geographic coordinates.
-    * 4. As with the Mercator projection, we need to be careful with distortions during the mapping
-    *    from 2-D to geographic coordinates. So far, we don't have distortions, even though we're
-    *    in 2-D because the set of points is neither north or south, it is in a virtual Euclidean
-    *    space. The only distortion we have is the one introduced by not computing points on Earth
-    *    during the MDS computation phase.
-    * 5. We define a function that maps from 2-D onto earth coordinates and optimize the aerial
-    *    distances.
-    *      - The question is: how should we parametrize this function. We cannot simply
-    *        scale the 2-D coordinates to earth coordinates, as this would introduce even worse
-    *        distortions
-    *
-    * TODO: Let some geodesic person review these thoughts.
-    */
-
     const cityCoordinatesArray = cities.map(function (city) {
         return [city.location.lat(), city.location.lng()];
     });
     const cityCoordinates = new mlMatrix.Matrix(cityCoordinatesArray);
-
-    // coordinates = new mlMatrix.Matrix([[0, 0], [1, 0], [0, 2]]);
-    // const cityCoordinates = new mlMatrix.Matrix([[0, 0], [-1, 0], [0, 2]]);
 
     const coordinatesT = coordinates.transpose();
     const cityCoordinatesT = cityCoordinates.transpose();
 
     const errorBefore = getSimilarityTransformationError(coordinatesT, cityCoordinatesT);
     console.log(errorBefore);
-    const errorBound = getSimilarityTransformationErrorBound(coordinatesT, cityCoordinatesT);
+    const errorBound = getSimilarityTransformationErrorBound(coordinatesT, cityCoordinatesT, true);
     console.log(errorBound);
-    const coordinatesFitT = getSimilarityTransformation(coordinatesT, cityCoordinatesT);
-    console.log(coordinatesFitT);
+    const coordinatesFitT = getSimilarityTransformation(coordinatesT, cityCoordinatesT, true);
     const errorAfter = getSimilarityTransformationError(coordinatesFitT, cityCoordinatesT);
     console.log(errorAfter);
 
