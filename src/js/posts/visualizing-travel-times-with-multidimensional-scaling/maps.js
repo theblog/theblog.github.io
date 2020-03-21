@@ -60,6 +60,11 @@ let DISTANCE_MATRIX_SERVICE;
 
 // MAIN Function
 $(function () {
+    Chart.defaults.global.maintainAspectRatio = false;
+    Chart.defaults.global.elements.line.fill = false;
+    Chart.defaults.global.elements.line.tension = 0;
+    Chart.defaults.global.elements.point.radius = 0;
+
     const state = {
         cities: [],
         cityMarkers: [],
@@ -77,7 +82,65 @@ $(function () {
         .catch((reason) => {
             displayError('Error: ' + reason);
         });
+
+    plot();
 });
+
+function plot() {
+    const xs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+    const data1 = [1, 2, 3, 4, 5].map((y, yIndex) => {
+        return {x: xs[yIndex], y: y};
+    });
+    const data2 = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048].map((y, yIndex) => {
+        return {x: xs[yIndex], y: y};
+    });
+
+    const datasets = [{
+        label: 'label1',
+        data: data1,
+        borderColor: PostUtil.CHART_COLORS_DIVERSE[0],
+        backgroundColor: PostUtil.CHART_COLORS_DIVERSE[0]
+    }, {
+        label: 'label2',
+        data: data2,
+        borderColor: PostUtil.CHART_COLORS_DIVERSE[1],
+        backgroundColor: PostUtil.CHART_COLORS_DIVERSE[1]
+    },];
+
+    PostUtil.clearChart('my-chart');
+    // noinspection JSUnusedGlobalSymbols
+    const chartParams = {
+        type: 'line',
+        data: {
+            datasets: datasets
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    type: 'linear',
+                    position: 'bottom',
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'my-x-label'
+                    }
+                }],
+                yAxes: [{
+                    type: 'logarithmic',
+                    ticks: {
+                        min: 0,
+                        max: 1000,
+                        callback: value => value.toFixed(2)
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'my-y-label'
+                    }
+                }]
+            }
+        }
+    };
+    new Chart('my-chart', chartParams);
+}
 
 function displayError(message) {
     if (message == null) {
