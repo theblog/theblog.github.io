@@ -148,10 +148,11 @@ class PostUtil {
 }
 
 PostUtil.CHART_COLORS_DIVERSE = [
-    '#fe819d',
+    '#4bc0c0',
     '#2196F3',
     '#ffce56',
     '#9575CD',
+    '#fe819d',
     '#e0846b',
     '#5f8ca1',
     '#626a61',

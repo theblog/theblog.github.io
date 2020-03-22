@@ -51,6 +51,7 @@ const MAP_OPTIONS = {
 
 const UNIT_SECONDS = 'seconds';
 const UNIT_KILOMETERS = 'km';
+const OPTIMIZER_COMPARISON_CHART_ID = 'optimizer-comparison-chart';
 
 // Pseudo-constant variables that are initialized only once
 let CITY_MAP;
@@ -82,65 +83,7 @@ $(function () {
         .catch((reason) => {
             displayError('Error: ' + reason);
         });
-
-    plot();
 });
-
-function plot() {
-    const xs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-    const data1 = [1, 2, 3, 4, 5].map((y, yIndex) => {
-        return {x: xs[yIndex], y: y};
-    });
-    const data2 = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048].map((y, yIndex) => {
-        return {x: xs[yIndex], y: y};
-    });
-
-    const datasets = [{
-        label: 'label1',
-        data: data1,
-        borderColor: PostUtil.CHART_COLORS_DIVERSE[0],
-        backgroundColor: PostUtil.CHART_COLORS_DIVERSE[0]
-    }, {
-        label: 'label2',
-        data: data2,
-        borderColor: PostUtil.CHART_COLORS_DIVERSE[1],
-        backgroundColor: PostUtil.CHART_COLORS_DIVERSE[1]
-    },];
-
-    PostUtil.clearChart('my-chart');
-    // noinspection JSUnusedGlobalSymbols
-    const chartParams = {
-        type: 'line',
-        data: {
-            datasets: datasets
-        },
-        options: {
-            scales: {
-                xAxes: [{
-                    type: 'linear',
-                    position: 'bottom',
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'my-x-label'
-                    }
-                }],
-                yAxes: [{
-                    type: 'logarithmic',
-                    ticks: {
-                        min: 0,
-                        max: 1000,
-                        callback: value => value.toFixed(2)
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'my-y-label'
-                    }
-                }]
-            }
-        }
-    };
-    new Chart('my-chart', chartParams);
-}
 
 function displayError(message) {
     if (message == null) {
@@ -265,20 +208,44 @@ function getMdsCities(cities, durationsMatrix) {
         mlMatrix.Matrix.sub(durationsMatrix, durationsMatrix.min()),
         durationsMatrix.max() - durationsMatrix.min());
 
-    const coordinatesGaussNewton = getMdsCoordinatesWithGaussNewton(matrixNormalized);
-    const coordinatesGd = getMdsCoordinatesWithGradientDescent(matrixNormalized);
-    const coordinatesMomentum = getMdsCoordinatesWithGradientDescent(matrixNormalized, {
-        lr: 0.5,
-        momentum: 0.5
-    });
+    const {
+        coordinates: coordinatesGaussNewton,
+        lossPerStep: lossPerStepGaussNewton
+    } = getMdsCoordinatesWithGaussNewton(matrixNormalized, {lr: 0.1});
+
+    const {
+        coordinates: coordinatesGradientDescent,
+        lossPerStep: lossPerStepGradientDescent
+    } = getMdsCoordinatesWithGradientDescent(matrixNormalized, {lr: 1, momentum: 0});
+
+    const {
+        coordinates: coordinatesMomentum,
+        lossPerStep: lossPerStepMomentum
+    } = getMdsCoordinatesWithGradientDescent(matrixNormalized, {lr: 0.5, momentum: 0.5});
+
     const coordinatesClassic = getMdsCoordinatesClassic(matrixNormalized);
+    const lossClassic = getMdsLoss(matrixNormalized, coordinatesClassic);
 
     console.log('Final Gauss-Newton loss: ' + getMdsLoss(matrixNormalized, coordinatesGaussNewton));
-    console.log('Final GD loss: ' + getMdsLoss(matrixNormalized, coordinatesGd));
+    console.log('Final GD loss: ' + getMdsLoss(matrixNormalized, coordinatesGradientDescent));
     console.log('Final Momentum loss: ' + getMdsLoss(matrixNormalized, coordinatesMomentum));
-    console.log('Final classic loss:' + getMdsLoss(matrixNormalized, coordinatesClassic));
+    console.log('Final classic loss:' + lossClassic);
 
-    const coordinatesFit = fitCoordinatesToCities(coordinatesGd, cities);
+    plotLossesPerStep([{
+        lossPerStep: lossPerStepGaussNewton,
+        label: 'Gauss-Newton',
+        color: PostUtil.CHART_COLORS_DIVERSE[0]
+    }, {
+        lossPerStep: lossPerStepGradientDescent,
+        label: 'Gradient Descent',
+        color: PostUtil.CHART_COLORS_DIVERSE[1]
+    }, {
+        lossPerStep: lossPerStepMomentum,
+        label: 'Momentum',
+        color: PostUtil.CHART_COLORS_DIVERSE[2]
+    }], lossClassic);
+
+    const coordinatesFit = fitCoordinatesToCities(coordinatesGradientDescent, cities);
 
     // Convert the coordinates to google maps LatLng objects
     return cities.map((city, cityIndex) => {
@@ -290,25 +257,117 @@ function getMdsCities(cities, durationsMatrix) {
     });
 }
 
+function plotLossesPerStep(lossesPerStep, lossClassic) {
+    let lossMax = null;
+    let lossMin = null;
+
+    const datasets = lossesPerStep.map(({lossPerStep, label, color}) => {
+        const data = lossPerStep.map((loss, lossIndex) => {
+            lossMax = lossMax == null ? loss : Math.max(lossMax, loss);
+            lossMin = lossMin == null ? loss : Math.min(lossMin, loss);
+            return {x: lossIndex, y: loss};
+        });
+        return {
+            label: label,
+            data: data,
+            borderColor: color,
+            backgroundColor: color
+        }
+    });
+
+    // Find the closest 1eX bounds containing [lossMin, lossMax].
+    const yMinExponent = Math.floor(Math.log10(lossMin));
+    const yMaxExponent = Math.ceil(Math.log10(lossMax));
+    const yMin = Math.pow(10, yMinExponent);
+    const yMax = Math.pow(10, yMaxExponent);
+
+    PostUtil.clearChart(OPTIMIZER_COMPARISON_CHART_ID);
+    // noinspection JSUnusedGlobalSymbols
+    const chartParams = {
+        type: 'line',
+        data: {
+            datasets: datasets
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    type: 'linear',
+                    position: 'bottom',
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Step'
+                    }
+                }],
+                yAxes: [{
+                    type: 'logarithmic',
+                    ticks: {
+                        min: yMin,
+                        max: yMax,
+                        autoSkip: true,
+                        callback: (value) => {
+                            return value.toExponential(0);
+                        }
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Loss after step'
+                    },
+                    afterBuildTicks: function (axis, ticks) {
+                        // Filter the ticks / add completely new ticks
+                        ticks = [];
+                        for (let tickExp = yMinExponent; tickExp <= yMaxExponent; tickExp++) {
+                            ticks.push(Math.pow(10, tickExp));
+                        }
+                        return ticks;
+                    }
+                }]
+            },
+            annotation: {
+                annotations: [{
+                    type: 'line',
+                    mode: 'horizontal',
+                    scaleID: 'y-axis-0',
+                    value: lossClassic,
+                    borderColor: '#666666',
+                    borderWidth: 2,
+                    borderDash: [5, 3],
+                    label: {
+                        enabled: true,
+                        position: 'right',
+                        content: `Classic MDS (${lossClassic.toExponential(1)})`,
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        fontColor: '#333333',
+                        fontStyle: 'normal',
+                        yAdjust: -10
+                    }
+                }]
+            }
+        }
+    };
+    new Chart(OPTIMIZER_COMPARISON_CHART_ID, chartParams);
+}
+
 function getMdsCoordinatesWithGaussNewton(distances,
                                           {
                                               lr = 0.1,
                                               maxSteps = 200,
                                               minLossDifference = 1e-7,
-                                              logEvery = 10
+                                              logEvery = 0
                                           } = {}) {
     const numCoordinates = distances.rows;
     let coordinates = getInitialMdsCoordinates(numCoordinates);
     const dimensions = coordinates.columns;
 
-    let lossPrev = null;
+    const lossPerStep = [];
 
     for (let step = 0; step < maxSteps; step++) {
         const loss = getMdsLoss(distances, coordinates);
+        lossPerStep.push(loss);
 
         // Check if we should early stop.
+        const lossPrev = lossPerStep.length > 1 ? lossPerStep[lossPerStep.length - 2] : null;
         if (lossPrev != null && Math.abs(lossPrev - loss) < minLossDifference) {
-            return coordinates;
+            return {coordinates: coordinates, lossPerStep: lossPerStep};
         }
 
         if (logEvery > 0 && step % logEvery === 0) {
@@ -326,11 +385,9 @@ function getMdsCoordinatesWithGaussNewton(distances,
                 coordinates.set(coordIndex, dimension, updatedValue);
             }
         }
-
-        lossPrev = loss;
     }
 
-    return coordinates;
+    return {coordinates: coordinates, lossPerStep: lossPerStep};
 }
 
 function getMdsCoordinatesWithGradientDescent(distances,
@@ -339,7 +396,7 @@ function getMdsCoordinatesWithGradientDescent(distances,
                                                   maxSteps = 200,
                                                   minLossDifference = 1e-7,
                                                   momentum = 0,
-                                                  logEvery = 10
+                                                  logEvery = 0
                                               } = {}) {
     /*
     * If momentum is != 0, the update is:
@@ -354,15 +411,17 @@ function getMdsCoordinatesWithGradientDescent(distances,
     const numCoordinates = distances.rows;
     let coordinates = getInitialMdsCoordinates(numCoordinates);
 
-    let lossPrev = null;
+    const lossPerStep = [];
     let accumulation = null;
 
     for (let step = 0; step < maxSteps; step++) {
         const loss = getMdsLoss(distances, coordinates);
+        lossPerStep.push(loss);
 
         // Check if we should early stop.
+        const lossPrev = lossPerStep.length > 1 ? lossPerStep[lossPerStep.length - 2] : null;
         if (lossPrev != null && Math.abs(lossPrev - loss) < minLossDifference) {
-            return coordinates;
+            return {coordinates: coordinates, lossPerStep: lossPerStep};
         }
 
         if (logEvery > 0 && step % logEvery === 0) {
@@ -386,18 +445,16 @@ function getMdsCoordinatesWithGradientDescent(distances,
                 update);
             coordinates.setRow(coordIndex, updatedCoordinates);
         }
-
-        lossPrev = loss;
     }
 
-    return coordinates;
+    return {coordinates: coordinates, lossPerStep: lossPerStep};
 }
 
-function getInitialMdsCoordinates(numCoordinates, dimensions = 2) {
+function getInitialMdsCoordinates(numCoordinates, dimensions = 2, seed = 0) {
     // Initialize the solution by sampling from a uniform distribution, which only allows distances
     // in [0, 1].
     return mlMatrix.Matrix.div(
-        mlMatrix.Matrix.rand(numCoordinates, dimensions),
+        mlMatrix.Matrix.rand(numCoordinates, dimensions, {random: new Math.seedrandom(seed)}),
         Math.sqrt(dimensions));
 }
 
@@ -432,7 +489,9 @@ function getResidualsWithJacobian(distances, coordinates) {
     // second coordinate of the third point.
     const numCoordinates = coordinates.rows;
     const dimensions = coordinates.columns;
-    const jacobian = mlMatrix.Matrix.zeros(numCoordinates * numCoordinates, numCoordinates * dimensions);
+    const jacobian = mlMatrix.Matrix.zeros(
+        numCoordinates * numCoordinates,
+        numCoordinates * dimensions);
 
     for (let coordIndex1 = 0; coordIndex1 < numCoordinates; coordIndex1++) {
         for (let coordIndex2 = 0; coordIndex2 < numCoordinates; coordIndex2++) {
@@ -514,14 +573,7 @@ function fitCoordinatesToCities(coordinates, cities) {
 
     const coordinatesT = coordinates.transpose();
     const cityCoordinatesT = cityCoordinates.transpose();
-
-    const errorBefore = getSimilarityTransformationError(coordinatesT, cityCoordinatesT);
-    console.log(errorBefore);
-    const errorBound = getSimilarityTransformationErrorBound(coordinatesT, cityCoordinatesT, true);
-    console.log(errorBound);
     const coordinatesFitT = getSimilarityTransformation(coordinatesT, cityCoordinatesT, true);
-    const errorAfter = getSimilarityTransformationError(coordinatesFitT, cityCoordinatesT);
-    console.log(errorAfter);
 
     return coordinatesFitT.transpose();
 }

@@ -14,7 +14,9 @@ javascripts: |+2
     <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyC3XlurKkJzI_3Th-g5uF4gekxhboPOMtI"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.js"></script>
     <script src="https://unpkg.com/ml-matrix@6.4.1/matrix.umd.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.6.0/dist/tf.min.js"></script> -->
     <script src="/js/posts/visualizing-travel-times-with-multidimensional-scaling/lib/markerwithlabel.js"></script>
     <script src="/js/posts/visualizing-travel-times-with-multidimensional-scaling/lib/general.js"></script>
@@ -161,7 +163,7 @@ If you want to understand, why certain cities are closer and others are not, you
     $$P R = G.$$</p>
 
 <figure>
-    <canvas id="my-chart" class="chart" width="600" height="300"></canvas>
+    <canvas id="optimizer-comparison-chart" class="chart" data-width="600" data-height="300"></canvas>
 </figure>
 
 <h5>How do we find R?</h5>
