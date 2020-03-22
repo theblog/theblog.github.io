@@ -1,3 +1,4 @@
+const TRAVEL_MODE = google.maps.TravelMode.TRANSIT;
 const INITIAL_CITY_NAMES = ['San Francisco', 'Sacramento', 'Los Angeles', 'Las Vegas'];
 // const INITIAL_CITY_NAMES = ['Berlin', 'Munich', 'Stuttgart', 'Illertissen'];
 
@@ -209,11 +210,6 @@ function getMdsCities(cities, durationsMatrix) {
         durationsMatrix.max() - durationsMatrix.min());
 
     const {
-        coordinates: coordinatesGaussNewton,
-        lossPerStep: lossPerStepGaussNewton
-    } = getMdsCoordinatesWithGaussNewton(matrixNormalized, {lr: 0.1});
-
-    const {
         coordinates: coordinatesGradientDescent,
         lossPerStep: lossPerStepGradientDescent
     } = getMdsCoordinatesWithGradientDescent(matrixNormalized, {lr: 1, momentum: 0});
@@ -223,27 +219,29 @@ function getMdsCities(cities, durationsMatrix) {
         lossPerStep: lossPerStepMomentum
     } = getMdsCoordinatesWithGradientDescent(matrixNormalized, {lr: 0.5, momentum: 0.5});
 
-    const coordinatesClassic = getMdsCoordinatesClassic(matrixNormalized);
-    const lossClassic = getMdsLoss(matrixNormalized, coordinatesClassic);
+    const {
+        coordinates: coordinatesGaussNewton,
+        lossPerStep: lossPerStepGaussNewton
+    } = getMdsCoordinatesWithGaussNewton(matrixNormalized, {lr: 0.1});
 
-    console.log('Final Gauss-Newton loss: ' + getMdsLoss(matrixNormalized, coordinatesGaussNewton));
-    console.log('Final GD loss: ' + getMdsLoss(matrixNormalized, coordinatesGradientDescent));
-    console.log('Final Momentum loss: ' + getMdsLoss(matrixNormalized, coordinatesMomentum));
-    console.log('Final classic loss:' + lossClassic);
+    const coordinatesClassical = getMdsCoordinatesClassical(matrixNormalized);
+    const lossClassical = getMdsLoss(matrixNormalized, coordinatesClassical);
 
     plotLossesPerStep([{
-        lossPerStep: lossPerStepGaussNewton,
-        label: 'Gauss-Newton',
-        color: PostUtil.CHART_COLORS_DIVERSE[0]
-    }, {
         lossPerStep: lossPerStepGradientDescent,
         label: 'Gradient Descent',
-        color: PostUtil.CHART_COLORS_DIVERSE[1]
+        color: PostUtil.CHART_COLORS_DIVERSE[0]
     }, {
         lossPerStep: lossPerStepMomentum,
         label: 'Momentum',
+        color: PostUtil.CHART_COLORS_DIVERSE[1]
+    }, {
+        lossPerStep: lossPerStepGaussNewton,
+        label: 'Gauss-Newton',
         color: PostUtil.CHART_COLORS_DIVERSE[2]
-    }], lossClassic);
+    }], lossClassical);
+
+    // TODO: Take the best coordinates
 
     const coordinatesFit = fitCoordinatesToCities(coordinatesGradientDescent, cities);
 
@@ -257,7 +255,7 @@ function getMdsCities(cities, durationsMatrix) {
     });
 }
 
-function plotLossesPerStep(lossesPerStep, lossClassic) {
+function plotLossesPerStep(lossesPerStep, lossClassical) {
     let lossMax = null;
     let lossMin = null;
 
@@ -268,7 +266,7 @@ function plotLossesPerStep(lossesPerStep, lossClassic) {
             return {x: lossIndex, y: loss};
         });
         return {
-            label: label,
+            label: `${label} (${lossPerStep[lossPerStep.length - 1].toExponential(1)})`,
             data: data,
             borderColor: color,
             backgroundColor: color
@@ -327,14 +325,14 @@ function plotLossesPerStep(lossesPerStep, lossClassic) {
                     type: 'line',
                     mode: 'horizontal',
                     scaleID: 'y-axis-0',
-                    value: lossClassic,
+                    value: lossClassical,
                     borderColor: '#666666',
                     borderWidth: 2,
                     borderDash: [5, 3],
                     label: {
                         enabled: true,
                         position: 'right',
-                        content: `Classic MDS (${lossClassic.toExponential(1)})`,
+                        content: `Classical MDS (${lossClassical.toExponential(1)})`,
                         backgroundColor: 'rgba(0,0,0,0)',
                         fontColor: '#333333',
                         fontStyle: 'normal',
@@ -584,10 +582,17 @@ function getDurationsMatrix(cities, departureTime) {
     });
 
     return new Promise((resolve, reject) => {
+        resolve([
+            [0, 1 * 3600 + 5 * 60, 7 * 3600 + 18 * 60, 17 * 3600 + 7 * 60],
+            [2 * 3600 + 12 * 60, 0, 11 * 3600 + 30 * 60, 16 * 3600 + 51 * 60],
+            [7 * 3600 + 40 * 60, 10 * 3600 + 0 * 60, 0, 6 * 3600 + 14 * 60],
+            [14 * 3600 + 45 * 60, 18 * 3600 + 28 * 60, 6 * 3600 + 5 * 60, 0]
+        ]);
+        return;
         DISTANCE_MATRIX_SERVICE.getDistanceMatrix({
             origins: origins,
             destinations: origins,
-            travelMode: google.maps.TravelMode.TRANSIT,
+            travelMode: TRAVEL_MODE,
             drivingOptions: {
                 departureTime: departureTime,
             },
