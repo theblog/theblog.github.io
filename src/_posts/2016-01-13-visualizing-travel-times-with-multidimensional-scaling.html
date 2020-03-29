@@ -21,7 +21,9 @@ javascripts: |+2
     <script src="/js/posts/visualizing-travel-times-with-multidimensional-scaling/lib/markerwithlabel.js"></script>
     <script src="/js/posts/visualizing-travel-times-with-multidimensional-scaling/lib/general.js"></script>
     <script src="/js/posts/visualizing-travel-times-with-multidimensional-scaling/similarity-transformation.js"></script>
+    <script src="/js/posts/visualizing-travel-times-with-multidimensional-scaling/gradient-descent.js"></script>
     <script src="/js/posts/visualizing-travel-times-with-multidimensional-scaling/maps.js"></script>
+    <script src="/js/posts/visualizing-travel-times-with-multidimensional-scaling/code.js"></script>
 ---
 Which map is correct?
 <div class="gmaps clearfix">
@@ -189,11 +191,37 @@ If you want to understand why certain cities are closer and others are not, you 
     <li>Hope that public transport near the poles or across the 180° line of longitude will not increase drastically in the near future. Then, we simply treat the two coordinates of each point as latitude and longitude and accept that the similarity transformation algorithm will focus a bit too much on matching coordinates of cities close to the poles. We also accept to be mocked by every geodesist, although I think most of them already stopped reading when we performed MDS in Euclidean space without thinking about projections.</li>
 </ol>
 
-<p>After a bit of option 2, I chose option 3. The resulting points are depicted in the right or lower map above.</p>
+<p>After a bit of option 2, I chose option 3. The resulting points, based on the MDS solution of vanilla gradient descent, are depicted in the right or lower map.</p>
 
 <h3>Code</h3>
 
+<p>Documented etc. code in repos, for a quick look at the logic / quick copy-paste:</p>
+
+<div id="code-btn-group" class="btn-group" role="group" aria-label="Code snippet choice">
+    <button type="button" value="gradientDescent" onclick="selectCodeSnippet(this.value)" class="btn btn-default">Gradient Descent</button>
+    <button type="button" value="gaussNewton" onclick="selectCodeSnippet(this.value)" class="btn btn-default">Gauss-Newton</button>
+    <button type="button" value="similarityTransform" onclick="selectCodeSnippet(this.value)" class="btn btn-default">Similarity Transform</button>
+</div>
+
+<div id="code-mobile-dropdown" class="btn-group dropdown-full-width">
+    <button type="button" value="gradientDescent" class="btn btn-default dropdown-toggle" onchange="selectCodeSnippet(null)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="choice">Gradient Descent</span> <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li><a href="#\" data-value="gradientDescent">Gradient Descent</a></li>
+        <li><a href="#\" data-value="gaussNewton">Gauss-Newton</a></li>
+        <li><a href="#\" data-value="similarityTransform">Similarity Transform</a></li>
+    </ul>
+</div>
+
+<div id="code">
+    <pre data-value="gradientDescent"><code>{% include visualizing-travel-times-with-multidimensional-scaling/gradient-descent.js %}</code></pre>
+    <pre data-value="gaussNewton" style="display: none;"><code>{% include visualizing-travel-times-with-multidimensional-scaling/gauss-newton.js %}</code></pre>
+    <pre data-value="similarityTransform" style="display: none;"><code>{% include visualizing-travel-times-with-multidimensional-scaling/similarity-transformation.js %}</code></pre>
+</div>
+
 <!-- TODO: Add technical notes like that all methods operate on a normalized matrix or that they all start with the same seeded random uniformly distributed initial guess or that the code is not meant for production but more meant to be easily readable and can be optimized easily and that the GD+Momentum was sanity checked using TensorFlow.js. -->
+<!-- TODO: Upload Gradient Descent code in separate repo -->
 <h3>Notes</h3>
 <ul>
     <li><strong>Transit vs. Driving:</strong> by a small modification of the <a href="https://github.com/theblog/theblog.github.io/blob/dev/src/js/posts/visualizing-travel-times-with-multidimensional-scaling/maps.js">JavaScript code</a>, you can also calculate the driving durations (set <code>TRAVEL_MODE</code> to <code>google.maps.TravelMode.DRIVING</code>). I tried it out and the resulting map differed only slightly from the real map. So, driving durations seem to be quite proportional to distances between cities.</li>

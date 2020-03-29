@@ -215,12 +215,10 @@ function getMdsCities(cities, durationsMatrix) {
     } = getMdsCoordinatesWithGradientDescent(matrixNormalized, {lr: 1, momentum: 0});
 
     const {
-        coordinates: coordinatesMomentum,
         lossPerStep: lossPerStepMomentum
     } = getMdsCoordinatesWithGradientDescent(matrixNormalized, {lr: 0.5, momentum: 0.5});
 
     const {
-        coordinates: coordinatesGaussNewton,
         lossPerStep: lossPerStepGaussNewton
     } = getMdsCoordinatesWithGaussNewton(matrixNormalized, {lr: 0.1});
 
@@ -240,8 +238,6 @@ function getMdsCities(cities, durationsMatrix) {
         label: 'Gauss-Newton',
         color: PostUtil.CHART_COLORS_DIVERSE[2]
     }], lossClassical);
-
-    // TODO: Take the best coordinates
 
     const coordinatesFit = fitCoordinatesToCities(coordinatesGradientDescent, cities);
 
@@ -345,223 +341,6 @@ function plotLossesPerStep(lossesPerStep, lossClassical) {
     new Chart(OPTIMIZER_COMPARISON_CHART_ID, chartParams);
 }
 
-function getMdsCoordinatesWithGaussNewton(distances,
-                                          {
-                                              lr = 0.1,
-                                              maxSteps = 200,
-                                              minLossDifference = 1e-7,
-                                              logEvery = 0
-                                          } = {}) {
-    const numCoordinates = distances.rows;
-    let coordinates = getInitialMdsCoordinates(numCoordinates);
-    const dimensions = coordinates.columns;
-
-    const lossPerStep = [];
-
-    for (let step = 0; step < maxSteps; step++) {
-        const loss = getMdsLoss(distances, coordinates);
-        lossPerStep.push(loss);
-
-        // Check if we should early stop.
-        const lossPrev = lossPerStep.length > 1 ? lossPerStep[lossPerStep.length - 2] : null;
-        if (lossPrev != null && Math.abs(lossPrev - loss) < minLossDifference) {
-            return {coordinates: coordinates, lossPerStep: lossPerStep};
-        }
-
-        if (logEvery > 0 && step % logEvery === 0) {
-            console.log(`Step: ${step}, loss: ${loss}`);
-        }
-
-        // Apply the update
-        const {residuals, jacobian} = getResidualsWithJacobian(distances, coordinates);
-        const update = mlMatrix.pseudoInverse(jacobian).mmul(residuals);
-        for (let coordIndex = 0; coordIndex < numCoordinates; coordIndex++) {
-            for (let dimension = 0; dimension < dimensions; dimension++) {
-                const updateIndex = coordIndex * dimensions + dimension;
-                const paramValue = coordinates.get(coordIndex, dimension);
-                const updatedValue = paramValue - lr * update.get(updateIndex, 0);
-                coordinates.set(coordIndex, dimension, updatedValue);
-            }
-        }
-    }
-
-    return {coordinates: coordinates, lossPerStep: lossPerStep};
-}
-
-function getMdsCoordinatesWithGradientDescent(distances,
-                                              {
-                                                  lr = 1,
-                                                  maxSteps = 200,
-                                                  minLossDifference = 1e-7,
-                                                  momentum = 0,
-                                                  logEvery = 0
-                                              } = {}) {
-    /*
-    * If momentum is != 0, the update is:
-    *
-    * accumulation = momentum * accumulation + gradient
-    * parameters -= learning_rate * accumulation
-    *
-    * like in TensorFlow and PyTorch
-    *
-    */
-
-    const numCoordinates = distances.rows;
-    let coordinates = getInitialMdsCoordinates(numCoordinates);
-
-    const lossPerStep = [];
-    let accumulation = null;
-
-    for (let step = 0; step < maxSteps; step++) {
-        const loss = getMdsLoss(distances, coordinates);
-        lossPerStep.push(loss);
-
-        // Check if we should early stop.
-        const lossPrev = lossPerStep.length > 1 ? lossPerStep[lossPerStep.length - 2] : null;
-        if (lossPrev != null && Math.abs(lossPrev - loss) < minLossDifference) {
-            return {coordinates: coordinates, lossPerStep: lossPerStep};
-        }
-
-        if (logEvery > 0 && step % logEvery === 0) {
-            console.log(`Step: ${step}, loss: ${loss}`);
-        }
-
-        // Apply the gradient for each coordinate.
-        for (let coordIndex = 0; coordIndex < numCoordinates; coordIndex++) {
-            const gradient = getGradientForCoordinate(distances, coordinates, coordIndex);
-            if (momentum === 0 || accumulation == null) {
-                accumulation = gradient;
-            } else {
-                accumulation = mlMatrix.Matrix.add(
-                    mlMatrix.Matrix.mul(accumulation, momentum),
-                    gradient
-                );
-            }
-            const update = mlMatrix.Matrix.mul(accumulation, lr);
-            const updatedCoordinates = mlMatrix.Matrix.sub(
-                coordinates.getRowVector(coordIndex),
-                update);
-            coordinates.setRow(coordIndex, updatedCoordinates);
-        }
-    }
-
-    return {coordinates: coordinates, lossPerStep: lossPerStep};
-}
-
-function getInitialMdsCoordinates(numCoordinates, dimensions = 2, seed = 0) {
-    // Initialize the solution by sampling from a uniform distribution, which only allows distances
-    // in [0, 1].
-    return mlMatrix.Matrix.div(
-        mlMatrix.Matrix.rand(numCoordinates, dimensions, {random: new Math.seedrandom(seed)}),
-        Math.sqrt(dimensions));
-}
-
-function getMdsLoss(distances, coordinates) {
-    // Average the squared differences of target distances and predicted distances
-    let loss = 0;
-    for (let coordIndex1 = 0; coordIndex1 < coordinates.rows; coordIndex1++) {
-        for (let coordIndex2 = 0; coordIndex2 < coordinates.rows; coordIndex2++) {
-            if (coordIndex1 === coordIndex2) continue;
-
-            const coord1 = coordinates.getRowVector(coordIndex1);
-            const coord2 = coordinates.getRowVector(coordIndex2);
-            const target = distances.get(coordIndex1, coordIndex2);
-            const predicted = mlMatrix.Matrix.sub(coord1, coord2).norm();
-            loss += Math.pow(target - predicted, 2) / Math.pow(coordinates.rows, 2);
-        }
-    }
-    return loss;
-}
-
-function getResidualsWithJacobian(distances, coordinates) {
-    // The residuals are returned in a flattened vector as (target - predicted) / numCoordinates.
-    // The flattened vector is ordered based on iterating the matrix given by distances
-    // in row-major order.
-    // We divide by coordinates.rows, so that the sum of squared residuals equals the MDS loss,
-    // which involves a division by coordinates.rows ** 2.
-    const residuals = [];
-
-    // The element of the Jacobian at row i and column j should contain the partial derivative
-    // of the i-th residual w.r.t. the j-th coordinate. The coordinates are indexed in
-    // row-major order, such that in two dimensions, the 5th zero-based index corresponds to the
-    // second coordinate of the third point.
-    const numCoordinates = coordinates.rows;
-    const dimensions = coordinates.columns;
-    const jacobian = mlMatrix.Matrix.zeros(
-        numCoordinates * numCoordinates,
-        numCoordinates * dimensions);
-
-    for (let coordIndex1 = 0; coordIndex1 < numCoordinates; coordIndex1++) {
-        for (let coordIndex2 = 0; coordIndex2 < numCoordinates; coordIndex2++) {
-            if (coordIndex1 === coordIndex2) {
-                residuals.push(0);
-                // The gradient for all coordinates is zero, so we can skip this row of the
-                // jacobian.
-                continue;
-            }
-
-            const coord1 = coordinates.getRowVector(coordIndex1);
-            const coord2 = coordinates.getRowVector(coordIndex2);
-            const squaredDifferenceSum = mlMatrix.Matrix.sub(coord1, coord2).pow(2).sum();
-            const predicted = Math.sqrt(squaredDifferenceSum);
-            const target = distances.get(coordIndex1, coordIndex2);
-            const residual = (target - predicted) / numCoordinates;
-            residuals.push(residual);
-
-            // Compute the gradient w.r.t. the first coordinate only. The second coordinate is
-            // seen as a constant.
-            const residualWrtPredicted = -1 / numCoordinates;
-            const predictedWrtSquaredDifferenceSum = 0.5 / Math.sqrt(squaredDifferenceSum);
-            const squaredDifferenceSumWrtCoord1 = mlMatrix.Matrix.mul(
-                mlMatrix.Matrix.sub(coord1, coord2), 2);
-            const residualWrtCoord1 = mlMatrix.Matrix.mul(
-                squaredDifferenceSumWrtCoord1,
-                residualWrtPredicted * predictedWrtSquaredDifferenceSum
-            );
-
-            // Set the corresponding indices in the jacobian
-            const rowIndex = numCoordinates * coordIndex1 + coordIndex2;
-            for (let dimension = 0; dimension < dimensions; dimension++) {
-                const columIndex = dimensions * coordIndex1 + dimension;
-                const jacobianEntry = jacobian.get(rowIndex, columIndex);
-                const entryUpdated = jacobianEntry + residualWrtCoord1.get(0, dimension);
-                jacobian.set(rowIndex, columIndex, entryUpdated);
-            }
-        }
-    }
-    return {residuals: mlMatrix.Matrix.columnVector(residuals), jacobian: jacobian};
-}
-
-function getGradientForCoordinate(distances, coordinates, coordIndex) {
-    const coord = coordinates.getRowVector(coordIndex);
-    let gradient = mlMatrix.Matrix.zeros(1, coord.columns);
-
-    for (let otherCoordIndex = 0; otherCoordIndex < coordinates.rows; otherCoordIndex++) {
-        if (coordIndex === otherCoordIndex) continue;
-
-        const otherCoord = coordinates.getRowVector(otherCoordIndex);
-        const squaredDifferenceSum = mlMatrix.Matrix.sub(coord, otherCoord).pow(2).sum();
-        const predicted = Math.sqrt(squaredDifferenceSum);
-        const targets = [
-            distances.get(coordIndex, otherCoordIndex),
-            distances.get(otherCoordIndex, coordIndex)
-        ];
-
-        for (const target of targets) {
-            const lossWrtPredicted = -2 * (target - predicted) / Math.pow(coordinates.rows, 2);
-            const predictedWrtSquaredDifferenceSum = 0.5 / Math.sqrt(squaredDifferenceSum);
-            const squaredDifferenceSumWrtCoord = mlMatrix.Matrix.mul(
-                mlMatrix.Matrix.sub(coord, otherCoord), 2);
-            const lossWrtCoord = mlMatrix.Matrix.mul(
-                squaredDifferenceSumWrtCoord,
-                lossWrtPredicted * predictedWrtSquaredDifferenceSum
-            );
-            gradient = mlMatrix.Matrix.add(gradient, lossWrtCoord);
-        }
-    }
-
-    return gradient;
-}
 
 function fitCoordinatesToCities(coordinates, cities) {
     const cityCoordinatesArray = cities.map(function (city) {
@@ -582,13 +361,6 @@ function getDurationsMatrix(cities, departureTime) {
     });
 
     return new Promise((resolve, reject) => {
-        resolve([
-            [0, 1 * 3600 + 5 * 60, 7 * 3600 + 18 * 60, 17 * 3600 + 7 * 60],
-            [2 * 3600 + 12 * 60, 0, 11 * 3600 + 30 * 60, 16 * 3600 + 51 * 60],
-            [7 * 3600 + 40 * 60, 10 * 3600 + 0 * 60, 0, 6 * 3600 + 14 * 60],
-            [14 * 3600 + 45 * 60, 18 * 3600 + 28 * 60, 6 * 3600 + 5 * 60, 0]
-        ]);
-        return;
         DISTANCE_MATRIX_SERVICE.getDistanceMatrix({
             origins: origins,
             destinations: origins,

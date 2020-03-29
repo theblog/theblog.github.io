@@ -53,11 +53,41 @@
     display: none;
 }
 
+#code-btn-group {
+    display: flex;
+}
+
+#code-btn-group .btn {
+    flex: 1;
+}
+
+#code-mobile-dropdown {
+    display: none;
+}
+
+#code-mobile-dropdown .dropdown-menu {
+    width: 100%;
+}
+
+#code pre {
+    height: 400px;
+    max-height: 75vh;
+}
+
 /* Small Devices, Tablets */
 
 @media only screen and (max-width: 940px) {
     .gmap-container, .gmap-container-stub {
         width: 100%;
         margin-right: 0;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    #code-btn-group {
+        display: none;
+    }
+    #code-mobile-dropdown {
+        display: block;
     }
 }
