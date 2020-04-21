@@ -1,7 +1,7 @@
 // MAIN Function
 $(function () {
     // Wrap tables and specific elements to make them responsive.
-    $('table, .scroll-x')
+    $('table, .scroll-x').not('.no-scroll-x')
         .filter((index, element) => {
             return !($(element).parent().hasClass('scroll-x-container'));
         })
