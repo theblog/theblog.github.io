@@ -24,6 +24,13 @@ $(function () {
         target.slideToggle();
     });
 
+    // Make the navigation sticky when the user has scrolled to its bottom.
+    const $navbar = $('#main-navbar');
+    const $window = $(window);
+    $window.on('scroll', () => positionNavbar($navbar, $window));
+    $window.on('resize', () => positionNavbar($navbar, $window));
+    positionNavbar($navbar, $window);
+
     runHighlighting();
 });
 
@@ -44,4 +51,32 @@ function runHighlighting() {
     $('pre code').each(function (i, block) {
         hljs.highlightBlock(block);
     });
+}
+
+function positionNavbar($navbar, $window) {
+    if (isInResponsive()) {
+        $navbar.css({'position': '', 'bottom': ''});
+        return;
+    }
+
+    const navbarHeight = $navbar.outerHeight(true);
+    const windowHeight = $window.height();
+    const navBottom = $navbar.position().top
+        + $navbar.offset().top
+        + navbarHeight;
+
+    // The + 1 is to make sure that we don't switch to fixed when the
+    // navigation is higher than everything else. Then, the navigation's height
+    // is the unrounded value of the window's height.
+    if ($window.scrollTop() + windowHeight > navBottom + 1
+        && $navbar.offset().top >= 0) {
+        $navbar.css({'position': 'fixed', 'bottom': 0});
+    } else {
+        $navbar.css({'position': '', 'bottom': ''});
+    }
+}
+
+function isInResponsive() {
+    const query = 'only screen and (min-width: 768px)';
+    return window.matchMedia(query).matches === false;
 }

@@ -54,15 +54,15 @@
 }
 
 #code-btn-group {
-    display: flex;
+    display: none;
+}
+
+#code-mobile-dropdown {
+    display: block;
 }
 
 #code-btn-group .btn {
     flex: 1;
-}
-
-#code-mobile-dropdown {
-    display: none;
 }
 
 #code-mobile-dropdown .dropdown-menu {
@@ -74,21 +74,23 @@
     max-height: 75vh;
 }
 
-/* Small Devices, Tablets */
+/* Desktops */
+
+@media only screen and (min-width: 768px) {
+    #code-btn-group {
+        display: flex;
+    }
+
+    #code-mobile-dropdown {
+        display: none;
+    }
+}
+
+/* Google Maps on small screens */
 
 @media only screen and (max-width: 940px) {
     .gmap-container, .gmap-container-stub {
         width: 100%;
         margin-right: 0;
-    }
-}
-
-@media only screen and (max-width: 767px) {
-    #code-btn-group {
-        display: none;
-    }
-
-    #code-mobile-dropdown {
-        display: block;
     }
 }

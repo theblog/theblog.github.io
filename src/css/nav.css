@@ -9,7 +9,8 @@
 
 #main-navbar-sticky-background {
     position: fixed;
-    height: 100%;
+    top: 0;
+    height: 100vh;
     width: 220px;
     display: none;
     z-index: -1;
@@ -120,10 +121,12 @@
     #main-navbar {
         width: 220px;
         position: absolute;
+        min-height: 100vh;
         margin-bottom: 0;
         -webkit-box-shadow: none;
         -moz-box-shadow: none;
         box-shadow: none;
+        background: none;
     }
 
     #main-navbar-sticky-background {
