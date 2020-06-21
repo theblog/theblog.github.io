@@ -8,7 +8,7 @@ $(function () {
     CODE_MOBILE_DROPDOWN = $('#code-mobile-dropdown');
     CODE_BUTTON_GROUP = $('#code-btn-group');
     CODE_SNIPPETS = $('#code pre');
-    selectCodeSnippet('gradientDescent');
+    selectCodeSnippet('similarityTransform');
 });
 
 

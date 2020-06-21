@@ -1,6 +1,5 @@
 const TRAVEL_MODE = google.maps.TravelMode.TRANSIT;
 const INITIAL_CITY_NAMES = ['San Francisco', 'Sacramento', 'Los Angeles', 'Las Vegas'];
-// const INITIAL_CITY_NAMES = ['Berlin', 'Munich', 'Stuttgart', 'Illertissen'];
 
 const CITY_MAP_ID = 'city-map';
 const COORDINATE_MAP_ID = 'coordinate-map';

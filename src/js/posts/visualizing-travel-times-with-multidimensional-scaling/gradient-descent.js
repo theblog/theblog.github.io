@@ -11,7 +11,6 @@
  *   Version used: 6.4.1
  * - seedrandom, see https://github.com/davidbau/seedrandom.
  *   Version used: 3.0.5
- *
  */
 
 /**

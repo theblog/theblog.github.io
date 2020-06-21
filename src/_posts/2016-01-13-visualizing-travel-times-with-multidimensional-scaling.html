@@ -146,7 +146,7 @@ If you want to understand why certain cities are closer and others are not, you 
 <h5>Multidimensional Scaling</h5>
 <p>We start with the matrix of travel times. Given a matrix of distances or dissimilarities between points, it is possible to calculate coordinates for each point that depict the similarities between the points when drawn onto a coordinate system. This is what <a href="https://en.wikipedia.org/wiki/Multidimensional_scaling" target="_blank">Multidimensional Scaling</a> (MDS) does. However, the distance between two points in the coordinate system may not always be equal to the value given by the matrix. Imagine a matrix with small entries for A-B and B-C but a very large entry for A-C. How can you draw A, B and C into a coordinate system without breaking the constraints given by the matrix?</p>
 
-<p>Considering that a perfect solution might not exist, we therefore try to find points that approximate the given travel times best. This is similar to comparing the distances table with the travel durations table above, except now we may alter the cities' geographic coordinates to make both tables look as similar as possible. Specifically, we define "similar" via the squared difference between the distance between two points and the travel duration between the corresponding cities. Given a matrix \(A\), where \(a_{i,j}\) denotes the seconds needed to travel from city \(i\) to city \(j\), and the tuple \(P\) containing \(N\) two-dimensional points, the overall error \(e(P)\) is defined as
+<p>Considering that a perfect solution might not exist, we therefore try to find points that approximate the given travel times best. This is similar to comparing the distances table with the travel durations table above, except now we may alter the cities' geographic coordinates to make both tables look as similar as possible. Specifically, we define "similar" via the squared difference between the distance between two points and the travel duration between the corresponding cities. Given a matrix \(A\), where \(a_{i,j}\) denotes the seconds needed to travel from city \(i\) to city \(j\), and the tuple \(P\) containing \(N\) two-dimensional points \(\{p_1, ..., p_N\}\), the overall error \(e(P)\) is defined as
 
     $$e(P) = \frac{1}{N^2}\sum _{i=1}^{N}{~} \sum _{j=1}^{N}{~}(a_{i,j}~-~dist(p_i,~p_j))^2$$
 
@@ -156,24 +156,24 @@ If you want to understand why certain cities are closer and others are not, you 
 <h5>Classical Multidimensional Scaling</h5>
 
 <div class="alert alert-info" role="alert">
-    <p><strong>Update</strong> (22 Mar 2020) : Initially, I used <a href="http://www.benfrederickson.com/multidimensional-scaling/">Ben Frederickson's implementation</a> of the classical MDS algorithm. I later discovered the following note in a <a href="http://www.stat.nthu.edu.tw/~swcheng/Teaching/stat5191/lecture/06_MDS.pdf">derivation of this algorithm</a>:</p>
+    <p><strong>Update</strong> (21 June 2020) : Initially, I used <a href="http://www.benfrederickson.com/multidimensional-scaling/">Ben Frederickson's implementation</a> of the classical MDS algorithm. I later discovered the following note in a <a href="http://www.stat.nthu.edu.tw/~swcheng/Teaching/stat5191/lecture/06_MDS.pdf">derivation of this algorithm</a>:</p>
 
     <p><i>"When the observed proximity matrix is not Euclidean, the matrix B is not positive-definite. In such case, some of the eigenvalues of B will be negative; correspondingly, some coordinate values will be complex numbers. If B has only a small number of small negative eigenvalues, it's still possible to use the eigenvectors associated with the q largest positive eigenvalues"</i></p>
 
-    <p>(for details, please refer to <a href="http://www.stat.nthu.edu.tw/~swcheng/Teaching/stat5191/lecture/06_MDS.pdf">these slides</a>). While the algorithm produces reasonable approximations for every set of cities that I have entered so far, I wondered whether the condition mentioned above was still met. After all, public transport can be pretty non-linear. Out of interest, I therefore implemented gradient descent for solving a Multidimensional Scaling problem and compared its solution to the one produced by the classical MDS algorithm.</p>
+    <p>(for details, please refer to <a href="http://www.stat.nthu.edu.tw/~swcheng/Teaching/stat5191/lecture/06_MDS.pdf">these slides</a>). While the algorithm produces reasonable approximations for every set of cities that I have entered so far, I wondered whether the condition mentioned above was true in every case. After all, public transport can be pretty non-linear. Out of interest, I therefore implemented gradient descent for solving a Multidimensional Scaling problem and compared its solution to the one produced by the classical MDS algorithm.</p>
 </div>
 
 <p>The classical MDS algorithm assumes that the given distance matrix contains Euclidean distances. Using the Singular Value Decomposition of the centered squared distance matrix, it computes a tuple of points with optimal coordinates, minimizing the sum of squared errors above (the details of this can be found <a href="http://www.stat.nthu.edu.tw/~swcheng/Teaching/stat5191/lecture/06_MDS.pdf">here</a>). However, since trains do not always go the same speed and not every city is directly connected to all others, the algorithm's assumption does not apply in our case. While it still produces reasonable approximations, the results turn out to be suboptimal.</p>
 
 <h5>Iterative Optimization</h5>
 
-<p>Therefore, I tried out using <a href="https://en.wikipedia.org/wiki/Gradient_descent">gradient descent</a> to see if it finds better solutions. As the error function is fairly simple, implementing its gradient was straightforward. I also tried out <a href="https://www.tensorflow.org/js">TensorFlow.js</a> for differentiating the error function automatically, but found it to be orders of magnitude slower than computing the gradient directly (with 800 kilobytes, the library is also quite heavy). Nevertheless, it was helpful for ensuring that the gradient computation is correct. Out of interest, I also implemented the <a href="https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm">Gauss-Newton algorithm</a> for Multidimensional Scaling to see how fast it finds a solution. You can find the code for all iterative optimization algorithms, each one applicable to general MDS problems, at the bottom of this post. Here is how they compare to the classical MDS algorithm on the set of cities that you entered above:</p>
+<p>Therefore, I tried out using <a href="https://en.wikipedia.org/wiki/Gradient_descent">gradient descent</a> to see if it finds better solutions. There are better ways to perform Multidimensional Scaling (see "Modern Multidimensional Scaling - Theory and Applications" by Borg and Groenen, 2005, for a comprehensive overview), but I was curious about how well gradient descent would perform. As the error function is quite simple, implementing its gradient was straightforward. I also tried out <a href="https://www.tensorflow.org/js">TensorFlow.js</a> for differentiating the error function automatically, but found it to be orders of magnitude slower than computing the gradient directly (with 800 kilobytes, the library is also quite heavy). Nevertheless, it was helpful for ensuring that the gradient computation is correct. Out of interest, I also implemented the <a href="https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm">Gauss-Newton algorithm</a> for Multidimensional Scaling to see how fast it finds a solution. You can find the code for all iterative optimization algorithms, each one applicable to general MDS problems, at the bottom of this post. Here is how they compare to the classical MDS algorithm on the set of cities that you entered above:</p>
 
 <figure>
     <canvas id="optimizer-comparison-chart" class="chart" data-width="600" data-height="300"></canvas>
 </figure>
 
-<p>"Gradient Descent" refers to gradient descent with a learning rate of 1, "Momentum" refers to gradient descent with a learning rate of 0.5 and a <a href="https://en.wikipedia.org/wiki/Gradient_descent#The_momentum_method">momentum of 0.5</a> and "Gauss-Newton" refers to the Gauss-Newton algorithm with a learning rate (\(\alpha\)) of 0.1. The error of each algorithm's final solution is appended in parentheses. I experimented a bit with the learning rates, but generally you should not take the error curves too seriously. The key takeaway is that they all find better solutions than the classical MDS algorithm. Another benefit of the gradient-based approach is that we can easily modify the error function to, for example, use the great-circle distance instead of the Euclidean distance for \(dist(p_i, p_j)\).</p>
+<p>"Gradient Descent" refers to gradient descent with a learning rate of 1, "Momentum" refers to gradient descent with a learning rate of 0.5 and a <a href="https://en.wikipedia.org/wiki/Gradient_descent#The_momentum_method">momentum of 0.5</a> and "Gauss-Newton" refers to the Gauss-Newton algorithm with a learning rate (\(\alpha\)) of 0.1. The error of each algorithm's final solution is appended in parentheses. I experimented a bit with the learning rates, but generally you should not take the error curves too seriously. The key takeaway is that they all usually find better solutions than the classical MDS algorithm. Another benefit of the gradient-based approach is that we can easily modify the error function to, for example, use the great-circle distance instead of the Euclidean distance for \(dist(p_i, p_j)\).</p>
 
 <h5>Back To Earth</h5>
 <p>The points obtained by Multidimensional Scaling lie in some abstract Euclidean space and will not match the geographic locations of the cities. This is due to two facts:</p>
@@ -191,39 +191,44 @@ If you want to understand why certain cities are closer and others are not, you 
     <li>Hope that public transport near the poles or across the 180° line of longitude will not increase drastically in the near future. Then, we simply treat the two coordinates of each point as latitude and longitude and accept that the similarity transformation algorithm will focus a bit too much on matching coordinates of cities close to the poles. We also accept to be mocked by every geodesist, although I think most of them already stopped reading when we performed MDS in Euclidean space without thinking about projections.</li>
 </ol>
 
-<p>After a bit of option 2, I chose option 3. The resulting points, based on the MDS solution of vanilla gradient descent, are depicted in the right or lower map.</p>
+<p>After a bit of option 2, I chose option 3. The resulting points, based on the MDS solution of vanilla gradient descent, are depicted in the right or lower map above.</p>
 
 <h3>Code</h3>
 
-<p>Documented etc. code in repos, for a quick look at the logic / quick copy-paste:</p>
+<p>I uploaded the code for performing Multidimensional Scaling with gradient descent or the Gauss-Newton method to GitHub, as well as the implementation of Shinji Umeyama's similarity transformation algorithm:</p>
+
+<ul>
+    <li><a href="https://github.com/batzner/mds-gradient-descent-js">mds-gradient-descent-js</a></li>
+    <li><a href="https://github.com/batzner/similarity-transformation-js">similarity-transformation-js</a></li>
+</ul>
+
+<p>The code in these repositories is documented a bit more, but you can also take a quick look at the implementation below. As mentioned above, I sanity checked the gradient computation using TensorFlow.js.</p>
 
 <div id="code-btn-group" class="btn-group" role="group" aria-label="Code snippet choice">
+    <button type="button" value="similarityTransform" onclick="selectCodeSnippet(this.value)" class="btn btn-default">Similarity Transform</button>
     <button type="button" value="gradientDescent" onclick="selectCodeSnippet(this.value)" class="btn btn-default">Gradient Descent</button>
     <button type="button" value="gaussNewton" onclick="selectCodeSnippet(this.value)" class="btn btn-default">Gauss-Newton</button>
-    <button type="button" value="similarityTransform" onclick="selectCodeSnippet(this.value)" class="btn btn-default">Similarity Transform</button>
 </div>
 
 <div id="code-mobile-dropdown" class="btn-group dropdown-full-width">
-    <button type="button" value="gradientDescent" class="btn btn-default dropdown-toggle" onchange="selectCodeSnippet(null)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="choice">Gradient Descent</span> <span class="caret"></span>
+    <button type="button" value="similarityTransform" class="btn btn-default dropdown-toggle" onchange="selectCodeSnippet(null)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="choice">Similarity Transform</span> <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
+        <li><a href="#\" data-value="similarityTransform">Similarity Transform</a></li>
         <li><a href="#\" data-value="gradientDescent">Gradient Descent</a></li>
         <li><a href="#\" data-value="gaussNewton">Gauss-Newton</a></li>
-        <li><a href="#\" data-value="similarityTransform">Similarity Transform</a></li>
     </ul>
 </div>
 
 <div id="code">
-    <pre data-value="gradientDescent"><code>{% include visualizing-travel-times-with-multidimensional-scaling/gradient-descent.js %}</code></pre>
+    <pre data-value="similarityTransform"><code>{% include visualizing-travel-times-with-multidimensional-scaling/similarity-transformation.js %}</code></pre>
+    <pre data-value="gradientDescent" style="display: none;"><code>{% include visualizing-travel-times-with-multidimensional-scaling/gradient-descent.js %}</code></pre>
     <pre data-value="gaussNewton" style="display: none;"><code>{% include visualizing-travel-times-with-multidimensional-scaling/gauss-newton.js %}</code></pre>
-    <pre data-value="similarityTransform" style="display: none;"><code>{% include visualizing-travel-times-with-multidimensional-scaling/similarity-transformation.js %}</code></pre>
 </div>
 
-<!-- TODO: Add technical notes like that all methods operate on a normalized matrix or that they all start with the same seeded random uniformly distributed initial guess or that the code is not meant for production but more meant to be easily readable and can be optimized easily and that the GD+Momentum was sanity checked using TensorFlow.js. -->
-<!-- TODO: Upload Gradient Descent code in separate repo -->
 <h3>Notes</h3>
 <ul>
-    <li><strong>Transit vs. Driving:</strong> by a small modification of the <a href="https://github.com/theblog/theblog.github.io/blob/dev/src/js/posts/visualizing-travel-times-with-multidimensional-scaling/maps.js">JavaScript code</a>, you can also calculate the driving durations (set <code>TRAVEL_MODE</code> to <code>google.maps.TravelMode.DRIVING</code>). I tried it out and the resulting map differed only slightly from the real map. So, driving durations seem to be quite proportional to distances between cities.</li>
-    <li><strong>Credits:</strong> to <a href="http://www.benfrederickson.com/multidimensional-scaling/" target="_blank">Ben Frederickson</a> for providing insights and the JavaScript code used for classical Multidimensional Scaling.</li>
+    <li><strong>Transit vs. Driving:</strong> By a small modification of the <a href="https://github.com/theblog/theblog.github.io/blob/dev/src/js/posts/visualizing-travel-times-with-multidimensional-scaling/maps.js">JavaScript code</a>, you can also calculate the driving durations (set <code>TRAVEL_MODE</code> to <code>google.maps.TravelMode.DRIVING</code>). I tried it out and the resulting map differed only slightly from the real map. So, driving durations seem to be quite proportional to distances between cities.</li>
+    <li><strong>Credits</strong> to <a href="http://www.benfrederickson.com/multidimensional-scaling/" target="_blank">Ben Frederickson</a> for providing insights and the JavaScript code used for classical Multidimensional Scaling.</li>
 </ul>

@@ -43,7 +43,7 @@ gulp.task('_jekyll-build', ['_jekyll-clean'], function (gulpCallback) {
     waitForCommand(command, gulpCallback);
 });
 
-// Transpile the javascript files to ES5.
+// Minify JavaScript
 gulp.task('_javascripts', ['_jekyll-build'], function () {
     return gulp.src(sourcePaths.javascripts, {base: buildDir, cwd: buildDir})
         .pipe(uglify())
