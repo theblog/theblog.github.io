@@ -30,7 +30,7 @@ Which map is correct?
     <div class="gmap-container-stub"><img src="/images/posts/visualizing-travel-times-with-multidimensional-scaling/map-correct.jpg" alt="Distances map"/></div>
     <div class="gmap-container-stub"><img src="/images/posts/visualizing-travel-times-with-multidimensional-scaling/map-mds.jpg" alt="Durations map"/></div>
 </div>
-<p>In a geography exam, the correct answer would be the left or upper one. It displays the actual positions of four cities in the US. But that does not make the other map entirely incorrect. It just displays other data. Specifically, it approximates the travel times between the four cities. This means that the closer two cities are on the right map the faster you can travel between them with public transport. We can calculate such maps using Multidimensional Scaling. What is Multidimensional Scaling? How can it help us to approximate travel times? And what is the relationship between the left map with the actual positions and the right map? We are about to find out.</p>
+<p>In a geography exam, the correct answer would be the left or upper one. It displays the actual locations of four cities in the US. But that does not make the other map entirely incorrect. It just displays other data. Specifically, it approximates the travel times between the four cities. This means that the closer two cities are on the right map the faster you can travel between them with public transport. We can calculate such maps using Multidimensional Scaling. What is Multidimensional Scaling? How can it help us to approximate travel times? And what is the relationship between the left map with the geographic locations and the right map? We are about to find out.</p>
 
 <!--more-->
 
@@ -134,7 +134,7 @@ I created a small tool to visualize the results of this post. In the upper left 
 
 <div class="alert alert-danger" id="post-error"></div>
 
-If you want to understand why certain cities are closer and others are not, you can take a look at the distance table and the table of travel durations below. Two cities being closer on the right map than on the left map indicates a good ratio between travel time and distance. If the cities' positions on the right map still seem arbitrary, please take a look at the "Solution" section below.
+If you want to understand why certain cities are close while others are not, you can take a look at the distance table and the table of travel durations below. Two cities being closer on the right map than on the left map indicates a good ratio between travel time and distance. If the cities' positions on the right map still seem arbitrary, please take a look at the "Solution" section below.
 <br/><br/>
 <p>Distances:</p>
 <table id="distance-table" class="distance-table"></table>
@@ -167,7 +167,9 @@ If you want to understand why certain cities are closer and others are not, you 
 
 <h5>Iterative Optimization</h5>
 
-<p>Therefore, I tried out using <a href="https://en.wikipedia.org/wiki/Gradient_descent">gradient descent</a> to see if it finds better solutions. There are better ways to perform Multidimensional Scaling (see "Modern Multidimensional Scaling - Theory and Applications" by Borg and Groenen, 2005, for a comprehensive overview), but I was curious about how well gradient descent would perform. As the error function is quite simple, implementing its gradient was straightforward. I also tried out <a href="https://www.tensorflow.org/js">TensorFlow.js</a> for differentiating the error function automatically, but found it to be orders of magnitude slower than computing the gradient directly (with 800 kilobytes, the library is also quite heavy). Nevertheless, it was helpful for ensuring that the gradient computation is correct. Out of interest, I also implemented the <a href="https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm">Gauss-Newton algorithm</a> for Multidimensional Scaling to see how fast it finds a solution. You can find the code for all iterative optimization algorithms, each one applicable to general MDS problems, at the bottom of this post. Here is how they compare to the classical MDS algorithm on the set of cities that you entered above:</p>
+<p>Therefore, I tried out using <a href="https://en.wikipedia.org/wiki/Gradient_descent">gradient descent</a> to see if it finds better solutions. There are better ways to perform Multidimensional Scaling (see "Modern Multidimensional Scaling - Theory and Applications" by Borg and Groenen for a comprehensive overview), but I was curious about how well gradient descent would perform.</p>
+
+<p>Since the error function is quite simple, implementing its gradient was straightforward. I also tried out <a href="https://www.tensorflow.org/js">TensorFlow.js</a> for differentiating the error function automatically, but found it to be orders of magnitude slower than computing the gradient directly (with 800 kilobytes, the library is also quite heavy). Nevertheless, it was helpful for ensuring that the gradient computation is correct. Out of interest, I also implemented the <a href="https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm">Gauss-Newton algorithm</a> for Multidimensional Scaling to see how fast it finds a solution. You can find the code for both iterative optimization algorithms, each one applicable to general MDS problems, at the bottom of this post. Here is how they compare to the classical MDS algorithm on the set of cities that you entered above:</p>
 
 <figure>
     <canvas id="optimizer-comparison-chart" class="chart" data-width="600" data-height="300"></canvas>
@@ -179,7 +181,7 @@ If you want to understand why certain cities are closer and others are not, you 
 <p>The points obtained by Multidimensional Scaling lie in some abstract Euclidean space and will not match the geographic locations of the cities. This is due to two facts:</p>
 <ul>
     <li>The travel times are given in seconds on public transport, while the distances between cities are measured in meters. As these are two completely different scales, the points' coordinates first have to be scaled to a geometrically meaningful coordinate system.</li>
-    <li>Rotating, reflecting or moving the tuple of points does not change the distances between its points. So, even if we scale the points to match the cities' scale, they may be upside down or at a completely different place on the earth. But since the tuple's inner distances do not change, it is still the optimal solution for approximating the matrix of travel times.</li>
+    <li>Rotating, reflecting or moving the tuple of points does not change the distances between them. So, even if we scale the points to match the cities' scale, they may be upside down or at a completely different place on the earth. But since the tuple's inner distances do not change, it is still the optimal solution for approximating the matrix of travel times.</li>
 </ul>
 <p>In short, we have to <strong>scale, rotate, reflect</strong> and <strong>move</strong> the tuple of points in order to get meaningful results. Luckily, Shinji Umeyama provides an algorithm that does exactly this in <a href="https://www.computer.org/csdl/journal/tp/1991/04/i0376/13rRUxly8Yp">"Least-squares estimation of transformation parameters between two point patterns"</a> (IEEE Transactions on Pattern Analysis & Machine Intelligence, 1991). For two tuples of n-dimensional points, the algorithm computes the rotation, translation and scale parameters to transform the points in one tuple such that the sum of squared Euclidean distances between corresponding points in the two tuples is minimized. I uploaded a JavaScript implementation of Umeyama's algorithm that optionally allows reflections <a href="https://github.com/batzner/similarity-transformation-js">here</a>.</p>
 
@@ -187,7 +189,7 @@ If you want to understand why certain cities are closer and others are not, you 
 
 <ol>
     <li>Perform gradient-based optimization directly on geographic coordinates using great-circle distances.</li>
-    <li>Search for or come up with extensions of Multidimensional Scaling and similarity transformations to geographic coordinates.</li>
+    <li>Search for or think of extensions of Multidimensional Scaling and similarity transformations to geographic coordinates.</li>
     <li>Hope that public transport near the poles or across the 180° line of longitude will not increase drastically in the near future. Then, we simply treat the two coordinates of each point as latitude and longitude and accept that the similarity transformation algorithm will focus a bit too much on matching coordinates of cities close to the poles. We also accept to be mocked by every geodesist, although I think most of them already stopped reading when we performed MDS in Euclidean space without thinking about projections.</li>
 </ol>
 
@@ -195,7 +197,7 @@ If you want to understand why certain cities are closer and others are not, you 
 
 <h3>Code</h3>
 
-<p>I uploaded the code for performing Multidimensional Scaling with gradient descent or the Gauss-Newton method to GitHub, as well as the implementation of Shinji Umeyama's similarity transformation algorithm:</p>
+<p>I uploaded the code for performing Multidimensional Scaling with gradient descent or the Gauss-Newton algorithm to GitHub, as well as the implementation of Shinji Umeyama's similarity transformation algorithm:</p>
 
 <ul>
     <li><a href="https://github.com/batzner/mds-gradient-descent-js">mds-gradient-descent-js</a></li>
@@ -229,6 +231,6 @@ If you want to understand why certain cities are closer and others are not, you 
 
 <h3>Notes</h3>
 <ul>
-    <li><strong>Transit vs. Driving:</strong> By a small modification of the <a href="https://github.com/theblog/theblog.github.io/blob/dev/src/js/posts/visualizing-travel-times-with-multidimensional-scaling/maps.js">JavaScript code</a>, you can also calculate the driving durations (set <code>TRAVEL_MODE</code> to <code>google.maps.TravelMode.DRIVING</code>). I tried it out and the resulting map differed only slightly from the real map. So, driving durations seem to be quite proportional to distances between cities.</li>
+    <li><strong>Transit vs. Driving:</strong> By a small modification of the <a href="https://github.com/theblog/theblog.github.io/blob/dev/src/js/posts/visualizing-travel-times-with-multidimensional-scaling/maps.js">JavaScript code</a>, you can also calculate the driving durations (set <code>TRAVEL_MODE</code> to <code>google.maps.TravelMode.DRIVING</code>). I tried it out and the resulting map differed only slightly from the real map. So, driving durations seem to generally scale proportionally to distances between cities.</li>
     <li><strong>Credits</strong> to <a href="http://www.benfrederickson.com/multidimensional-scaling/" target="_blank">Ben Frederickson</a> for providing insights and the JavaScript code used for classical Multidimensional Scaling.</li>
 </ul>
