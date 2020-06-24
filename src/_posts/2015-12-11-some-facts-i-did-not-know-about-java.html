@@ -35,7 +35,7 @@ static {
   set.add("a");
 }</code></pre>
 
-This is possible. Static initialization blocks are used for initializations that cannot be done in one line. If we remove the static keyword before the block, the code would be called every time that an object of the class is constructed <a href="http://stackoverflow.com/questions/2420389/static-initialization-blocks">(reference)</a>. By making it static we ensure that the block only gets executed upon the first construction.
+This is possible. Static initialization blocks are used for initializations that cannot be done in one line. If we remove the static keyword before the block, the code would be called every time that an object of the class is constructed (<a href="http://stackoverflow.com/questions/2420389/static-initialization-blocks">source</a>). By making it static we ensure that the block only gets executed upon the first construction.
 <h3>4. Interfaces can initialize static constants as well</h3>
 You probably already knew that this is possible in an interface:
 <pre><code>static final int ID = 1234;</code></pre>
@@ -68,7 +68,7 @@ They can, however, be used for notifying a thread from another thread by changi
 <pre><code>int a = 5;
 outerloop:
 while (true) {
-  // "continue outerloop" would jump to here
+  // "continue outerloop" would jump here.
   while (a &gt; 0) {
     a--;
     break outerloop;
@@ -77,14 +77,14 @@ while (true) {
 // the break jumps to this point, where a is 4.</code></pre>
 
 <h3>7. The difference between inner and static nested classes</h3>
-Inner classes are nested classes <strong>without</strong> the static keyword. They belong to an <strong>instance</strong> of the outer class and can therefore access the members of the instance. They cannot define static variables. In contrast, "a static nested class is behaviorally a top-level class that has been nested in another top-level class for packaging convenience" (from <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html" target="_blank">Oracle Docs</a>).
+Inner classes are nested classes <strong>without</strong> the static keyword. They belong to an <strong>instance</strong> of the outer class and can therefore access the members of the instance. They cannot define static variables. In contrast, "a static nested class is behaviorally a top-level class that has been nested in another top-level class for packaging convenience" (from the <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html" target="_blank">Oracle Docs</a>).
 
 <pre><code>public class Outer {
   public void foo() { }
 
   class Inner {
     static int i = 1; // COMPILER ERROR
-    // i needs to be final or an instance variable
+    // i needs to be final or an instance variable.
 
     void bar(){
       foo();
@@ -96,7 +96,7 @@ Inner classes are nested classes <strong>without</strong> the static keyword. Th
 
     void bar(){
       foo(); // COMPILER ERROR
-      // foo needs to be accessed via an instance of Outer
+      // foo needs to be accessed via an instance of Outer.
     }
   }
 }</code></pre>

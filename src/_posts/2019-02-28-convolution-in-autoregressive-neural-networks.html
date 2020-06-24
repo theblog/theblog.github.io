@@ -39,7 +39,7 @@ javascripts: ""
 ...</code></pre>
 
 <p>
-    But since we only predict one time step per feed-forward pass it takes long to iterate through a single training example, let alone through our entire dataset. It would speed up training if we could predict the next time steps for a whole training example in a single feed-forward pass. To do this, we need to apply the same four weights to each chunk of time steps in the input frame. This is exactly what a <code>Conv1D</code> layer with <code>kernel_size=4</code> does:
+    But since we only predict one time step per feed-forward pass, it takes long to iterate through a single training example, let alone through our entire dataset. It would speed up training if we could predict the next time steps for a whole training example in a single feed-forward pass. To do this, we need to apply the same four weights to each chunk of time steps in the input frame. This is exactly what a <code>Conv1D</code> layer with <code>kernel_size=4</code> does:
 </p>
 
 <figure>
@@ -84,7 +84,7 @@ javascripts: ""
 
 <h3>Dilated convolutions</h3>
 
-<p>When a convolutional layer in our conceptual architecture has a stride that is larger than one</p>
+<p>When a convolutional layer in our conceptual architecture has a stride that is larger than one, for example</p>
 
 <figure>
     <img src="/images/posts/convolution-autoregressive-nns/04-stride-concept.svg" width="400px" height="237px"/>
@@ -102,7 +102,7 @@ javascripts: ""
     <img src="/images/posts/convolution-autoregressive-nns/wavenet.png"/>
 </figure>
 
-<p>This figure shows how a stride greater than one affects the dilation rates of all subsequent layers in practice, not just the next one. For example, the dilation rate in the output layer is <code>2 * 2 * 2 = 8</code>, caused by the "conceptual strides" in the previous layers. If we set the conceptual stride in the layer before the output layer to one, the output layer would still need a dilation rate of 4. The rule for computing the dilation rate in a specific layer is to multiply all conceptual strides of the previous layers (more on the equivalence of strides and dilation rates below).
+<p>This figure shows how a stride greater than one affects the dilation rates of all subsequent layers in practice, not just the next one. For example, the dilation rate in the output layer is <code>2 * 2 * 2 = 8</code>, caused by the "conceptual strides" in the previous layers. If we set the conceptual stride in the layer before the output layer to 1, the output layer would still need a dilation rate of 4. The rule for computing the dilation rate in a specific layer is to multiply all conceptual strides of the previous layers (more on the equivalence of strides and dilation rates below).
 </p>
 
 <h3>Pooling</h3>
@@ -183,7 +183,7 @@ class DilatedPooling1D(tf.keras.layers.Layer):
     Dense(units=10, activation='softmax'),
 ])</code></pre>
 
-<p>Regardless of autoregressive or not, this is equivalent to</p>
+<p>Regardless of whether the network is autoregressive or not, this is equivalent to</p>
 
 <pre><code>model = Sequential([
     ..., # Output of this part has the shape (batch_size, 10, 32)
@@ -208,7 +208,7 @@ class DilatedPooling1D(tf.keras.layers.Layer):
     <img src="/images/posts/convolution-autoregressive-nns/09-residual-concept.svg" width="409px" height="237px"/>
 </figure>
 
-<p>An alternative to adding the skip connection to a layer's output, for example adding the blue input values to the output of the first hidden layer, is to simply concatenate the feature maps of both tensors. <a href="https://arxiv.org/abs/1608.06993">DenseNet</a> uses this approach to give layers close to the output direct access to layers close to the input. An advantage of this method is that it does not require the number of feature maps in each tensor to match. They need to match when using residual connections, because we add both together, which might require using <a href="https://stats.stackexchange.com/questions/194142/what-does-1x1-convolution-mean-in-a-neural-network">1x1 convolutions</a>. For concatenating them, however, they don't need to match. Each feature map just needs to have the same size, which they do when using causal padding.</p>
+<p>An alternative to adding the skip connection to a layer's output, for example adding the blue input values to the output of the first hidden layer, is to simply concatenate the feature maps of both tensors. <a href="https://arxiv.org/abs/1608.06993">DenseNet</a> uses this approach to give layers close to the output direct access to layers close to the input. An advantage of this method is that it does not require the same number of feature maps in each tensor. They need to match when using residual connections, because we add both tensors together, which might require using <a href="https://stats.stackexchange.com/questions/194142/what-does-1x1-convolution-mean-in-a-neural-network">1x1 convolutions</a>. For concatenating them, however, they don't need to match. Each feature map just needs to have the same size, which they do when using causal padding.</p>
 
 <p>When replacing the addition of the residual connections with a concatenation and adding a skip connection from the input to the second hidden layer, this is the resulting network architecture used during training:</p>
 
