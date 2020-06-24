@@ -8,37 +8,37 @@
             <g id="Input" transform="translate(321.000000, 424.000000)">
                 <g id="Input-dot">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="1" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="1" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">1</tspan>
                     </text>
                 </g>
                 <g id="Input-dot" transform="translate(86.000000, 0.000000)">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="2" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="2" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">2</tspan>
                     </text>
                 </g>
                 <g id="Input-dot" transform="translate(172.000000, 0.000000)">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="3" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="3" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">3</tspan>
                     </text>
                 </g>
                 <g id="Input-dot" transform="translate(258.000000, 0.000000)">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="4" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="4" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">4</tspan>
                     </text>
                 </g>
                 <g id="Input-dot" transform="translate(344.000000, 0.000000)">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="5" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="5" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">5</tspan>
                     </text>
                 </g>
                 <g id="Input-dot" transform="translate(430.000000, 0.000000)">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="6" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="6" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">6</tspan>
                     </text>
                 </g>
@@ -58,7 +58,7 @@
                 </g>
                 <g id="Info" transform="translate(0.000000, 29.000000)">
                     <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="258" height="88"></rect>
-                    <text id="kernel_size-=-4-stri" font-family="Menlo-Regular, Menlo" font-size="20" font-weight="normal" fill="#000000">
+                    <text id="kernel_size-=-4-stri" font-family="Menlo-Regular, Menlo, Consolas, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif" font-size="20" font-weight="normal" fill="#000000">
                         <tspan x="16.25" y="25.8">kernel_size = 4</tspan>
                         <tspan x="16.25" y="49.8">strides = 2</tspan>
                         <tspan x="16.25" y="73.8">padding = 'valid'</tspan>
@@ -68,13 +68,13 @@
             <g id="Concat-Input" transform="translate(589.000000, 212.000000)">
                 <g id="Input-dot">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="4" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="4" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">4</tspan>
                     </text>
                 </g>
                 <g id="Input-dot" transform="translate(172.000000, 0.000000)">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="6" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="6" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">6</tspan>
                     </text>
                 </g>
@@ -98,7 +98,7 @@
                 </g>
                 <g id="Info" transform="translate(0.000000, 29.000000)">
                     <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="258" height="88"></rect>
-                    <text id="kernel_size-=-2-stri" font-family="Menlo-Regular, Menlo" font-size="20" font-weight="normal" fill="#000000">
+                    <text id="kernel_size-=-2-stri" font-family="Menlo-Regular, Menlo, Consolas, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif" font-size="20" font-weight="normal" fill="#000000">
                         <tspan x="16.25" y="25.8">kernel_size = 2</tspan>
                         <tspan x="16.25" y="49.8">strides = 1</tspan>
                         <tspan x="16.25" y="73.8">padding = 'valid'</tspan>
@@ -108,7 +108,7 @@
             <g id="Concat-Input" transform="translate(771.000000, 0.000000)">
                 <g id="Input-dot">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="6" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="6" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">6</tspan>
                     </text>
                 </g>
@@ -127,7 +127,7 @@
                 <path id="Line" d="M0.478217371,4.93546769 L-0.889294543,17.4925233 C-0.978983172,18.3160811 -1.71931568,18.9109996 -2.54287348,18.821311 C-3.36643128,18.7316224 -3.96134979,17.9912898 -3.87166116,17.167732 L-1.88420286,-1.08192575 L0.520117011,-2.10956441 L15.0842008,9.06574154 C15.7414386,9.57005293 15.8654099,10.5116746 15.3610985,11.1689124 C14.8567872,11.8261502 13.9151655,11.9501215 13.2579277,11.4458101 L3.23679123,3.7563964 L7.22834762,13.0953167 C36.7351939,83.4001625 51.5,139.016898 51.5,180 C51.5,223.606265 34.7837564,283.784742 1.37553276,360.598255 C1.04512537,361.357941 0.161430274,361.70594 -0.598255491,361.375533 C-1.35794126,361.045125 -1.70594014,360.16143 -1.37553276,359.401745 C31.8829103,282.932613 48.5,223.11109 48.5,180 C48.5,139.492063 33.8282899,84.2260056 4.4659305,14.2653403 L0.478217371,4.93546769 Z" fill="#7C7C7C" fill-rule="nonzero"></path>
                 <g id="Dot" transform="translate(40.000000, 163.000000)">
                     <circle id="Oval" stroke="#ABABAB" stroke-width="2" fill="#FFFFFF" cx="10" cy="13" r="10"></circle>
-                    <text id="c" font-family="Helvetica-Bold, Helvetica" font-size="18" font-weight="bold" fill="#000000">
+                    <text id="c" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="18" font-weight="bold" fill="#000000">
                         <tspan x="4.49462891" y="18">c</tspan>
                     </text>
                 </g>
@@ -136,7 +136,7 @@
                 <path id="Line" d="M0.206173672,4.95429365 L-1.84957714,17.4171835 C-1.9844041,18.2345654 -2.75632191,18.7878855 -3.57370382,18.6530586 C-4.39108574,18.5182316 -4.94440585,17.7463138 -4.8095789,16.9289319 L-1.8218762,-1.18387112 L0.635300893,-2.07778163 L14.5630139,9.88126556 C15.191534,10.4209451 15.2635535,11.367958 14.723874,11.9964781 C14.1841945,12.6249982 13.2371816,12.6970177 12.6086615,12.1573382 L3.0253127,3.92858446 L6.50689169,13.4991276 C15.163846,38.5538262 19.5,58.70871 19.5,74 C19.5,92.0433039 13.46102,116.870222 1.40177726,148.533873 C1.10692728,149.308053 0.240307087,149.696627 -0.533873118,149.401777 C-1.30805332,149.106927 -1.69662724,148.240307 -1.40177726,147.466127 C10.53898,116.11358 16.5,91.6071643 16.5,74 C16.5,59.0982641 12.2289113,39.2458103 3.67951801,14.5018066 L0.206173672,4.95429365 Z" fill="#7C7C7C" fill-rule="nonzero"></path>
                 <g id="Dot" transform="translate(8.000000, 59.000000)">
                     <circle id="Oval" stroke="#ABABAB" stroke-width="2" fill="#FFFFFF" cx="10" cy="13" r="10"></circle>
-                    <text id="c" font-family="Helvetica-Bold, Helvetica" font-size="18" font-weight="bold" fill="#000000">
+                    <text id="c" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="18" font-weight="bold" fill="#000000">
                         <tspan x="4.49462891" y="18">c</tspan>
                     </text>
                 </g>
@@ -145,7 +145,7 @@
                 <path id="Line" d="M0.206173672,4.95429365 L-1.84957714,17.4171835 C-1.9844041,18.2345654 -2.75632191,18.7878855 -3.57370382,18.6530586 C-4.39108574,18.5182316 -4.94440585,17.7463138 -4.8095789,16.9289319 L-1.8218762,-1.18387112 L0.635300893,-2.07778163 L14.5630139,9.88126556 C15.191534,10.4209451 15.2635535,11.367958 14.723874,11.9964781 C14.1841945,12.6249982 13.2371816,12.6970177 12.6086615,12.1573382 L3.0253127,3.92858446 L6.50689169,13.4991276 C15.163846,38.5538262 19.5,58.70871 19.5,74 C19.5,92.0433039 13.46102,116.870222 1.40177726,148.533873 C1.10692728,149.308053 0.240307087,149.696627 -0.533873118,149.401777 C-1.30805332,149.106927 -1.69662724,148.240307 -1.40177726,147.466127 C10.53898,116.11358 16.5,91.6071643 16.5,74 C16.5,59.0982641 12.2289113,39.2458103 3.67951801,14.5018066 L0.206173672,4.95429365 Z" fill="#7C7C7C" fill-rule="nonzero"></path>
                 <g id="Dot" transform="translate(8.000000, 59.000000)">
                     <circle id="Oval" stroke="#ABABAB" stroke-width="2" fill="#FFFFFF" cx="10" cy="13" r="10"></circle>
-                    <text id="c" font-family="Helvetica-Bold, Helvetica" font-size="18" font-weight="bold" fill="#000000">
+                    <text id="c" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="18" font-weight="bold" fill="#000000">
                         <tspan x="4.49462891" y="18">c</tspan>
                     </text>
                 </g>
@@ -154,7 +154,7 @@
                 <path id="Line" d="M0.206173672,4.95429365 L-1.84957714,17.4171835 C-1.9844041,18.2345654 -2.75632191,18.7878855 -3.57370382,18.6530586 C-4.39108574,18.5182316 -4.94440585,17.7463138 -4.8095789,16.9289319 L-1.8218762,-1.18387112 L0.635300893,-2.07778163 L14.5630139,9.88126556 C15.191534,10.4209451 15.2635535,11.367958 14.723874,11.9964781 C14.1841945,12.6249982 13.2371816,12.6970177 12.6086615,12.1573382 L3.0253127,3.92858446 L6.50689169,13.4991276 C15.163846,38.5538262 19.5,58.70871 19.5,74 C19.5,92.0433039 13.46102,116.870222 1.40177726,148.533873 C1.10692728,149.308053 0.240307087,149.696627 -0.533873118,149.401777 C-1.30805332,149.106927 -1.69662724,148.240307 -1.40177726,147.466127 C10.53898,116.11358 16.5,91.6071643 16.5,74 C16.5,59.0982641 12.2289113,39.2458103 3.67951801,14.5018066 L0.206173672,4.95429365 Z" fill="#7C7C7C" fill-rule="nonzero"></path>
                 <g id="Dot" transform="translate(8.000000, 59.000000)">
                     <circle id="Oval" stroke="#ABABAB" stroke-width="2" fill="#FFFFFF" cx="10" cy="13" r="10"></circle>
-                    <text id="c" font-family="Helvetica-Bold, Helvetica" font-size="18" font-weight="bold" fill="#000000">
+                    <text id="c" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="18" font-weight="bold" fill="#000000">
                         <tspan x="4.49462891" y="18">c</tspan>
                     </text>
                 </g>

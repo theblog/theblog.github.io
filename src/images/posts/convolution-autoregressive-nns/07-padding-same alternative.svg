@@ -8,25 +8,25 @@
             <g id="Input" transform="translate(339.000000, 424.000000)">
                 <g id="Input-dot">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="2" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="2" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">1</tspan>
                     </text>
                 </g>
                 <g id="Input-dot" transform="translate(86.000000, 0.000000)">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="2" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="2" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">2</tspan>
                     </text>
                 </g>
                 <g id="Input-dot" transform="translate(172.000000, 0.000000)">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="3" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="3" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">3</tspan>
                     </text>
                 </g>
                 <g id="Input-dot" transform="translate(258.000000, 0.000000)">
                     <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
-                    <text id="4" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="4" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="35">4</tspan>
                     </text>
                 </g>
@@ -60,7 +60,7 @@
                 </g>
                 <g id="Info" transform="translate(0.000000, 37.000000)">
                     <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="190" height="73"></rect>
-                    <text id="kernel_size-=-?-stri" font-family="Menlo-Regular, Menlo" font-size="16" font-weight="normal" fill="#000000">
+                    <text id="kernel_size-=-?-stri" font-family="Menlo-Regular, Menlo, Consolas, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif" font-size="16" font-weight="normal" fill="#000000">
                         <tspan x="12" y="24">kernel_size = ?</tspan>
                         <tspan x="12" y="43">strides = 1</tspan>
                         <tspan x="12" y="62">padding = ?</tspan>
@@ -73,13 +73,13 @@
                 </g>
                 <g id="Hidden-dot" transform="translate(86.000000, 0.000000)">
                     <circle id="Oval" stroke="#ABABAB" stroke-width="5" fill="#DCDCDC" cx="25" cy="25" r="25"></circle>
-                    <text id="!" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#000000">
+                    <text id="!" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#000000">
                         <tspan x="20.171875" y="35">!</tspan>
                     </text>
                 </g>
                 <g id="Hidden-dot" transform="translate(172.000000, 0.000000)">
                     <circle id="Oval" stroke="#ABABAB" stroke-width="5" fill="#DCDCDC" cx="25" cy="25" r="25"></circle>
-                    <text id="!" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#000000">
+                    <text id="!" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#000000">
                         <tspan x="20.171875" y="35">!</tspan>
                     </text>
                 </g>
@@ -100,7 +100,7 @@
                 </g>
                 <g id="Info" transform="translate(0.000000, 37.000000)">
                     <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="190" height="73"></rect>
-                    <text id="kernel_size-=-3-stri" font-family="Menlo-Regular, Menlo" font-size="16" font-weight="normal" fill="#000000">
+                    <text id="kernel_size-=-3-stri" font-family="Menlo-Regular, Menlo, Consolas, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif" font-size="16" font-weight="normal" fill="#000000">
                         <tspan x="12" y="24">kernel_size = 3</tspan>
                         <tspan x="12" y="43">strides = 1</tspan>
                         <tspan x="12" y="62">padding = 'valid'</tspan>
@@ -110,13 +110,13 @@
             <g id="Output" transform="translate(511.000000, 0.000000)">
                 <g id="Output-dot">
                     <circle id="Oval" stroke="#FF651E" stroke-width="5" fill="#FF9901" cx="25" cy="25" r="25"></circle>
-                    <text id="4" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="4" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="36">4</tspan>
                     </text>
                 </g>
                 <g id="Output-dot" transform="translate(86.000000, 0.000000)">
                     <circle id="Oval" stroke="#FF651E" stroke-width="5" fill="#FF9901" cx="25" cy="25" r="25"></circle>
-                    <text id="5" font-family="Helvetica-Bold, Helvetica" font-size="32" font-weight="bold" fill="#FFFFFF">
+                    <text id="5" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
                         <tspan x="16.6015625" y="36">5</tspan>
                     </text>
                 </g>

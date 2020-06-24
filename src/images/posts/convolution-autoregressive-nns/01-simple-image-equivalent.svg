@@ -93,7 +93,7 @@
                 </g>
                 <g id="Info" transform="translate(0.000000, 29.000000)">
                     <rect id="Rectangle" stroke="#979797" stroke-width="2" x="1" y="1" width="258" height="88"></rect>
-                    <text id="kernel_size-=-4-stri" font-family="Menlo-Regular, Menlo" font-size="20" font-weight="normal" fill="#000000">
+                    <text id="kernel_size-=-4-stri" font-family="Menlo-Regular, Menlo, Consolas, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, serif" font-size="20" font-weight="normal" fill="#000000">
                         <tspan x="16.25" y="25.8">kernel_size = 4</tspan>
                         <tspan x="16.25" y="49.8">strides = 1</tspan>
                         <tspan x="16.25" y="73.8">padding = 'valid'</tspan>
