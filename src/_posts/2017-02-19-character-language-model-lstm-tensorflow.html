@@ -81,7 +81,9 @@ excerpt: |+2
 <p>You can choose between networks that read a lot of Wikipedia articles, US Congress transcripts etc.</p>
 
 <div class="alert alert-info" role="alert">
-    <strong>Update</strong> (1 Mar 2020) : After three years, I finally ran out of free AWS credits and shut down the instance hosting the five text completion networks. Therefore, the generated texts are now cached results from previous queries. If you enter a query that is not in the cache, I will later run it locally and add it to the cache at some point.
+    <p><strong>Update</strong> (1 Mar 2020) : After three years, I finally ran out of free AWS credits and shut down the instance hosting the five text completion networks. Therefore, the generated texts are now cached results from previous queries. If you enter a query that is not in the cache, I will later run it locally and add it to the cache at some point.</p>
+
+    <p>Also, by now there are much better interactive language models available on the web, for example <a href="https://transformer.huggingface.co/">transformer.huggingface.co</a> and <a href="https://talktotransformer.com/">talktotransformer.com</a>.</p>
 </div>
 
 <div class="talk-box">
@@ -156,27 +158,27 @@ excerpt: |+2
 <strong>US Congress</strong>
 <ul>
     <li>488 million characters from transcripts of the United States Senate's congressional record</li>
-    <li>Trained for 2 days.</li>
+    <li>Trained for 2 days</li>
 </ul>
 <strong>Wikipedia</strong>
 <ul>
     <li>447 million characters from about 140,000 articles (2.5% of the English Wikipedia)</li>
-    <li>Trained for 2 days.</li>
+    <li>Trained for 2 days</li>
 </ul>
 <strong>Sherlock</strong>
 <ul>
     <li>3.6 million characters (about 650,000 words) from the whole <a href="https://sherlock-holm.es/stories/plain-text/cano.txt" target="_blank">Sherlock Holmes corpus</a> by Sir Arthur Conan Doyle. I removed indentation but kept all line breaks even if their only purpose was formatting.</li>
-    <li>Trained for 3 hours.</li>
+    <li>Trained for 3 hours</li>
 </ul>
 <strong>South Park</strong>
 <ul>
     <li>4.7 million characters from all 277 South Park episodes</li>
-    <li>Trained for 2 hours.</li>
+    <li>Trained for 2 hours</li>
 </ul>
 <strong>Goethe</strong>
 <ul>
     <li>1.5 million characters from all poems by Johann Wolfgang von Goethe</li>
-    <li>Trained for 2 hours.</li>
+    <li>Trained for 2 hours</li>
 </ul>
 <p>As training / validation split, I used a 90 / 10 ratio for the three small datasets and a 95 / 5 ratio for the US Congress and the Wikipedia dataset.</p>
 
