@@ -27,9 +27,10 @@ $(function () {
     // Make the navigation sticky when the user has scrolled to its bottom.
     const $navbar = $('#main-navbar');
     const $window = $(window);
-    $window.on('scroll', () => positionNavbar($navbar, $window));
-    $window.on('resize', () => positionNavbar($navbar, $window));
-    positionNavbar($navbar, $window);
+    const $body = $('body');
+    $window.on('scroll', () => positionNavbar($navbar, $body));
+    $window.on('resize', () => positionNavbar($navbar, $body));
+    positionNavbar($navbar, $body);
 
     runHighlighting();
 });
@@ -53,26 +54,38 @@ function runHighlighting() {
     });
 }
 
-function positionNavbar($navbar, $window) {
+function positionNavbar($navbar, $body) {
     if (isInResponsive()) {
-        $navbar.css({'position': '', 'bottom': ''});
+        // Reset the style attribute of the html element.
+        $navbar.css({'position': '', 'height': ''});
         return;
     }
 
-    const navbarHeight = $navbar.outerHeight(true);
-    const windowHeight = $window.height();
-    const navBottom = $navbar.position().top
-        + $navbar.offset().top
-        + navbarHeight;
+    const contentHeight = $body.prop('scrollHeight');
+    const navbarContentHeight = $navbar.prop('scrollHeight');
+    const isTallest = navbarContentHeight >= contentHeight;
 
-    // The + 1 is to make sure that we don't switch to fixed when the
-    // navigation is higher than everything else. Then, the navigation's height
-    // is the unrounded value of the window's height.
-    if ($window.scrollTop() + windowHeight > navBottom + 1
-        && $navbar.offset().top >= 0) {
-        $navbar.css({'position': 'fixed', 'bottom': 0});
+    if ($navbar.css('position') === 'absolute') {
+        // The navbar was the tallest element on the screen. Check if this
+        // is still the case.
+        if (isTallest) {
+            // No need for manual scrolling in the case of absolute
+            // positioning.
+        } else {
+            $navbar.css({'position': 'fixed', 'height': '100vh'});
+            // Do the manual scrolling.
+            positionNavbar($navbar, $body);
+        }
     } else {
-        $navbar.css({'position': '', 'bottom': ''});
+        // The navbar is already in fixed, i.e. sticky mode. If it is
+        // the tallest element on the screen, switch to absolute
+        // positioning.
+        if (!isTallest) {
+            // Stay in fixed positioning mode and scroll manually.
+            $navbar.scrollTop($(this).scrollTop());
+        } else {
+            $navbar.css({'position': 'absolute', 'height': 'auto'});
+        }
     }
 }
 

@@ -5,6 +5,10 @@
     border-radius: 0;
     border: none;
     color: white;
+    /* We need to set overflow to hidden to be able to manually scroll
+    in fixed positioning mode. In absolute positioning, this has no
+    effect, because we set the height to auto. */
+    overflow: hidden;
 }
 
 #main-navbar-sticky-background {
@@ -119,9 +123,10 @@
 /* Transform the top navbar to a sidebar */
 @media only screen and (min-width: 768px) {
     #main-navbar {
+        position: fixed;
+        top: 0;
+        height: 100vh;
         width: 220px;
-        position: absolute;
-        min-height: 100vh;
         margin-bottom: 0;
         -webkit-box-shadow: none;
         -moz-box-shadow: none;
