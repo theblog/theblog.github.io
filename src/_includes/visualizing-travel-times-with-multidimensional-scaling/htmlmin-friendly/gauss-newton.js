@@ -1,4 +1,4 @@
-/**
+{% raw %}/**
  * Solves a Multidimensional Scaling problem with the Gauss-Newton algorithm.
  *
  * In the returned object, coordinates is a matrix of shape (n, 2) containing
@@ -195,4 +195,4 @@ function getMdsLoss(distances, coordinates) {
         }
     }
     return loss;
-}
+}{% endraw %}

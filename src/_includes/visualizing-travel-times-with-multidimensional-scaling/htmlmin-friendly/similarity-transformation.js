@@ -1,4 +1,4 @@
-/**
+{% raw %}/**
  * Transform a tuple of source points to match a tuple of target points
  * following equation 40, 41 and 42 of umeyama_1991.
  *
@@ -216,4 +216,4 @@ function getSimilarityTransformationSvdWithMirrorIdentities(covarianceMatrix,
         mirrorIdentityForErrorBound: mirrorIdentityForErrorBound,
         mirrorIdentityForSolution: mirrorIdentityForSolution
     }
-}
+}{% endraw %}

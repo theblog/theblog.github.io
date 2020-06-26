@@ -17,7 +17,7 @@ javascripts: ""
 
 <h3>1. % can output negative numbers</h3>
 The <code>%</code> operator calculates the remainder of the division, which does not necessarily have to be in [0, n-1].
-<pre><code>int positive = 23 % 7; // will be 2
+<pre><code class="lang-java">int positive = 23 % 7; // will be 2
 int negative = -17 % 7; // will be -3</code></pre>
 <h3>2. Java's Garbage collection finds isolated circular references</h3>
 Java's GC starts from the garbage collection root. Every object that it does not reach from there is considered garbage. The main types of GC roots are (see <a href="https://www.yourkit.com/docs/java/help/gc_roots.jsp" target="_blank">yourkit.com</a>):
@@ -30,7 +30,7 @@ Java's GC starts from the garbage collection root. Every object that it does no
 </ul>
 <h3>3. Static initialization blocks</h3>
 
-<pre><code>public static final HashSet&lt;String&gt; set = new HashSet();
+<pre><code class="lang-java">public static final HashSet&lt;String&gt; set = new HashSet();
 static {
   set.add("a");
 }</code></pre>
@@ -38,10 +38,10 @@ static {
 This is possible. Static initialization blocks are used for initializations that cannot be done in one line. If we remove the static keyword before the block, the code would be called every time that an object of the class is constructed (<a href="http://stackoverflow.com/questions/2420389/static-initialization-blocks">source</a>). By making it static we ensure that the block only gets executed upon the first construction.
 <h3>4. Interfaces can initialize static constants as well</h3>
 You probably already knew that this is possible in an interface:
-<pre><code>static final int ID = 1234;</code></pre>
+<pre><code class="lang-java">static final int ID = 1234;</code></pre>
 But did you know that you can also define a static final Hashset and populate it with values in the interface? While the compiler will give you an error for the code we used in the section above (<code>"The interface cannot define an initializer."</code>), there is a workaround:
 
-<pre><code>public interface SomeInterface {
+<pre><code class="lang-java">public interface SomeInterface {
   static final HashSet&lt;String&gt; set = new HashSet&lt;String&gt;();
   static final Instantiator li = new Instantiator();
 
@@ -65,7 +65,7 @@ Volatile variables only provide <strong>visibility</strong>. Therefore, they sh
 They can, however, be used for notifying a thread from another thread by changing the value of a volatile variable. The benefits of using a volatile variable are simplicity and performance. Volatile reads are about as fast as non-volatile reads. Volatile and synchronized can also be combined to provide <a href="http://stackoverflow.com/questions/11681326/volatile-synchronized-combination-for-performance">fast read and safe increase operations</a>.
 <h3>6. Labelling loops for break and continue</h3>
 
-<pre><code>int a = 5;
+<pre><code class="lang-java">int a = 5;
 outerloop:
 while (true) {
   // "continue outerloop" would jump here.
@@ -79,7 +79,7 @@ while (true) {
 <h3>7. The difference between inner and static nested classes</h3>
 Inner classes are nested classes <strong>without</strong> the static keyword. They belong to an <strong>instance</strong> of the outer class and can therefore access the members of the instance. They cannot define static variables. In contrast, "a static nested class is behaviorally a top-level class that has been nested in another top-level class for packaging convenience" (from the <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html" target="_blank">Oracle Docs</a>).
 
-<pre><code>public class Outer {
+<pre><code class="lang-java">public class Outer {
   public void foo() { }
 
   class Inner {

@@ -1,4 +1,4 @@
-/**
+{% raw %}/**
  * Solves a Multidimensional Scaling problem with gradient descent.
  *
  * If momentum is != 0, the update is:
@@ -179,4 +179,4 @@ function getMdsLoss(distances, coordinates) {
         }
     }
     return loss;
-}
+}{% endraw %}
