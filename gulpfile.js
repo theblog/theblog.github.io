@@ -61,7 +61,7 @@ gulp.task('_images', ['_jekyll-build'], function () {
 gulp.task('_html', ['_jekyll-build'], function () {
     return gulp.src(sourcePaths.html, {base: buildDir, cwd: buildDir})
         .pipe(htmlmin({
-            collapseWhitespace: true,
+            collapseWhitespace: false,
             removeComments: true
         }))
         .pipe(minifyInline())
@@ -75,9 +75,8 @@ gulp.task('_css', ['_jekyll-build'], function () {
         .pipe(gulp.dest(buildDir));
 });
 
-// Default task producing a ready-to-ship frontend in the build folder.
-// _html is excluded, since it fails for <pre> blocks containing < or >.
-gulp.task('default', ['_jekyll-build', '_javascripts', '_images', '_css']);
+// Default task producing a ready-to-ship frontend in the build folder
+gulp.task('default', ['_jekyll-build', '_javascripts', '_images', '_html', '_css']);
 
 // Check code style on JS
 gulp.task('eslint', function () {
