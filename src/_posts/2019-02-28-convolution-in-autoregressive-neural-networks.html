@@ -33,7 +33,7 @@ javascripts: ""
     This is already an autoregressive neural network. We can train it by splitting our recordings into appropriate chunks of inputs and targets, i.e.:
 </p>
 
-<pre><code>1st chunk: x = [1, 2, 3, 4], y = [5]
+<pre><code class="plaintext">1st chunk: x = [1, 2, 3, 4], y = [5]
 2nd chunk: x = [2, 3, 4, 5], y = [6]
 3rd chunk: x = [3, 4, 5, 6], y = [7]
 ...</code></pre>
@@ -121,7 +121,7 @@ javascripts: ""
 
 <p>These neurons don't appear in the conceptual computation of the tenth time step, yet they are included in the pooling windows and thus will influence the computation in practice. What we need to circumvent this is a pooling layer with dilation; just like in the convolutional layers. Unfortunately, the pooling layers <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/AvgPool1D"><code>AvgPool1D</code></a> and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/MaxPool1D"><code>MaxPool1D</code></a> neither support dilation rates nor specifying <code>padding="causal"</code>. We can, however, use <a href="https://www.tensorflow.org/api_docs/python/tf/nn/pool"><code>tf.nn.pool</code></a>, which supports specifying a dilation rate. As for the causal padding, we can take a look at Keras' <a href="https://github.com/keras-team/keras/issues/8751#issuecomment-377784644">implementation</a> to verify that we can really just pad the input on the left and then carry on with "valid" padding:</p>
 
-<pre><code>if padding == 'causal':
+<pre><code class="lang-python">if padding == 'causal':
     # causal (dilated) convolution:
     left_pad = dilation_rate * (kernel_shape[0] - 1)
     x = temporal_padding(x, (left_pad, 0))
@@ -129,7 +129,7 @@ javascripts: ""
 
 Below is a custom Keras layer that will perform dilated pooling with optional causal padding. The <code>pooling_type</code> argument is given to <a href="https://www.tensorflow.org/api_docs/python/tf/nn/pool"><code>tf.nn.pool</code></a> and must be <code>"avg"</code> or <code>"max"</code> (case insensitive).
 
-<pre><code>import tensorflow as tf
+<pre><code class="lang-python">import tensorflow as tf
 
 class DilatedPooling1D(tf.keras.layers.Layer):
     def __init__(self, pooling_type, pool_size=2, padding='causal',
@@ -175,7 +175,7 @@ class DilatedPooling1D(tf.keras.layers.Layer):
 
 <p>This also works for hidden fully connected layers. Many convolutional neural networks have large fully connected layers before the softmax output layer, for example</p>
 
-<pre><code>model = Sequential([
+<pre><code class="lang-python">model = Sequential([
     ..., # Output of this part has the shape (batch_size, 10, 32)
     Flatten(),
     Dense(units=500, activation='relu'),
@@ -185,7 +185,7 @@ class DilatedPooling1D(tf.keras.layers.Layer):
 
 <p>Regardless of whether the network is autoregressive or not, this is equivalent to</p>
 
-<pre><code>model = Sequential([
+<pre><code class="lang-python">model = Sequential([
     ..., # Output of this part has the shape (batch_size, 10, 32)
     Conv1D(filters=500, kernel_size=10, padding='valid', activation='relu'),
     Conv1D(filters=100, kernel_size=1, padding='valid', activation='relu'),

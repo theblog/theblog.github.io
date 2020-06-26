@@ -33,25 +33,25 @@ The iCloud key-value storage is like the <code>UserDefaults</code> but synced ac
 
 <p>Wherever you need to access the key-value store, call</p>
 
-<pre>
+<pre class="lang-swift">
     <code>var keyStore = NSUbiquitousKeyValueStore()</code>
 </pre>
 
 <p>Add data just like with the <code>UserDefaults</code>:</p>
 
-<pre>
+<pre class="lang-swift">
     <code>keyStore.set("John Appleseed", forKey: "userName")</code>
 </pre>
 
 <p>Retrieve data somewhere else with:</p>
 
-<pre>
+<pre class="lang-swift">
     <code>let storedUserName = keyStore.string(forKey: "userName")</code>
 </pre>
 
 <p>So far, the keyStore acts like the <code>UserDefaults</code>. The data will be stored locally. To sync them with iCloud, call</p>
 
-<pre>
+<pre class="lang-swift">
     <code>keyStore.synchronize()</code>
 </pre>
 

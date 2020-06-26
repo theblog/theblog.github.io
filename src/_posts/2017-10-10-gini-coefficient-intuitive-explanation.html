@@ -22,7 +22,7 @@ excerpt: |+2
 
 <p>First, let's define our predictions and their actual values:</p>
 
-<pre><code class="gpy">import numpy as np
+<pre><code class="lang-python">import numpy as np
 import matplotlib.pyplot as plt
 import scipy.interpolate
 import scipy.integrate
@@ -33,7 +33,7 @@ actual = [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 <p>We can calculate the Gini coefficient using one of the many efficient but inexpressive implementations from <a href="https://www.kaggle.com/c/ClaimPredictionChallenge/discussion/703">this thread</a>. This gives us the values that I will try to explain next.</p>
 
-<pre><code># Copied from https://www.kaggle.com/c/ClaimPredictionChallenge/discussion/703
+<pre><code class="lang-python"># Copied from https://www.kaggle.com/c/ClaimPredictionChallenge/discussion/703
 def gini(actual, pred, cmpcol = 0, sortcol = 1):
     assert (len(actual) == len(pred))
     all = np.asarray(np.c_[actual, pred, np.arange(len(actual))], dtype=np.float)
@@ -51,13 +51,13 @@ def gini_normalized(actual, pred):
 
 <p>We calculate the Gini coefficient for the predictions:</p>
 
-<pre><code>gini_predictions = gini(actual, predictions)
+<pre><code class="lang-python">gini_predictions = gini(actual, predictions)
 gini_max = gini(actual, actual)
 ngini= gini_normalized(actual, predictions)
 print('Gini: %.3f, Max. Gini: %.3f, Normalized Gini: %.3f' % (gini_predictions, gini_max, ngini))
 </code></pre>
 
-<pre><code class="no-highlight">Gini: 0.189, Max. Gini: 0.300, Normalized Gini: 0.630</code></pre>
+<pre><code class="plaintext">Gini: 0.189, Max. Gini: 0.300, Normalized Gini: 0.630</code></pre>
 
 <p><strong>So, how do we get this Gini of 0.189 and the Normalized Gini of 0.630?</strong></p>
 
@@ -75,7 +75,7 @@ print('Gini: %.3f, Max. Gini: %.3f, Normalized Gini: %.3f' % (gini_predictions, 
 
 <p>Instead of going through the population from poorest to richest, we go through our predictions from lowest to highest.</p>
 
-<pre><code># Sort the actual values by the predictions
+<pre><code class="lang-python"># Sort the actual values by the predictions
 data = zip(actual, predictions)
 sorted_data = sorted(data, key=lambda d: d[1])
 sorted_actual = [d[0] for d in sorted_data]
@@ -83,7 +83,7 @@ print(sorted_actual)</code></pre>
 
 <p>Instead of summing up the income, we sum up the actual values of our predictions:</p>
 
-<pre><code># Sum up the actual values
+<pre><code class="lang-python"># Sum up the actual values
 cumulative_actual = np.cumsum(sorted_actual)
 cumulative_index = np.arange(1, len(cumulative_actual)+1)
 
@@ -100,7 +100,7 @@ plt.show()</code></pre>
 
 <p>We normalize both axes so that they go from 0 to 100% like in the economic figure and display the 45° line to illustrate random guessing:</p>
 
-<pre><code>cumulative_actual_shares = cumulative_actual / sum(actual)
+<pre><code class="lang-python">cumulative_actual_shares = cumulative_actual / sum(actual)
 cumulative_index_shares = cumulative_index / len(predictions)
 
 # Add (0, 0) to the plot
@@ -121,16 +121,16 @@ plt.show()</code></pre>
 
 <p>Now, we calculate the orange area by integrating the curve function:</p>
 
-<pre><code>fy = scipy.interpolate.interp1d(x_values, y_values)
+<pre><code class="lang-python">fy = scipy.interpolate.interp1d(x_values, y_values)
 blue_area, _ = scipy.integrate.quad(fy, 0, 1, points=x_values)
 orange_area = 0.5 - blue_area
 print('Orange Area: %.3f' % orange_area)</code></pre>
 
-<pre><code class="no-highlight">Orange Area: 0.189</code></pre>
+<pre><code class="plaintext">Orange Area: 0.189</code></pre>
 
 <p>So, the orange area is equal to the Gini coefficient calculated above with the <code>gini</code> function. We can do the same using the actual values as predictions to get the maximum possible Gini coefficient.</p>
 
-<pre><code>cumulative_actual_shares_perfect = np.cumsum(sorted(actual)) / sum(actual)
+<pre><code class="lang-python">cumulative_actual_shares_perfect = np.cumsum(sorted(actual)) / sum(actual)
 y_values_perfect = [0] + list(cumulative_actual_shares_perfect)
 
 # Display the 45° line stacked on top of the y values
@@ -151,7 +151,7 @@ print('Orange Area: %.3f' % orange_area)</code></pre>
     <img src="/images/posts/gini-coefficient/perfect-diagram.png" alt="Visualization of the perfect Gini coefficient">
 </figure>
 
-<pre><code class="no-highlight">Orange Area: 0.300</code></pre>
+<pre><code class="plaintext">Orange Area: 0.300</code></pre>
 
 <p>Dividing both orange areas gives us the Normalized Gini coefficient:</p>
 
@@ -161,11 +161,11 @@ print('Orange Area: %.3f' % orange_area)</code></pre>
 
 <p>I also found another interpretation of the Gini coefficient <a href="http://www.rhinorisk.com/Publications/Gini%20Coefficients.pdf">here</a>. Again, we take the predictions and actual values from above and sort them in descending order:</p>
 
-<pre><code>print('Predictions', predictions)
+<pre><code class="lang-python">print('Predictions', predictions)
 print('Actual Values', actual)
 print('Sorted Actual', list(reversed(sorted_actual)))</code></pre>
 
-<pre><code class="no-highlight">Predictions [0.9, 0.3, 0.8, 0.75, 0.65, 0.6, 0.78, 0.7, 0.05, 0.4, 0.4, 0.05, 0.5, 0.1, 0.1]
+<pre><code class="plaintext">Predictions [0.9, 0.3, 0.8, 0.75, 0.65, 0.6, 0.78, 0.7, 0.05, 0.4, 0.4, 0.05, 0.5, 0.1, 0.1]
 Actual Values [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 Sorted Actual [1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0]</code></pre>
 

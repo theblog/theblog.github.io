@@ -172,10 +172,6 @@ figcaption {
     font-size: 0.8em;
 }
 
-.no-highlight {
-    color: inherit;
-}
-
 .no-wrap {
     white-space: nowrap;
 }
