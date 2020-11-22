@@ -19,7 +19,7 @@ const buildDir = '_site/';
 
 // Paths to be used in gulp.src
 const sourcePaths = {
-    javascripts: ['js/**/*.js', '!js/lib/**/*.js'],
+    javascripts: ['js/**/*.js'],
     images: ['images/**/*.png', 'images/**/*.jpg', 'images/**/*.jpeg', 'images/**/*.gif'],
     html: ['**/*.html'],
     css: ['css/**/*.css']

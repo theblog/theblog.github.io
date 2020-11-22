@@ -57,6 +57,8 @@ fabric.properties
 
 ### CUSTOM
 
+local
+src/lib
 .DS_Store
 .idea
 node_modules
