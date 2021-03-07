@@ -14,7 +14,7 @@ body {
 }
 
 /* Copy anchor styles from Bootstrap and apply them to buttons as well */
-a, button {
+a, button, a > code {
     color: #5480d6;
     text-decoration: none;
     cursor: pointer;
@@ -294,8 +294,8 @@ h1 a, h1 a:hover, h1 a:active, h1 a:focus {
 }
 
 .post-body p {
-    margin-top: 0;
-    margin-bottom: 1em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
     margin-left: 0;
     margin-right: 0;
 }
