@@ -31,9 +31,21 @@ stylesheets: |+2
 
                 <h3>Like what you read?</h3>
                 <div>
+                    <div class="clearfix">
                     <div><applause-button url="{{ site.url }}/{{ page.post_id }}" multiclap="true" color="rgb(10, 18, 79)"/></div>
                     <p>I don't use Google Analytics or Disqus because they require cookies. I would still like to know
-                        which posts are popular, so if you liked this post you can let me know here.</p>
+                        which posts are popular, so if you liked this post you can let me know here on the right.</p>
+                    </div>
+                    <p>You can also leave a comment if you have a GitHub account. The "Sign in" button will store the GitHub API token in a cookie.</p>
+                    <script src="https://utteranc.es/client.js"
+                            repo="theblog/blog-comments"
+                            issue-term="{{ page.post_id }}"
+                            theme="github-light"
+                            crossorigin="anonymous"
+                            async>
+                    </script>
+                </div>
+                <div>
                 </div>
 
             </div>

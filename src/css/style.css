@@ -381,6 +381,7 @@ applause-button {
     height: 52px;
     float: right;
     margin-left: 20px;
+    margin-bottom: 10px;
 }
 
 applause-button .count {
