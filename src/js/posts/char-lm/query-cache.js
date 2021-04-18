@@ -574,7 +574,7 @@ function completeTextWithCache(prime, steps, maxSentences, datasetName, callback
         }, delaySeconds * 1000);
     } else {
         // Store the new request
-        $.get('https://ec2-01.batzner.io/store_charlm_request.php',
+        $.get('https://kilians.net/store_charlm_request.php',
             {
                 prime: prime,
                 steps: steps,
