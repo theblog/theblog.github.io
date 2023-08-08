@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>A Random Walk Through Computer Science</title>
+
+    
+    <meta name="description" content="A Random Walk Through Computer Science">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="A Random Walk Through Computer Science">
+    <meta property="og:description" content="A Random Walk Through Computer Science">
+    <meta property="og:url" content="https://theblog.github.io">
+    <meta property="og:site_name" content="The Blog">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:description" content="A Random Walk Through Computer Science">
+    <meta name="twitter:title" content="A Random Walk Through Computer Science">
+    
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/favicons/site.webmanifest">
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.1.6/css/ion.rangeSlider.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github-gist.min.css">
+    <link rel="stylesheet" href="/css/lib/ion.rangeSlider/css/ion.rangeSlider.skinFlat.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post-util.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    
+
+    
+      <link rel="stylesheet" href="/css/posts-overview.css">
+
+
+    
+</head>
+
+<body>
+
+
+
+<div id="main-navbar-sticky-background"></div>
+
+<nav role="navigation" id="main-navbar" class="navbar navbar-default">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header">
+            <button type="button" data-target="#main-navbar-collapse" data-toggle="collapse" class="navbar-toggle collapsed" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <div class="navbar-brand">
+                <a href="https://theblog.github.io">
+                    <div id="logo-title"><img src="/images/logo.png" alt="Site logo"></div>
+                    <div id="logo-subtitle">A Random Walk Through Computer Science</div>
+                </a>
+            </div>
+        </div>
+
+        
+        <div id="main-navbar-collapse" class="collapse navbar-collapse">
+            <h5><a href="https://theblog.github.io">Posts</a></h5>
+            <div class="nav navbar-nav">
+                
+                
+
+                
+                    
+                <h5 class="navigation-year">2021</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/from-tensorflow-to-pytorch/">PyTorch for TensorFlow Users - A Minimal Diff</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2019</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/convolution-in-autoregressive-neural-networks/">Convolutions in Autoregressive Neural Networks</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2017</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/gini-coefficient-intuitive-explanation/">Intuitive Explanation of the Gini Coefficient</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/swift-icloud-key-value-store/">iCloud Key-Value Storage in Swift 3</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/jekyll-github-pages-gulp-babel-directory-structure/">Directory Structure for Jekyll / GitHub Pages with Gulp and Babel</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/character-language-model-lstm-tensorflow/">An Interactive Character-Level Language Model</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2016</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/visualizing-travel-times-with-multidimensional-scaling/">Visualizing Travel Times with Multidimensional Scaling</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2015</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/some-facts-i-did-not-know-about-java/">Some facts I did not know about Java</a>
+                </li>
+                
+                
+                </ul>
+
+            </div>
+            <h5><a href="/about/">About</a></h5>
+        </div>
+    </div>
+</nav>
+
+
+<section class="wrapper">
+    <div id="content" class="container-fluid">
+        <div class="row">
+    
+    
+    
+    
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1><a href="/post/from-tensorflow-to-pytorch/">PyTorch for TensorFlow Users - A Minimal Diff</a></h1>
+                    
+                    <h5>
+                        
+                        <span><i class="fa fa-calendar-o"></i> 07 March 2021</span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                  <p>This is a migration guide for TensorFlow users that already know how neural networks work and what a tensor is. I have been using TensorFlow since 2016, but I switched to PyTorch a year ago. Although the key concepts of both frameworks are pretty similar, especially since TF v2, I wanted to make sure that I use PyTorch's API properly and don't overlook some critical difference. Therefore, I read through the currently listed beginner-level PyTorch <a href="https://pytorch.org/tutorials/">tutorials</a>, the 14 notes in the PyTorch <a href="https://pytorch.org/docs/stable/index.html">documentation</a> (as of version 1.8.0), the top-level pages of the Python API like <a href="https://pytorch.org/docs/stable/tensors.html"><code>torch.Tensor</code></a> and <a href="https://pytorch.org/docs/stable/distributions.html"><code>torch.distributions</code></a>, and some intermediate tutorials. For each tutorial and documentation page, I list the insights that I consider relevant for TensorFlow users.</p>
+
+                <a href="/post/from-tensorflow-to-pytorch/">Read more</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1><a href="/post/convolution-in-autoregressive-neural-networks/">Convolutions in Autoregressive Neural Networks</a></h1>
+                    
+                    <h5>
+                        
+                        <span><i class="fa fa-calendar-o"></i> 28 February 2019</span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                <p>This post explains how to use one-dimensional causal and dilated convolutions in autoregressive neural networks such as WaveNet. For implementation details, I will use the notation of the <code>tensorflow.keras.layers</code> package, although the concepts themselves are framework-independent.</p>
+
+<p>
+    Say we have some temporal data, for example recordings of human speech. At a sample rate of 16,000 Hz, one second of recorded speech is a one-dimensional array of 16,000 values, as visualized <a href="https://deepmind.com/blog/wavenet-generative-model-raw-audio/#gif-8">here</a>. Based on the recordings we have, we can compute a probabilistic model of the value at the next time step given the values at the previous time steps. Having a good model for this would be really helpful as it would allow us to generate speech ourselves.
+</p>
+
+<p>
+    A simple approach would be to model the next value using an affine transformation (linear combination + bias) of the four previous values. Implemented in Keras, this would be a single <code>Dense</code> layer with <code>units=1</code>:
+</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/01-simple-concept.svg" width="154px" height="131px">
+</figure>
+
+
+                <a href="/post/convolution-in-autoregressive-neural-networks/">Read more</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1><a href="/post/gini-coefficient-intuitive-explanation/">Intuitive Explanation of the Gini Coefficient</a></h1>
+                    
+                    <h5>
+                        
+                        <span><i class="fa fa-calendar-o"></i> 10 October 2017</span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                  <p>The Gini coefficient is a popular metric on Kaggle, especially for imbalanced class values. But googling "Gini coefficient" gives you mostly economic explanations. Here is a descriptive explanation with regard to using it as an evaluation metric in classification. The Jupyter Notebook for this post is <a href="https://www.kaggle.com/batzner/gini-coefficient-an-intuitive-explanation">here</a>.</p>
+  <p><strong>TL;DR:</strong> The Gini coefficients are the orange areas. The normalized Gini coefficient is the left one divided by the right one.</p>
+  <figure>
+      <img src="/images/posts/gini-coefficient/excerpt-figure.png" alt="Visualization of the normalized gini coefficient">
+  </figure>
+
+                <a href="/post/gini-coefficient-intuitive-explanation/">Read more</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1><a href="/post/swift-icloud-key-value-store/">iCloud Key-Value Storage in Swift 3</a></h1>
+                    
+                    <h5>
+                        
+                        <span><i class="fa fa-calendar-o"></i> 09 August 2017</span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                The iCloud key-value storage is like the <code>UserDefaults</code> but synced across devices. It also survives uninstalls of the app. I used it today to add iCloud backups to <a href="https://itunes.apple.com/us/app/emoji-diary-daily-journal-with-emoticons/id1247061044?mt=8">Emoji Diary</a>. It required 4 lines of code.
+
+<h3>Activate the iCloud capability</h3>
+
+<p>Select your project in Xcode and then select the target under "Project and Targets". Activate iCloud and check "Key-Value storage".</p>
+
+<img src="/images/posts/swift-icloud-key-value-store/project-settings.png" alt="Screenshot of project settings in Xcode">
+
+
+                <a href="/post/swift-icloud-key-value-store/">Read more</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1><a href="/post/jekyll-github-pages-gulp-babel-directory-structure/">Directory Structure for Jekyll / GitHub Pages with Gulp and Babel</a></h1>
+                    
+                    <h5>
+                        
+                        <span><i class="fa fa-calendar-o"></i> 07 August 2017</span>
+                        
+                        <span><i class="fa fa-github"></i> <a href="https://github.com/batzner/github-pages-boilerplate"> Source Code</a></span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                <ul>
+    <li><strong><a href="https://jekyllrb.com/" target="_blank">Jekyll</a></strong> is the most popular static site generator.</li>
+    <li><strong><a href="https://pages.github.com/" target="_blank">GitHub Pages</a></strong> hosts your jekyll sites for free under *.github.io.</li>
+    <li><strong><a href="https://gulpjs.com/" target="_blank">Gulp</a></strong> lets you automate your build process (minifying .css files, concatenating all .js files etc.).</li>
+    <li><strong><a href="https://babeljs.io/" target="_blank">Babel</a></strong> lets you write ES6 <i>(cool new JavaScript)</i> even though not all browsers support it by transpiling it into ES5 <i>(lame old JavaScript)</i>.</li>
+</ul>
+
+<p>I switched to using Jekyll for this blog yesterday and I love it. There are blog posts describing how to combine a subset of the above, but I could not find one for combining all four. However, each of these four components brings its own peculiarities to consider, so no blog post worked out of the box. Here is the solution that I ended up with:</p>
+
+
+                <a href="/post/jekyll-github-pages-gulp-babel-directory-structure/">Read more</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1><a href="/post/character-language-model-lstm-tensorflow/">An Interactive Character-Level Language Model</a></h1>
+                    
+                    <h5>
+                        
+                        <span><i class="fa fa-calendar-o"></i> 19 February 2017</span>
+                        
+                        <span><i class="fa fa-github"></i> <a href="https://github.com/batzner/tensorlm"> Source Code</a></span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                  <p>I let a neural network read long texts one letter at a time. Its task was to predict the next letter based on those it had seen so far. Over time, it recognized patterns between letters. Find out what it learned by feeding it some letters below. When you click the send button on the right, it will read your text and auto-complete it.</p>
+  <p>You can choose between networks that read a lot of Wikipedia articles, US Congress transcripts etc.</p>
+  <a href="/post/character-language-model-lstm-tensorflow" style="color:white">
+      <div class="talk-box">
+          <table class="no-scroll-x">
+              <tr class="talk-box-heading">
+                  <td></td>
+                  <td class="no-stretch">
+                      <div>Generate text from</div>
+                      <div class="btn-group" role="group" aria-label="Dataset choice">
+                      <button type="button" value="congress" class="btn btn-default dark">US Congress</button>
+                      <button type="button" value="wiki" class="btn btn-default dark">Wikipedia</button>
+                      <button type="button" value="sherlock" class="btn btn-default dark">Sherlock Holmes</button>
+                      <button type="button" value="southPark" class="btn btn-default dark">South Park</button>
+                      <button type="button" value="goethe" class="btn btn-default dark">Goethe</button>
+      </div>
+          </td>
+          <td></td>
+          </tr>
+          <tr class="talk-box-body">
+              <td></td>
+              <td>
+                  <div class="talk-box-input">
+                      <div class="text-input" contenteditable="true"></div>
+                      <div class="text-input-output-bridge">...</div>
+                      <span class="text-output"></span>
+                  </div>
+              </td>
+              <td>
+                  <button type="button" class="send-button btn btn-default round btn-icon">
+                  <span class="fa fa-paper-plane"></span>
+                  </button>
+              </td>
+          </tr>
+          </table>
+      </div>
+
+      <div class="talk-box mobile">
+          <div class="talk-box-heading">
+              <div>Generate text from</div>
+              
+              <div id="talk-box-dataset-dropdown" class="btn-group dropdown-full-width">
+              <button type="button" value="congress" class="btn btn-default dropdown-toggle dark">
+              <span class="choice">US Congress</span> <span class="caret"></span>
+              </button>
+          </div>
+          </div>
+          <div class="talk-box-body">
+              <div class="talk-box-input">
+                  <div class="text-input" contenteditable="true"></div>
+                  <div class="text-input-output-bridge">...</div>
+                  <span class="text-output"></span>
+              </div>
+              <button type="button" class="send-button btn btn-default dark">
+              Send
+              </button>
+          </div>
+      </div>
+  </a>
+
+                <a href="/post/character-language-model-lstm-tensorflow/">Read more</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1><a href="/post/visualizing-travel-times-with-multidimensional-scaling/">Visualizing Travel Times with Multidimensional Scaling</a></h1>
+                    
+                    <h5>
+                        
+                        <span><i class="fa fa-calendar-o"></i> 13 January 2016</span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                Which map is correct?
+<div class="gmaps clearfix">
+    <div class="gmap-container-stub"><img src="/images/posts/visualizing-travel-times-with-multidimensional-scaling/map-correct.jpg" alt="Distances map"></div>
+    <div class="gmap-container-stub"><img src="/images/posts/visualizing-travel-times-with-multidimensional-scaling/map-mds.jpg" alt="Durations map"></div>
+</div>
+<p>In a geography exam, the correct answer would be the left or upper one. It displays the actual locations of four cities in the US. But that does not make the other map entirely incorrect. It just displays other data. Specifically, it approximates the travel times between the four cities. This means that the closer two cities are on the right map the faster you can travel between them with public transport. We can calculate such maps using Multidimensional Scaling. What is Multidimensional Scaling? How can it help us to approximate travel times? And what is the relationship between the left map with the geographic locations and the right map? We are about to find out.</p>
+
+
+                <a href="/post/visualizing-travel-times-with-multidimensional-scaling/">Read more</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1><a href="/post/some-facts-i-did-not-know-about-java/">Some facts I did not know about Java</a></h1>
+                    
+                    <h5>
+                        
+                        <span><i class="fa fa-calendar-o"></i> 11 December 2015</span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                <p>I found out about some helpful and some surprising properties of Java 6 today. Did you know that to this day, Java has Go To statements? Here are some facts about the language I was not aware of.</p>
+
+
+                <a href="/post/some-facts-i-did-not-know-about-java/">Read more</a>
+            </div>
+        </div>
+    </div>
+    
+</div>
+    </div>
+</section>
+<footer class="footer">
+    <div>Powered by <a href="https://github.com/jekyll/jekyll" target="_blank">Jekyll</a>.</div>
+    <div style="margin-top: 5px"><a href="https://www.iubenda.com/privacy-policy/63560500/legal" style="color:inherit">Imprint and Privacy Policy</a></div>
+</footer>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+
+<script src="/js/general.js"></script>
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+</body>
+
+</html>

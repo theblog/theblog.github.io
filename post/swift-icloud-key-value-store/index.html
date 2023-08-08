@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>iCloud Key-Value Storage in Swift 3</title>
+
+    
+    <meta name="description" content="A really quick tutorial with 4 lines of code on how to add iCloud backups / synchronization to your app">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="iCloud Key-Value Storage in Swift 3">
+    <meta property="og:description" content="A really quick tutorial with 4 lines of code on how to add iCloud backups / synchronization to your app">
+    <meta property="og:url" content="https://theblog.github.io">
+    <meta property="og:site_name" content="The Blog">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:description" content="A really quick tutorial with 4 lines of code on how to add iCloud backups / synchronization to your app">
+    <meta name="twitter:title" content="iCloud Key-Value Storage in Swift 3">
+    
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/favicons/site.webmanifest">
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.1.6/css/ion.rangeSlider.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github-gist.min.css">
+    <link rel="stylesheet" href="/css/lib/ion.rangeSlider/css/ion.rangeSlider.skinFlat.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post-util.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css">
+
+    
+
+    
+</head>
+
+<body>
+
+
+
+<div id="main-navbar-sticky-background"></div>
+
+<nav role="navigation" id="main-navbar" class="navbar navbar-default">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header">
+            <button type="button" data-target="#main-navbar-collapse" data-toggle="collapse" class="navbar-toggle collapsed" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <div class="navbar-brand">
+                <a href="https://theblog.github.io">
+                    <div id="logo-title"><img src="/images/logo.png" alt="Site logo"></div>
+                    <div id="logo-subtitle">A Random Walk Through Computer Science</div>
+                </a>
+            </div>
+        </div>
+
+        
+        <div id="main-navbar-collapse" class="collapse navbar-collapse">
+            <h5><a href="https://theblog.github.io">Posts</a></h5>
+            <div class="nav navbar-nav">
+                
+                
+
+                
+                    
+                <h5 class="navigation-year">2021</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/from-tensorflow-to-pytorch/">PyTorch for TensorFlow Users - A Minimal Diff</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2019</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/convolution-in-autoregressive-neural-networks/">Convolutions in Autoregressive Neural Networks</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2017</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/gini-coefficient-intuitive-explanation/">Intuitive Explanation of the Gini Coefficient</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a class="active" href="/post/swift-icloud-key-value-store/">iCloud Key-Value Storage in Swift 3</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/jekyll-github-pages-gulp-babel-directory-structure/">Directory Structure for Jekyll / GitHub Pages with Gulp and Babel</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/character-language-model-lstm-tensorflow/">An Interactive Character-Level Language Model</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2016</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/visualizing-travel-times-with-multidimensional-scaling/">Visualizing Travel Times with Multidimensional Scaling</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2015</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/some-facts-i-did-not-know-about-java/">Some facts I did not know about Java</a>
+                </li>
+                
+                
+                </ul>
+
+            </div>
+            <h5><a href="/about/">About</a></h5>
+        </div>
+    </div>
+</nav>
+
+
+<section class="wrapper">
+    <div id="content" class="container-fluid">
+        <div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1>iCloud Key-Value Storage in Swift 3</h1>
+                    
+                    <h5>
+                        <span><i class="fa fa-calendar-o"></i> 09 August 2017</span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                <div>The iCloud key-value storage is like the <code>UserDefaults</code> but synced across devices. It also survives uninstalls of the app. I used it today to add iCloud backups to <a href="https://itunes.apple.com/us/app/emoji-diary-daily-journal-with-emoticons/id1247061044?mt=8">Emoji Diary</a>. It required 4 lines of code.
+
+<h3>Activate the iCloud capability</h3>
+
+<p>Select your project in Xcode and then select the target under "Project and Targets". Activate iCloud and check "Key-Value storage".</p>
+
+<img src="/images/posts/swift-icloud-key-value-store/project-settings.png" alt="Screenshot of project settings in Xcode">
+
+
+
+<h3>Add iCloud to your App ID</h3>
+
+<ol>
+    <li>Go to <a href="https://developer.apple.com/account/#/welcome">https://developer.apple.com/account/</a> -> Certificates, Identifiers & Profiles.</li>
+    <li>Under <strong>Identifiers -> App IDs</strong>, edit your App ID and <strong>check the iCloud box</strong>. For Key-Value storage "Compatible with Xcode 5" suffices. CloudKit is for documents, large files and Core Data. Click Done.</li>
+    <li>Go to your <strong>Provisioning Profiles</strong>. You will see that they turned invalid. For each of them, click edit and then generate to regenerate them. By opening the downloaded Provisioning Profiles, Xcode will automatically update them.</li>
+</ol>
+
+<h3>4 lines of code</h3>
+
+<p>Wherever you need to access the key-value store, call</p>
+
+<pre class="lang-swift">
+    <code>var keyStore = NSUbiquitousKeyValueStore()</code>
+</pre>
+
+<p>Add data just like with the <code>UserDefaults</code>:</p>
+
+<pre class="lang-swift">
+    <code>keyStore.set("John Appleseed", forKey: "userName")</code>
+</pre>
+
+<p>Retrieve data somewhere else with:</p>
+
+<pre class="lang-swift">
+    <code>let storedUserName = keyStore.string(forKey: "userName")</code>
+</pre>
+
+<p>So far, the keyStore acts like the <code>UserDefaults</code>. The data will be stored locally. To sync them with iCloud, call</p>
+
+<pre class="lang-swift">
+    <code>keyStore.synchronize()</code>
+</pre>
+
+<p>This may not synchronize immediately but at "an appropriate later time", as the Apple Docs put it.</p></div>
+
+                <h3>Like what you read?</h3>
+                <div>
+                    <div class="clearfix">
+                    <div><applause-button url="https://theblog.github.io/swift-icloud-key-value-store" multiclap="false" color="rgb(10, 18, 79)"></div>
+                    <p>I don't use Google Analytics or Disqus because they require cookies. I would still like to know
+                        which posts are popular, so if you liked this post you can let me know here on the right.</p>
+                    </div>
+                    <p>You can also leave a comment if you have a GitHub account. The "Sign in" button will store the GitHub API token in a cookie.</p>
+                    <script src="https://utteranc.es/client.js" repo="theblog/blog-comments" issue-term="swift-icloud-key-value-store" theme="github-light" crossorigin="anonymous" async>
+                    </script>
+                </div>
+                <div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</section>
+<footer class="footer">
+    <div>Powered by <a href="https://github.com/jekyll/jekyll" target="_blank">Jekyll</a>.</div>
+    <div style="margin-top: 5px"><a href="https://www.iubenda.com/privacy-policy/63560500/legal" style="color:inherit">Imprint and Privacy Policy</a></div>
+</footer>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+
+<script src="/js/general.js"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+  <script src="/js/post.js"></script>
+  <script src="/js/post-util.js"></script>
+
+
+
+</body>
+
+</html>

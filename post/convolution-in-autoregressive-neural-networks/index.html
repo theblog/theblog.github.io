@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Convolutions in Autoregressive Neural Networks</title>
+
+    
+    <meta name="description" content="This post explains how to use one-dimensional causal and dilated convolutions in autoregressive neural networks such as WaveNet.">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Convolutions in Autoregressive Neural Networks">
+    <meta property="og:description" content="This post explains how to use one-dimensional causal and dilated convolutions in autoregressive neural networks such as WaveNet.">
+    <meta property="og:url" content="https://theblog.github.io">
+    <meta property="og:site_name" content="The Blog">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:description" content="This post explains how to use one-dimensional causal and dilated convolutions in autoregressive neural networks such as WaveNet.">
+    <meta name="twitter:title" content="Convolutions in Autoregressive Neural Networks">
+    
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/favicons/site.webmanifest">
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.1.6/css/ion.rangeSlider.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github-gist.min.css">
+    <link rel="stylesheet" href="/css/lib/ion.rangeSlider/css/ion.rangeSlider.skinFlat.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post-util.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css">
+
+      <link rel="stylesheet" href="/css/posts/convolution-autoregressive-nns.css">
+
+
+    
+</head>
+
+<body>
+
+
+
+<div id="main-navbar-sticky-background"></div>
+
+<nav role="navigation" id="main-navbar" class="navbar navbar-default">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header">
+            <button type="button" data-target="#main-navbar-collapse" data-toggle="collapse" class="navbar-toggle collapsed" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <div class="navbar-brand">
+                <a href="https://theblog.github.io">
+                    <div id="logo-title"><img src="/images/logo.png" alt="Site logo"></div>
+                    <div id="logo-subtitle">A Random Walk Through Computer Science</div>
+                </a>
+            </div>
+        </div>
+
+        
+        <div id="main-navbar-collapse" class="collapse navbar-collapse">
+            <h5><a href="https://theblog.github.io">Posts</a></h5>
+            <div class="nav navbar-nav">
+                
+                
+
+                
+                    
+                <h5 class="navigation-year">2021</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/from-tensorflow-to-pytorch/">PyTorch for TensorFlow Users - A Minimal Diff</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2019</h5>
+                <ul>
+                
+
+                <li>
+                    <a class="active" href="/post/convolution-in-autoregressive-neural-networks/">Convolutions in Autoregressive Neural Networks</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2017</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/gini-coefficient-intuitive-explanation/">Intuitive Explanation of the Gini Coefficient</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/swift-icloud-key-value-store/">iCloud Key-Value Storage in Swift 3</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/jekyll-github-pages-gulp-babel-directory-structure/">Directory Structure for Jekyll / GitHub Pages with Gulp and Babel</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/character-language-model-lstm-tensorflow/">An Interactive Character-Level Language Model</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2016</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/visualizing-travel-times-with-multidimensional-scaling/">Visualizing Travel Times with Multidimensional Scaling</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2015</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/some-facts-i-did-not-know-about-java/">Some facts I did not know about Java</a>
+                </li>
+                
+                
+                </ul>
+
+            </div>
+            <h5><a href="/about/">About</a></h5>
+        </div>
+    </div>
+</nav>
+
+
+<section class="wrapper">
+    <div id="content" class="container-fluid">
+        <div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1>Convolutions in Autoregressive Neural Networks</h1>
+                    
+                    <h5>
+                        <span><i class="fa fa-calendar-o"></i> 28 February 2019</span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                <div><p>This post explains how to use one-dimensional causal and dilated convolutions in autoregressive neural networks such as WaveNet. For implementation details, I will use the notation of the <code>tensorflow.keras.layers</code> package, although the concepts themselves are framework-independent.</p>
+
+<p>
+    Say we have some temporal data, for example recordings of human speech. At a sample rate of 16,000 Hz, one second of recorded speech is a one-dimensional array of 16,000 values, as visualized <a href="https://deepmind.com/blog/wavenet-generative-model-raw-audio/#gif-8">here</a>. Based on the recordings we have, we can compute a probabilistic model of the value at the next time step given the values at the previous time steps. Having a good model for this would be really helpful as it would allow us to generate speech ourselves.
+</p>
+
+<p>
+    A simple approach would be to model the next value using an affine transformation (linear combination + bias) of the four previous values. Implemented in Keras, this would be a single <code>Dense</code> layer with <code>units=1</code>:
+</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/01-simple-concept.svg" width="154px" height="131px">
+</figure>
+
+
+
+<p>
+    This is already an autoregressive neural network. We can train it by splitting our recordings into appropriate chunks of inputs and targets, i.e.:
+</p>
+
+<pre><code class="plaintext">1st chunk: x = [1, 2, 3, 4], y = [5]
+2nd chunk: x = [2, 3, 4, 5], y = [6]
+3rd chunk: x = [3, 4, 5, 6], y = [7]
+...</code></pre>
+
+<p>
+    But since we only predict one time step per feed-forward pass, it takes long to iterate through a single training example, let alone through our entire dataset. It would speed up training if we could predict the next time steps for a whole training example in a single feed-forward pass. To do this, we need to apply the same four weights to each chunk of time steps in the input frame. This is exactly what a <code>Conv1D</code> layer with <code>kernel_size=4</code> does:
+</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/01-simple.svg" width="530px" height="131px">
+</figure>
+
+<p>So, training a fully connected layer in theory corresponds to training a convolutional layer in practice. Note that the final trained model is still a fully connected layer. We just train it efficiently by converting it to a convolutional layer without changing the number or shape of the weights.</p>
+
+<p>At this point, we are already using causal convolutions. This might be surprising, because we just defined a simple convolutional layer without specifying something like <code>causal=True</code>. But whether a convolution is causal or not is rather a matter of perspective than of the architecture. By using it in a causal way, i.e. giving the model appropriate input and target values, we make it a causal convolution. We could also decide to use the same convolutional layer in a non-causal way, for example for processing an image. Then, our view of it would look like this:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/01-simple-image-equivalent.svg" width="530px" height="131px">
+</figure>
+
+<p>This causal interpretation also works for a neural network with multiple layers. We only have to make sure that the time step given as the target value comes after the final layer's receptive field. Thus, the model never has access to future time steps when predicting the value of the next one.</p>
+
+<h3>Causal padding</h3>
+
+<p>One thing that <code>Conv1D</code> does allow us to specify is <code>padding="causal"</code>. This simply pads the layer's input with zeros in the front so that we can also predict the values of early time steps in the frame:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/02-causal-padding.svg" width="615px" height="131px">
+</figure>
+
+<p>This doesn't change the architecture of our model (it's still a fully connected layer with four weights). But it allows us to train the model on incomplete inputs. Thus, it also learns how to start a sequence (sentence, song etc.) and not just how to continue it. A convenient consequence of causal padding is that the output of a layer has the same width as its input. This is helpful when implementing skip connections between layers, which we will cover below.</p>
+
+<p>Note: in the following, I will distinguish between the model's architecture "in theory" and the model's architecture "in practice". The former term refers to the concept of our model, which has been a single <code>Dense</code> layer with four weights so far. The latter term refers to the architecture we use for training the model efficiently. Above, we have seen that in order to train the model efficiently, we should use a <code>Conv1D</code> layer instead of a <code>Dense</code> layer. This, however, does not change the model's parameters. It is just a trick used for training. At test time, our model can be converted to a <code>Dense</code> layer again.</p>
+
+<h3>Convolutions in theory</h3>
+
+<p>Above, we have seen that a fully connected layer in theory corresponds to training a convolutional layer in practice. But what does a convolutional layer in theory correspond to? For example, this convolutional neural network:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/03-two-layers-concept.svg" width="400px" height="237px">
+</figure>
+
+<p>The lower layer is a convolutional layer. The upper layer can be seen as a fully connected layer or as a convolutional layer with a feature map of size one. Now, when drawing the computations for the other time steps with dashed arrows, we see that we can use convolutional layers in practice as well:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/03-two-layers.svg" width="615px" height="237px">
+</figure>
+
+<h3>Dilated convolutions</h3>
+
+<p>When a convolutional layer in our conceptual architecture has a stride that is larger than one, for example</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/04-stride-concept.svg" width="400px" height="237px">
+</figure>
+
+<p>the subsequent layers in practice must compensate for this by leaving out the corresponding weights:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/04-stride.svg" width="615px" height="237px">
+</figure>
+
+<p>This is precisely what a dilated convolution does. It is equivalent to a convolution with a stride of greater than one in the previous layers. At the same time, it allows us to perform the actual convolution with a stride of one. This is necessary, since we want to apply our model to every time step in one feed-forward pass without skipping time steps. When taking a look at the WaveNet architecture (<a href="http://www.gabormelli.com/RKB/WaveNet_Neural_Network">source</a>), we can see that it theoretically also corresponds to a simple stack of convolutions with stride two:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/wavenet.png">
+</figure>
+
+<p>This figure shows how a stride greater than one affects the dilation rates of all subsequent layers in practice, not just the next one. For example, the dilation rate in the output layer is <code>2 * 2 * 2 = 8</code>, caused by the "conceptual strides" in the previous layers. If we set the conceptual stride in the layer before the output layer to 1, the output layer would still need a dilation rate of 4. The rule for computing the dilation rate in a specific layer is to multiply all conceptual strides of the previous layers (more on the equivalence of strides and dilation rates below).
+</p>
+
+<h3>Pooling</h3>
+
+<p>Pooling is problematic when we perform it on the output of a convolutional layer with a stride larger than one. In theory, that would look like this:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/05-pooling-concept.svg" width="487px" height="343px">
+</figure>
+
+<p>When drawing the arrows for the computation of the previous time step, we can see that a problem arises in the neurons marked with exclamation marks.</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/05-pooling.svg" width="572px" height="343px">
+</figure>
+
+<p>These neurons don't appear in the conceptual computation of the tenth time step, yet they are included in the pooling windows and thus will influence the computation in practice. What we need to circumvent this is a pooling layer with dilation; just like in the convolutional layers. Unfortunately, the pooling layers <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/AvgPool1D"><code>AvgPool1D</code></a> and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/MaxPool1D"><code>MaxPool1D</code></a> neither support dilation rates nor specifying <code>padding="causal"</code>. We can, however, use <a href="https://www.tensorflow.org/api_docs/python/tf/nn/pool"><code>tf.nn.pool</code></a>, which supports specifying a dilation rate. As for the causal padding, we can take a look at Keras' <a href="https://github.com/keras-team/keras/issues/8751#issuecomment-377784644">implementation</a> to verify that we can really just pad the input on the left and then carry on with "valid" padding:</p>
+
+<pre><code class="lang-python">if padding == 'causal':
+    # causal (dilated) convolution:
+    left_pad = dilation_rate * (kernel_shape[0] - 1)
+    x = temporal_padding(x, (left_pad, 0))
+    padding = 'valid'</code></pre>
+
+Below is a custom Keras layer that will perform dilated pooling with optional causal padding. The <code>pooling_type</code> argument is given to <a href="https://www.tensorflow.org/api_docs/python/tf/nn/pool"><code>tf.nn.pool</code></a> and must be <code>"avg"</code> or <code>"max"</code> (case insensitive).
+
+<pre><code class="lang-python">import tensorflow as tf
+
+class DilatedPooling1D(tf.keras.layers.Layer):
+    def __init__(self, pooling_type, pool_size=2, padding='causal',
+                 dilation_rate=1, name=None, **kwargs):
+        super(DilatedPooling1D, self).__init__(name=name, **kwargs)
+        self.pooling_type = pooling_type.upper()
+        self.pool_size = pool_size
+        self.padding = padding.upper()
+        self.dilation_rate = dilation_rate
+        self.input_spec = tf.keras.layers.InputSpec(ndim=3)
+
+    def call(self, inputs):
+        # Input should have rank 3 and be in NWC format
+        padding = self.padding
+        if self.padding == 'CAUSAL':
+            # Compute the causal padding
+            left_pad = self.dilation_rate * (self.pool_size - 1)
+            inputs = tf.pad(inputs, [[0, 0, ], [left_pad, 0], [0, 0]])
+            padding = 'VALID'
+
+        outputs = tf.nn.pool(inputs,
+                             window_shape=[self.pool_size],
+                             pooling_type=self.pooling_type,
+                             padding=padding,
+                             dilation_rate=[self.dilation_rate],
+                             strides=[1],
+                             data_format='NWC')
+        return outputs</code></pre>
+
+<h3>Fully connected layers</h3>
+
+<p>The fully connected layers above all had a single unit and could be interpreted as convolutional layers with a feature map of size one. Fully connected layers with multiple units can be interpreted as convolutional layers as well by setting the number of filters to the number of units while each feature map still has a size of one. For example, when adding a softmax output layer to our conceptual architecture, we add a convolutional layer with <code>filters = n_classes</code>.</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/08-softmax-concept.svg" width="405px" height="237px">
+</figure>
+
+<p>Thus, we can directly draw the network architecture in practice:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/08-softmax.svg" width="620px" height="237px">
+</figure>
+
+<p>This also works for hidden fully connected layers. Many convolutional neural networks have large fully connected layers before the softmax output layer, for example</p>
+
+<pre><code class="lang-python">model = Sequential([
+    ..., # Output of this part has the shape (batch_size, 10, 32)
+    Flatten(),
+    Dense(units=500, activation='relu'),
+    Dense(units=100, activation='relu'),
+    Dense(units=10, activation='softmax'),
+])</code></pre>
+
+<p>Regardless of whether the network is autoregressive or not, this is equivalent to</p>
+
+<pre><code class="lang-python">model = Sequential([
+    ..., # Output of this part has the shape (batch_size, 10, 32)
+    Conv1D(filters=500, kernel_size=10, padding='valid', activation='relu'),
+    Conv1D(filters=100, kernel_size=1, padding='valid', activation='relu'),
+    Conv1D(filters=10, kernel_size=1, padding='valid', activation='softmax'),
+])</code></pre>
+
+<p>Therefore, we can use fully connected layers in our conceptual architecture just like convolutional layers.</p>
+
+<h3>Skip connections</h3>
+
+<p>Another popular architectural concept are residual and skip connections. The WaveNet architecture makes use of these as well. Since causal padding makes the outputs of all layers have the same width, residual connections are simple to implement in the network used for training:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/09-residual.svg" width="653px" height="237px">
+</figure>
+
+<p>Here, we add the blue input values to the output of the first hidden layer. We also add the result to the output of the second hidden layer. In the conceptual network, i.e. our final trained network, this corresponds to adding residual connections to the first time step in each convolution's receptive field:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/09-residual-concept.svg" width="409px" height="237px">
+</figure>
+
+<p>An alternative to adding the skip connection to a layer's output, for example adding the blue input values to the output of the first hidden layer, is to simply concatenate the feature maps of both tensors. <a href="https://arxiv.org/abs/1608.06993">DenseNet</a> uses this approach to give layers close to the output direct access to layers close to the input. An advantage of this method is that it does not require the same number of feature maps in each tensor. They need to match when using residual connections, because we add both tensors together, which might require using <a href="https://stats.stackexchange.com/questions/194142/what-does-1x1-convolution-mean-in-a-neural-network">1x1 convolutions</a>. For concatenating them, however, they don't need to match. Each feature map just needs to have the same size, which they do when using causal padding.</p>
+
+<p>When replacing the addition of the residual connections with a concatenation and adding a skip connection from the input to the second hidden layer, this is the resulting network architecture used during training:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/10-densenet.svg" width="682px" height="237px">
+</figure>
+
+<p>The blue input values are now given as an input to the second hidden layer in a separate feature map. The feature maps of all three layer outputs are concatenated to be the input to whatever layer might follow after the second hidden layer. Just like with the residual connections, this corresponds conceptually to prioritizing more recent time steps - this time by assigning additional weights to them:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/10-densenet-concept.svg" width="435px" height="237px">
+</figure>
+
+<h3>Mixing stride with dilation</h3>
+
+<p>The <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv1D"><code>Conv1D</code></a> layer does not support specifying both a stride greater than one and a dilation rate greater than one. One reason for this might be that you can express a network using strides and dilation rates greater than one with a network without strides greater than one. An example is the following (a bit crazy) network:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/06-stride-and-dilation.svg" width="1095px" height="343px">
+</figure>
+
+<p>The boxes on the left show the original specification with strides greater than one while the boxes on the right show the corresponding specification with strides equal to one. While both specifications yield the same value in the output node, the specification on the right allows us to compute the outputs for multiple time steps in a single feed-forward pass. If we would use strides greater than one in the actual network used for training, we would skip time steps during that feed-forward pass.</p>
+
+<h3><code>"same"</code> padding</h3>
+
+<p>One frequent architectural concept that cannot be easily translated into an efficient training architecture is <code>"same"</code> padding, at least I couldn't think of a solution for it. Conceptually, <code>"same"</code> padding looks like this:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/07-padding-same-concept.svg" width="357px" height="237px">
+</figure>
+
+<p>We add padding on both sides of the input so that the size of each feature map in the layer's output is equal to the size of each input feature map (when using a stride of one). When applying this network to a whole frame of inputs in parallel, we notice that the space where the padding neurons need to be is occupied by the input values of other time steps - in this case the fourth input:</p>
+
+<figure>
+    <img src="/images/posts/convolution-autoregressive-nns/07-padding-same.svg" width="486px" height="237px">
+</figure>
+
+<p>So, we can't apply our trick for efficient training to a conceptual model with <code>"same"</code> padding.</p>
+
+<p>That's it, I hope you enjoyed this post! Let me know if you spot any errors or have an idea on how to make <code>"same"</code> padding work efficiently.</p></div>
+
+                <h3>Like what you read?</h3>
+                <div>
+                    <div class="clearfix">
+                    <div><applause-button url="https://theblog.github.io/convolution-autoregressive-nns" multiclap="false" color="rgb(10, 18, 79)"></div>
+                    <p>I don't use Google Analytics or Disqus because they require cookies. I would still like to know
+                        which posts are popular, so if you liked this post you can let me know here on the right.</p>
+                    </div>
+                    <p>You can also leave a comment if you have a GitHub account. The "Sign in" button will store the GitHub API token in a cookie.</p>
+                    <script src="https://utteranc.es/client.js" repo="theblog/blog-comments" issue-term="convolution-autoregressive-nns" theme="github-light" crossorigin="anonymous" async>
+                    </script>
+                </div>
+                <div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</section>
+<footer class="footer">
+    <div>Powered by <a href="https://github.com/jekyll/jekyll" target="_blank">Jekyll</a>.</div>
+    <div style="margin-top: 5px"><a href="https://www.iubenda.com/privacy-policy/63560500/legal" style="color:inherit">Imprint and Privacy Policy</a></div>
+</footer>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+
+<script src="/js/general.js"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+  <script src="/js/post.js"></script>
+  <script src="/js/post-util.js"></script>
+
+
+
+</body>
+
+</html>

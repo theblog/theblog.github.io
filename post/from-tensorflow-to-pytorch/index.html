@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>PyTorch for TensorFlow Users - A Minimal Diff</title>
+
+    
+    <meta name="description" content="This is a migration guide for TensorFlow users that already know how neural networks work and what a tensor is.">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PyTorch for TensorFlow Users - A Minimal Diff">
+    <meta property="og:description" content="This is a migration guide for TensorFlow users that already know how neural networks work and what a tensor is.">
+    <meta property="og:url" content="https://theblog.github.io">
+    <meta property="og:site_name" content="The Blog">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:description" content="This is a migration guide for TensorFlow users that already know how neural networks work and what a tensor is.">
+    <meta name="twitter:title" content="PyTorch for TensorFlow Users - A Minimal Diff">
+    
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/favicons/site.webmanifest">
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.1.6/css/ion.rangeSlider.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github-gist.min.css">
+    <link rel="stylesheet" href="/css/lib/ion.rangeSlider/css/ion.rangeSlider.skinFlat.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post-util.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css">
+
+    
+
+    
+</head>
+
+<body>
+
+
+
+<div id="main-navbar-sticky-background"></div>
+
+<nav role="navigation" id="main-navbar" class="navbar navbar-default">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header">
+            <button type="button" data-target="#main-navbar-collapse" data-toggle="collapse" class="navbar-toggle collapsed" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <div class="navbar-brand">
+                <a href="https://theblog.github.io">
+                    <div id="logo-title"><img src="/images/logo.png" alt="Site logo"></div>
+                    <div id="logo-subtitle">A Random Walk Through Computer Science</div>
+                </a>
+            </div>
+        </div>
+
+        
+        <div id="main-navbar-collapse" class="collapse navbar-collapse">
+            <h5><a href="https://theblog.github.io">Posts</a></h5>
+            <div class="nav navbar-nav">
+                
+                
+
+                
+                    
+                <h5 class="navigation-year">2021</h5>
+                <ul>
+                
+
+                <li>
+                    <a class="active" href="/post/from-tensorflow-to-pytorch/">PyTorch for TensorFlow Users - A Minimal Diff</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2019</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/convolution-in-autoregressive-neural-networks/">Convolutions in Autoregressive Neural Networks</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2017</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/gini-coefficient-intuitive-explanation/">Intuitive Explanation of the Gini Coefficient</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/swift-icloud-key-value-store/">iCloud Key-Value Storage in Swift 3</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/jekyll-github-pages-gulp-babel-directory-structure/">Directory Structure for Jekyll / GitHub Pages with Gulp and Babel</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/character-language-model-lstm-tensorflow/">An Interactive Character-Level Language Model</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2016</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/visualizing-travel-times-with-multidimensional-scaling/">Visualizing Travel Times with Multidimensional Scaling</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2015</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/some-facts-i-did-not-know-about-java/">Some facts I did not know about Java</a>
+                </li>
+                
+                
+                </ul>
+
+            </div>
+            <h5><a href="/about/">About</a></h5>
+        </div>
+    </div>
+</nav>
+
+
+<section class="wrapper">
+    <div id="content" class="container-fluid">
+        <div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1>PyTorch for TensorFlow Users - A Minimal Diff</h1>
+                    
+                    <h5>
+                        <span><i class="fa fa-calendar-o"></i> 07 March 2021</span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                <div><p>This is a migration guide for TensorFlow users that already know how neural networks work and what a tensor is. I have been using TensorFlow since 2016, but I switched to PyTorch a year ago. Although the key concepts of both frameworks are pretty similar, especially since TF v2, I wanted to make sure that I use PyTorch's API properly and don't overlook some critical difference. Therefore, I read through the currently listed beginner-level PyTorch <a href="https://pytorch.org/tutorials/">tutorials</a>, the 14 notes in the PyTorch <a href="https://pytorch.org/docs/stable/index.html">documentation</a> (as of version 1.8.0), the top-level pages of the Python API like <a href="https://pytorch.org/docs/stable/tensors.html"><code>torch.Tensor</code></a> and <a href="https://pytorch.org/docs/stable/distributions.html"><code>torch.distributions</code></a>, and some intermediate tutorials. For each tutorial and documentation page, I list the insights that I consider relevant for TensorFlow users below. <button class="show-more" data-target-id="meta-information" data-show-text="Expand" data-hide-text="Hide">Expand</button> the meta-information about the contents of this post.</p>
+
+<div id="meta-information" class="detail">
+    <p>I skipped parts where one would assume that PyTorch behaves similar to TensorFlow like <code>torch.ones_like(tensor)</code>, <code>a + b[:, 1]</code>, CUDA non-determinism, or <code>torch.cat</code> instead of <code>tf.concat</code>.</p>
+    <p>I use one section per tutorial so that you can look up the context of a specific statement if needed. The sections are sorted by relevance so that the most important concepts are explained first. Tutorials without new general insights are not mentioned.</p>
+    <p>Phrases in quotation marks are copied from the documentation. At times, I removed the quotes when I changed a few words like "you" instead of "we". From a credit perspective, all credit is owed to the authors of the PyTorch documentation, since this post is just derivative work.</p><p>
+    </p><p>I went through the application-specific tutorials to find out about best practices and patterns not mentioned in the general tutorials. I only mention things that are relevant to the general PyTorch user. If you want to implement a transformer in PyTorch, then the <a href="https://pytorch.org/tutorials/beginner/transformer_tutorial.html">Transformer tutorial</a> will of course be worth a separate read.</p>
+</div>
+
+<h3><a href="https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html">Tutorial: Deep Learning with PyTorch: A 60 Minute Blitz</a></h3>
+
+<h4><a href="https://pytorch.org/tutorials/beginner/blitz/tensor_tutorial.html">Part 1: Tensors</a></h4>
+
+<p>Create a new tensor with <code>torch.tensor([[1, 2]])</code> or from NumPy with <code>torch.from_numpy(...)</code>.</p>
+
+<p>By default, new tensors are created on the CPU. You can explicitly move a tensor to a (specific) GPU with</p>
+
+<pre><code class="lang-python">if torch.cuda.is_available():
+    tensor = tensor.to('cuda')</code></pre>
+
+<p>or use the <code>torch.cuda.device</code> context manager. Generally, the result of an operation will be on the same device as its operands.</p>
+
+<p>Operations that have a <code>_</code> suffix are in-place. For example, <code>tensor.add_(5)</code> will change <code>tensor</code>. This saves memory but can be problematic when computing derivatives because of an immediate loss of history. Hence, in-place operations are discouraged.</p>
+
+<p>Tensors on the CPU and NumPy arrays can (and do by default) share their underlying memory locations, and changing one will change the other. Access a tensor's NumPy array with <code>tensor.numpy()</code>.</p>
+
+<h4><a href="https://pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html">Part 2: A Gentle Introduction to torch.autograd</a></h4>
+
+<p>PyTorch has pretrained models in the <code>torchvision</code> package. Prediction is simply done with <code>prediction = model(data)</code>. More on defining your own model below in part 3.</p>
+
+<p>You can connect an optimizer to tensors with:</p>
+<pre><code class="lang-python">optim = torch.optim.SGD(model.parameters(), lr=1e-2, momentum=0.9)</code></pre>
+
+<p>Backward propagation is kicked off when you call <code>.backward()</code> on a tensor, for example <code>loss.backward()</code>. Autograd then calculates and stores the gradients for each model parameter in the parameter’s <code>.grad</code> attribute. <code>optim.step()</code> uses this to perform a step.</p>
+
+<p>If you want to compute the gradient w.r.t. a tensor, you need to set <code>tensor.requires_grad = True</code>. After this, subsequent operations depending on <code>tensor</code> will be tracked by autograd. The result tensors of these operations will have <code>.requires_grad = True</code> as well. They will have a <code>.grad_fn</code> attribute telling autograd how to backpropagate from the respective tensor.</p>
+
+<p>Backpropagation stops at tensors with <code>.requires_grad = False</code> or tensors without predecessors, called leaf tensors. For leaf tensors with <code>.requires_grad = True</code>, <code>.grad</code> will be populated.  For non-leaf tensors from intermediate operations, <code>.grad</code> will not be populated by default.</p>
+
+<p>After each <code>.backward()</code> call, autograd starts populating a new graph. This is exactly what allows you to use control flow statements in your model; you can change the shape, size and operations at every iteration if needed - what you run is what you differentiate.</p>
+
+<p>Calling <code>.backward()</code> directly again will lead to an error because the intermediate results will have been freed. Nevertheless, the <code>.grad</code> attribute of the leaf tensors persists across <code>.backward()</code> calls and each call adds its computed gradient to it.</p>
+
+<p>Only tensors of floating point and complex dtype can require gradients.</p>
+
+<p>You can freeze a model like this:</p>
+<pre><code class="lang-python">for param in model.parameters():
+    param.requires_grad = False</code></pre>
+
+<p>There is also a context manager that disables gradient calculation, called <a href="https://pytorch.org/docs/stable/generated/torch.no_grad.html"><code>torch.no_grad()</code></a>.</p>
+
+<h4><a href="https://pytorch.org/tutorials/beginner/blitz/neural_networks_tutorial.html">Part 3: Neural Networks</a></h4>
+
+<p>Use the <code>torch.nn</code> package. <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html"><code>nn.Module</code></a> is the base class for implementing layers and models. It has a <code>forward(input)</code> method that computes the output for a given input. Analogous to <code>call(inputs)</code> in Keras layers in TF v1, <code>forward(input)</code> is automatically called when you call the module like a function with <code>module(input)</code>. The difference is that <code>forward(input)</code> gets called in every forward pass and can do something different each time.</p>
+
+<p>You define the (trainable) parameters of a module in its constructor like this:</p>
+
+<pre><code class="lang-python">self.conv1 = nn.Conv2d(in_channels=1, out_channels=6, kernel_size=3)
+self.conv2 = nn.Conv2d(in_channels=6, out_channels=16, kernel_size=3)</code></pre>
+<p>When assigning a value to a member variable of a module, PyTorch will automatically check whether it is a parameter or another module and add it to the module's list of parameters and modules. This happens <a href="https://github.com/pytorch/pytorch/blob/4949eea0ffb60dc81a0a78402fa59fdf68206718/torch/nn/modules/module.py#L950">here</a>. <code>nn.Conv2d</code> is a <code>nn.Module</code> and its <code>weight</code> and <code>bias</code> variables are instances of <code>nn.Parameter</code>.</p>
+
+<p>You can (recursively) iterate over a module's parameters and child modules with <code>.parameters()</code>, <code>.modules()</code> and <code>.children()</code>.</p>
+
+<p>Parameters have <code>requires_grad = True</code> by default. Before <code>.backward()</code>, you usually call <code>module.zero_grad()</code> or <code>optimizer.zero_grad()</code> to set the <code>.grad</code> value of each parameter to zero. Otherwise, gradients will be accumulated to existing gradients.</p>
+
+<p>You can move a whole module to a GPU and back with <code>.to(...)</code>, <code>.cuda(...)</code> and <code>.cpu(...)</code>. Often, you use <code>.to(device)</code> and set the <code>device</code> variable at the start of your script like this:</p>
+<pre><code class="lang-python">device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')</code></pre>
+<p>For modules, <code>.to()</code> moves the module to the GPU (or CPU) in-place. For tensors, it returns a new copy on the GPU instead of rewriting the given tensor. Therefore, you usually do <code>tensor = tensor.to(device)</code>.</p>
+
+<p><code>torch.nn</code> also contains loss functions like <code>nn.MSELoss</code>.</p>
+
+<p><code>import torch.nn.functional as F</code> is very common to apply non-trainable functions like <code>F.relu</code> or <code>F.max_pool</code>.</p>
+
+<h4><a href="https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html">Part 4: Training a Classifier</a></h4>
+
+<p>For data loading, the central classes are <code>torch.utils.data.Dataset</code> and <code>torch.utils.data.DataLoader</code>.</p>
+
+<p>You start with a <code>Dataset</code> that implements loading samples, define preprocessing transformations and then connect it to your model with a <code>DataLoader</code>.</p>
+
+<p>For images, the official <a href="https://pytorch.org/vision/stable/index.html"><code>torchvision</code></a> package contains common preprocessing transformations and popular datasets, so you don't need to implement the <code>Dataset</code> yourself (more on that below):</p>
+
+<pre><code class="lang-python">import torchvision.transforms as transforms
+transform = transforms.Compose(
+    [transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+
+trainset = torchvision.datasets.CIFAR10(
+    root='./data', train=True,
+    download=True, transform=transform)
+
+trainloader = torch.utils.data.DataLoader(
+    trainset, batch_size=4,
+    shuffle=True, num_workers=2)</code></pre>
+
+<p>You can then iterate over <code>trainloader</code> like this:</p>
+<pre><code class="lang-python">for images, labels in trainloader:
+    predictions = model(images)
+    ...</code></pre>
+<p>You can do this multiple times without having to reset the data loader.</p>
+
+<p>A common operation in training loops is <code>.item()</code>, for example <code>loss.item()</code>. This returns the value of the tensor as a Python number. As a standard Python object, the result always lives on the CPU, is independent from the original tensor and is ignored by autograd. For tensors with multiple values, you can use <code>.tolist()</code>.</p>
+
+<p>Save a model with <code>torch.save(model.state_dict(), './cifar_net.pth')</code>. More on saving and loading below.</p>
+
+<p>You can wrap the evaluation or test phase with <code>torch.no_grad()</code> to speed up inference. In addition, <code>model.eval()</code> sets dropout and batch-norm layers to inference mode.</p>
+
+<p>If your network lives on the GPU, you need to put the data on the GPU at every step as well:</p>
+<pre><code class="lang-python">inputs, labels = inputs.to(device), labels.to(device)</code></pre>
+
+<h4><a href="https://pytorch.org/tutorials/beginner/blitz/data_parallel_tutorial.html">Part 5: Data Parallelism</a></h4>
+
+<p>PyTorch will only use one GPU by default. To use multiple GPUs, you can use <code>model = nn.DataParallel(model)</code>. This works on any model (CNN, RNN, Capsule Net etc.) and will divide the batch across GPUs. Without any additional lines of code needed, it automatically splits the batch and merges the results, so that the caller of <code>model(inputs)</code> does not notice the data parallelism.</p>
+
+<h3><a href="https://pytorch.org/tutorials/beginner/fgsm_tutorial.html">Tutorial: Adversarial Example Generation</a></h3>
+
+<p><code>detached = tensor.detach()</code> returns a view of <code>tensor</code> that is detached from the current computational graph. This means that <code>detached.requires_grad</code> will be <code>False</code> and operations using <code>detached</code> will not be tracked by autograd. <a href="http://www.bnikolic.co.uk/blog/pytorch-detach.html">Here</a> is an illustrative example. Note that <code>detached</code> and <code>tensor</code> still share the same memory.</p>
+
+<p>A common code fragment for converting a tensor on the GPU to NumPy is:</p>
+
+<pre><code class="lang-python">result_np = result.detach().cpu().numpy()</code></pre>
+
+<p>All three function calls are necessary because <code>.numpy()</code> can only be called on a tensor that does not require grad and only on a tensor on the CPU. Call <code>.detach()</code> before <code>.cpu()</code> instead of afterwards to avoid creating an unnecessary autograd edge in the <code>.cpu()</code> call.
+
+</p><h3><a href="https://pytorch.org/tutorials/beginner/data_loading_tutorial.html">Tutorial: Writing Custom Datasets, DataLoaders and Transforms</a></h3>
+
+<p>A custom dataset should inherit <code>torch.utils.data.Dataset</code> and override <code>__len__</code> and <code>__getitem__(idx)</code>. In <code>__getitem__</code>, you usually do the heavy-loading like <code>PIL.Image.open()</code> for the requested sample index.</p>
+
+<p>Similar to <code>torchvision.datasets.CIFAR10</code> above, you can add a <code>transform</code> parameter to the dataset's constructor and apply these <code>torchvision.transforms</code> in <code>__getitem__</code>. You can also write and reuse custom transformations.</p>
+
+<p>NumPy and TensorFlow store an image in HWC format, while PyTorch uses CHW. Use <code>torchvision.transforms.ToTensor</code> for converting.</p>
+
+<p>You can iterate over the dataset directly, but it is recommended to use <code>torch.utils.data.DataLoader</code> for batching, shuffling and loading the data in parallel using <code>multiprocessing</code> workers.</p>
+
+<p><code>torchvision</code> offers <code>Dataset</code> subclasses for common use cases. For example, <a href="https://pytorch.org/vision/stable/datasets.html#imagefolder"><code>ImageFolder</code></a> and <a href="https://pytorch.org/vision/stable/datasets.html#datasetfolder"><code>DatasetFolder</code></a> assume that each sample is stored under <code>root/class_name/xxx.ext</code>. Thus, you only have to provide <code>ImageFolder</code> with the path to <code>root</code> and let it do the rest for you.</p>
+
+<h3><a href="https://pytorch.org/tutorials/beginner/saving_loading_models.html">Tutorial: Saving and Loading Models</a></h3>
+
+<p>The recommended way to serialize a model is via <code>model.state_dict()</code>. This returns a Python dictionary, which contains the trainable parameters. It can be saved with</p>
+
+<pre><code class="lang-python">torch.save(model.state_dict(), 'model.pth')</code></pre>
+
+<p>and loaded with</p>
+
+<pre><code class="lang-python">model.load_state_dict(torch.load('model.pth'))</code></pre>
+
+<p>As you can see, you need to have a <code>model</code> instance for loading the weights. There is also another way to save and load a model: <code>torch.save(model, 'model.pth')</code> and <code>model = torch.load('model.pth')</code>. This loads the <code>model</code> instance and the weights in one call. However, it does so using <code>pickle</code> and may break if you move the Python file defining the model's class, rename classes or attributes, or perform other refactoring between saving and loading the model. This way is therefore not recommended. Personally, I store both the <code>state_dict</code> and the pickled model, because for both ways I have encountered scenarios where one works better than the other.</p>
+
+
+
+<p>An optimizer's state is not part of <code>model.state_dict()</code>, but can be saved with <code>optim.state_dict()</code>.</p>
+
+<h3><a href="https://pytorch.org/tutorials/beginner/nn_tutorial.html">Tutorial: What is torch.nn really?</a></h3>
+
+<p>If you have your whole dataset in two NumPy arrays <code>x_train</code> and <code>y_train</code>, you can use <code>torch.utils.data.TensorDataset(x_train, y_train)</code>.</p>
+
+<p><a href="https://pytorch.org/docs/stable/tensor_view.html"><code>tensor.view()</code></a> is a commonly used function for reshaping, for example between a convolutional and a fully connected layer:</p>
+<pre><code class="lang-python">x = x.view(-1, 16 * 4 * 4)</code></pre>
+<p>It returns a view of the original tensor that can be used like a tensor but shares the underlying data with the original tensor. Most tensor operations that don't modify the data, like <code>transpose</code>, <code>squeeze</code>, <code>unsqueeze</code>, basic indexing and slicing, return a view. Some operations can return a view or a new tensor, so you should not rely on whether it's a view or not. The docs sometimes use the word <a href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor.is_contiguous">"contiguous"</a> to refer to a tensor whose values are stored in the same order in memory as its shape suggests. Non-contiguous tensors can affect the performance.</p>
+
+<p>When implementing a module that has its own parameters, you can initialize the parameters by passing an initialized tensor to <code>nn.Parameter(...)</code>. For example:</p>
+<pre><code class="lang-python">self.weights = nn.Parameter(torch.randn(784, 10) / math.sqrt(784))</code></pre>
+
+<p>PyTorch does not have a layer like <code>tf.keras.layers.Lambda</code>. You can write one yourself quite easily for using it in <code>nn.Sequential</code>, but it might be better to simply write the custom logic in a subclass of <code>nn.Module</code> (<a href="https://discuss.pytorch.org/t/how-to-implement-keras-layers-core-lambda-in-pytorch/5903">discussion on the PyToch forum</a>).</p>
+
+<h3><a href="https://pytorch.org/docs/stable/notes/faq.html">Note: Frequently Asked Questions</a></h3>
+
+<p>When accumulating metrics across forward passes like <code>total_loss += loss</code>, it is important to use <code>loss.item()</code> instead of <code>loss</code>. Not only does that prevent autograd from tracking operations on <code>total_loss</code> unnecessarily. It also tells autograd that the history of <code>total_loss</code> is not needed. Otherwise, autograd will keep the history of each <code>loss</code> tensor across forward passes.</p>
+
+<p>Python only deallocates local variables when they go out of scope. Use <code>del x</code> to free a reference to a tensor or module when you don't need it anymore to optimize memory usage.</p>
+
+<h3><a href="https://pytorch.org/docs/stable/notes/broadcasting.html">Note: Broadcasting semantics</a></h3>
+
+<p>Many PyTorch operations support <a href="https://numpy.org/doc/stable/user/basics.broadcasting.html#module-numpy.doc.broadcasting">NumPy Broadcasting Semantics</a>. "When iterating over the dimension sizes, starting at the trailing dimension, the dimension sizes must either be equal, one of them is 1, or one of them does not exist." For example:</p>
+<pre><code class="lang-python">x = torch.ones(5, 3, 4, 1)
+y = torch.ones(   3, 1, 1)
+# x and y are broadcastable.
+# 1st trailing dimension: both have size 1
+# 2nd trailing dimension: y has size 1
+# 3rd trailing dimension: x size == y size
+# 4th trailing dimension: y dimension doesn't exist</code></pre>
+
+<p>Caution: since dimensions are matched starting at the trailing dimension, <code>torch.ones(3, 1) + torch.ones(3)</code> returns a tensor with shape <code>(3, 3)</code>.</p>
+
+<h3><a href="https://pytorch.org/docs/stable/notes/cuda.html">Note: CUDA semantics</a></h3>
+
+<p>By default, Cross-GPU operations are not allowed.</p>
+
+<p>GPU operations are asynchronous by default. This allows parallel execution on the CPU and other GPUs. "PyTorch automatically performs necessary synchronization when copying data between CPU and GPU or between two GPUs. Hence, computation will proceed as if every operation was executed synchronously."</p>
+
+<p>The note contains a code snippet for device-agnostic code. <button class="show-more" data-target-id="cuda-snippet" data-show-text="Expand it!" data-hide-text="Hide it!">Expand it!</button></p>
+
+<pre id="cuda-snippet" class="detail"><code class="lang-python">import argparse
+import torch
+
+parser = argparse.ArgumentParser(description='PyTorch Example')
+parser.add_argument('--disable-cuda', action='store_true',
+                    help='Disable CUDA')
+args = parser.parse_args()
+args.device = None
+if not args.disable_cuda and torch.cuda.is_available():
+    args.device = torch.device('cuda')
+else:
+    args.device = torch.device('cpu')
+# Example usage:
+x = torch.empty((8, 42), device=args.device)
+net = Network().to(device=args.device)</code></pre>
+
+<p>The note recommends <code>nn.parallel.DistributedDataParallel</code> over <code>nn.DataParallel</code>, even on a single node. The former creates a dedicated process for each GPU, while the latter uses multithreading. <a href="https://pytorch.org/docs/stable/notes/ddp.html"><code>DistributedDataParallel</code></a>, on the other hand, has stronger requirements regarding your code structure.</p>
+
+<h3><a href="https://pytorch.org/docs/stable/optim.html">API Page: torch.optim</a></h3>
+
+<p>"If you need to move a model to GPU via <code>.cuda()</code>, please do so before constructing optimizers for it. Parameters of a model after <code>.cuda()</code> will be different objects from those before the call. In general, you should make sure that optimized parameters live in consistent locations when optimizers are constructed and used."</p>
+
+<h3><a href="https://pytorch.org/docs/stable/data.html">API Page: torch.utils.data</a></h3>
+
+<p>If data loading is a bottleneck, multi-process data loading and memory pinning might help. Both techniques can be activated quite easily for a standard <code>DataLoader</code> by setting <code>num_workers</code> and <code>pin_memory=True</code>.</p>
+
+<h3><a href="https://pytorch.org/docs/stable/named_tensor.html">API Page: Named Tensor</a></h3>
+
+<p>You can name the dimensions of a tensor. Many operations support specifying dimensions by name instead of by position:</p>
+
+<pre><code class="lang-python">t = torch.ones(3, 2, 4, names=('channel', 'height', 'width'))
+torch.sum(t, dim=('height', 'width'))
+# returns tensor([8., 8., 8.], names=('channel',))</code></pre>
+
+<h3>Other API Pages</h3>
+
+<p>The insights from the following API pages can be summarized quite quickly.</p>
+
+<p><a href="https://pytorch.org/docs/stable/backends.html">torch.backends</a> - PyTorch also supports other backends than CUDA, such as Intel's OneDNN library.</p>
+<p><a href="https://pytorch.org/docs/stable/distributions.html">torch.distributions</a> - "This package generally follows the design of the <a href="https://www.tensorflow.org/probability/examples/TensorFlow_Distributions_Tutorial">TensorFlow Distributions</a> package."</p>
+<p><a href="https://pytorch.org/docs/stable/hub.html">torch.hub</a> - Formerly known as <code>torch.util.model_zoo</code>, this module is the equivalent of <a href="https://www.tensorflow.org/hub">TensorFlow Hub</a>.</p>
+<p><a href="https://pytorch.org/docs/stable/nn.init.html">torch.nn.init</a> - Contains helpful initializers like <code>kaiming_normal_(tensor)</code>. You can apply them with <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.apply"><code>module.apply(fn)</code></a>.</p>
+<p><a href="https://pytorch.org/docs/stable/tensors.html">torch.Tensor</a> - <code class="lang-python">tensor[0][1] = 8</code> is possible.</p>
+
+<h3><a href="https://pytorch.org/tutorials/intermediate/torchvision_tutorial.html">Tutorial: TorchVision Object Detection Finetuning Tutorial</a></h3>
+
+<p>You can return dicts in the <code>__getitem__</code> method of a <code>torch.utils.data.Dataset</code>. A data loader will create nested batches from nested tensors.</p>
+
+<p>You can hook a learning rate scheduler to an optimizer like this:</p>
+<pre><code class="lang-python">lr_scheduler = torch.optim.lr_scheduler.StepLR(
+    optimizer, step_size=3, gamma=0.1)</code></pre>
+<p>The schedule is applied each time you call <code>lr_scheduler.step()</code>, usually at the end of an epoch.</p>
+
+<h3><a href="https://pytorch.org/tutorials/intermediate/tensorboard_tutorial.html">Tutorial: Visualizing Models, Data, and Training with TensorBoard</a></h3>
+
+<p>PyTorch integrates well with TensorBoard. You need very few lines of code and can even visualize the graph of a model, or its latent space in 3D.</p>
+
+<h3><a href="https://pytorch.org/tutorials/beginner/pytorch_with_examples.html">Tutorial: Learning PyTorch with Examples</a></h3>
+
+<p>You can define your own differentiable operation by subclassing <code>torch.autograd.Function</code> and implementing the <code>forward</code> and <code>backward</code> functions.</p>
+
+<p><code>torch.nn.Sequential</code> is the equivalent to <code>tf.keras.Sequential</code>.</p>
+
+<h3>What PyTorch does not have</h3>
+
+<p>I noticed a few convenient features of TensorFlow that I did not find in PyTorch. For all of them, the reason is that, in standard PyTorch, computations are done on the fly and neither layers nor tensors are statically connected. Therefore, you cannot:</p>
+
+<ul>
+    <li>Connect layers with symbolic tensors. For example, you need to specify the number of input channels for each <code>torch.nn.Conv2d</code> layer, whereas Keras would infer it from the output shape of the previous layer.</li>
+    <li>Construct a model based on another model like you can do with the functional Keras API:
+        <pre><code class="lang-python">backbone = Model(model.inputs, model.layers[-3].output)</code></pre>
+    </li>
+    <li>Load a model just from a <code>model.pth</code> file that you downloaded from somewhere, whereas in Keras, the static graph of layers allows loading a model with a single of code: <pre><code class="lang-python">model = tf.keras.models.load_model('model.h5')</code></pre></li>
+</ul>
+
+<p>For doing research I think that PyTorch's advantages outweigh these shortcomings.</p>
+
+<h3>Further reading</h3>
+
+<p>Here are some links to helpful resources that I collected over time:</p>
+
+<ul>
+    <li>The <a href="https://pytorch.org/tutorials/beginner/basics/quickstart_tutorial.html">Quickstart tutorial</a> contains a concise training script that you can use as a reference to make sure you don't forget calls like <code>optimizer.zero_grad()</code>.</li>
+    <li>The <a href="https://pytorch.org/docs/stable/index.html">overview page</a> of the PyTorch documentation is good for discovering what PyTorch has to offer.</li>
+    <li>An unofficial PyTorch <a href="https://github.com/IgorSusmelj/pytorch-styleguide">style guide</a>.</li>
+    <li>The official PyTorch <a href="https://pytorch.org/tutorials/beginner/ptcheat.html">cheat sheet</a>.</li>
+    <li>The <a href="https://www.youtube.com/watch?v=9mS1fIYj1So">ECCV 2020 PyTorch Performance Tuning Guide</a>.</li>
+    <li><a href="https://github.com/PyTorchLightning/pytorch-lightning">PyTorch Lightning</a>, a PyTorch wrapper for increasing the computational performance.</li>
+    <li>A <a href="https://old.reddit.com/r/MachineLearning/comments/kvs1ex/d_here_are_17_ways_of_making_pytorch_training/">list of ways</a> to speed up PyTorch training scripts (some items are not specific to PyTorch).</li>
+</ul>
+
+<p>That's it! I hope you found this diff between TensorFlow and PyTorch useful. So far, I am very happy with PyTorch and I like its clean and simple, yet powerful API. I hope that you will, too.</p>
+
+<p>Please let me know if you think that there is an important concept or difference missing here.</p></div>
+
+                <h3>Like what you read?</h3>
+                <div>
+                    <div class="clearfix">
+                    <div><applause-button url="https://theblog.github.io/tf-to-pytorch" multiclap="false" color="rgb(10, 18, 79)"></div>
+                    <p>I don't use Google Analytics or Disqus because they require cookies. I would still like to know
+                        which posts are popular, so if you liked this post you can let me know here on the right.</p>
+                    </div>
+                    <p>You can also leave a comment if you have a GitHub account. The "Sign in" button will store the GitHub API token in a cookie.</p>
+                    <script src="https://utteranc.es/client.js" repo="theblog/blog-comments" issue-term="tf-to-pytorch" theme="github-light" crossorigin="anonymous" async>
+                    </script>
+                </div>
+                <div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</section>
+<footer class="footer">
+    <div>Powered by <a href="https://github.com/jekyll/jekyll" target="_blank">Jekyll</a>.</div>
+    <div style="margin-top: 5px"><a href="https://www.iubenda.com/privacy-policy/63560500/legal" style="color:inherit">Imprint and Privacy Policy</a></div>
+</footer>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+
+<script src="/js/general.js"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+  <script src="/js/post.js"></script>
+  <script src="/js/post-util.js"></script>
+
+
+
+</body>
+
+</html>

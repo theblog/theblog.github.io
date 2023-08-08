@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="314px" height="268px" viewBox="0 0 314 268" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>01-simple-concept</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01-simple-concept" transform="translate(3.000000, 3.000000)">
+            <g id="Input" transform="translate(0.000000, 212.000000)">
+                <g id="Input-dot">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="1" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">1</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(86.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="2" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">2</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(172.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="3" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">3</tspan>
+                    </text>
+                </g>
+                <g id="Input-dot" transform="translate(258.000000, 0.000000)">
+                    <circle id="Oval" stroke="#1E81E9" stroke-width="5" fill="#65BFFF" cx="25" cy="25" r="25"></circle>
+                    <text id="4" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="35">4</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="Output" transform="translate(258.000000, 0.000000)">
+                <g id="Output-dot">
+                    <circle id="Oval" stroke="#FF651E" stroke-width="5" fill="#FF9901" cx="25" cy="25" r="25"></circle>
+                    <text id="5" font-family="Helvetica-Bold, Helvetica, Arial, 'Lucida Grande', sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="16.6015625" y="36">5</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="Kernels" transform="translate(25.000000, 57.000000)" fill="#7C7C7C" fill-rule="nonzero">
+                <g id="Active-Kernel">
+                    <path id="Line" d="M256.5,4.72625996 L250.307363,15.7353919 C249.901218,16.4574287 248.986645,16.713509 248.264608,16.3073633 C247.542571,15.9012176 247.286491,14.986645 247.692637,14.2646081 L256.692637,-1.73539186 L259.307363,-1.73539186 L268.307363,14.2646081 C268.713509,14.986645 268.457429,15.9012176 267.735392,16.3073633 C267.013355,16.713509 266.098782,16.4574287 265.692637,15.7353919 L259.5,4.72625996 L259.5,15 L259.5,148 C259.5,148.828427 258.828427,149.5 258,149.5 C257.171573,149.5 256.5,148.828427 256.5,148 L256.5,15 L256.5,4.72625996 Z"></path>
+                    <path id="Line" d="M254.328507,3.33281757 L243.443018,9.74030258 C242.72909,10.1605392 241.809669,9.92245552 241.389432,9.20852786 C240.969195,8.4946002 241.207279,7.57517841 241.921207,7.15494182 L257.741512,-2.15730562 L260.00227,-0.843621563 L259.74522,17.5121384 C259.73362,18.3404843 259.052709,19.0025877 258.224363,18.9909877 C257.396017,18.9793877 256.733914,18.298477 256.745514,17.4701311 L256.922383,4.84006966 L251.763419,13.7182869 L173.296938,148.753626 C172.880722,149.469905 171.962653,149.713154 171.246374,149.296938 C170.530095,148.880722 170.286846,147.962653 170.703062,147.246374 L249.169543,12.2110348 L254.328507,3.33281757 Z"></path>
+                    <path id="Line" d="M253.439081,1.94564853 L241.054942,4.43217985 C240.242725,4.59525966 239.45209,4.06902999 239.289011,3.25681298 C239.125931,2.44459596 239.652161,1.65396167 240.464378,1.49088186 L258.462729,-2.12289091 L260.168163,-0.140899707 L253.910166,17.1170688 C253.62776,17.8958743 252.767477,18.2982853 251.988672,18.0158788 C251.209866,17.7334723 250.807455,16.8731899 251.089862,16.0943844 L255.395806,4.21968116 L247.687749,10.8521958 L86.9783629,149.137016 C86.3504061,149.677351 85.4033186,149.60632 84.8629837,148.978363 C84.3226488,148.350406 84.3936804,147.403319 85.0216371,146.862984 L245.731023,8.5781632 L253.439081,1.94564853 Z"></path>
+                    <path id="Line" d="M253.153995,1.05060175 L240.523143,1.15701551 C239.694745,1.16399469 239.017538,0.498103386 239.010559,-0.330294339 C239.00358,-1.15869207 239.669471,-1.83589885 240.497869,-1.84287802 L258.854777,-1.99753329 L260.15583,0.270518084 L250.755479,16.0386316 C250.331267,16.750204 249.410531,16.9831553 248.698959,16.5589428 C247.987386,16.1347304 247.754435,15.2139948 248.178648,14.5024224 L254.646754,3.65284479 L245.739882,8.76221309 L0.746379787,149.301122 C0.0277902135,149.713336 -0.888907347,149.464969 -1.30112152,148.74638 C-1.7133357,148.02779 -1.46496936,147.111093 -0.746379787,146.698878 L244.247123,6.15997004 L253.153995,1.05060175 Z"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

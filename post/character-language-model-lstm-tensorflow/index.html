@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>An Interactive Character-Level Language Model built with LSTMs in TensorFlow</title>
+
+    
+    <meta name="description" content="I let an LSTM read texts one character at a time. Find out, what it learned, by feeding it some letters in this interactive post.">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="An Interactive Character-Level Language Model built with LSTMs in TensorFlow">
+    <meta property="og:description" content="I let an LSTM read texts one character at a time. Find out, what it learned, by feeding it some letters in this interactive post.">
+    <meta property="og:url" content="https://theblog.github.io">
+    <meta property="og:site_name" content="The Blog">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:description" content="I let an LSTM read texts one character at a time. Find out, what it learned, by feeding it some letters in this interactive post.">
+    <meta name="twitter:title" content="An Interactive Character-Level Language Model built with LSTMs in TensorFlow">
+    
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/favicons/site.webmanifest">
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.1.6/css/ion.rangeSlider.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github-gist.min.css">
+    <link rel="stylesheet" href="/css/lib/ion.rangeSlider/css/ion.rangeSlider.skinFlat.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post-util.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    
+
+      <link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css">
+
+      <link rel="stylesheet" href="/css/posts/char-lm.css">
+
+
+    
+</head>
+
+<body>
+
+
+
+<div id="main-navbar-sticky-background"></div>
+
+<nav role="navigation" id="main-navbar" class="navbar navbar-default">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header">
+            <button type="button" data-target="#main-navbar-collapse" data-toggle="collapse" class="navbar-toggle collapsed" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <div class="navbar-brand">
+                <a href="https://theblog.github.io">
+                    <div id="logo-title"><img src="/images/logo.png" alt="Site logo"></div>
+                    <div id="logo-subtitle">A Random Walk Through Computer Science</div>
+                </a>
+            </div>
+        </div>
+
+        
+        <div id="main-navbar-collapse" class="collapse navbar-collapse">
+            <h5><a href="https://theblog.github.io">Posts</a></h5>
+            <div class="nav navbar-nav">
+                
+                
+
+                
+                    
+                <h5 class="navigation-year">2021</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/from-tensorflow-to-pytorch/">PyTorch for TensorFlow Users - A Minimal Diff</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2019</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/convolution-in-autoregressive-neural-networks/">Convolutions in Autoregressive Neural Networks</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2017</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/gini-coefficient-intuitive-explanation/">Intuitive Explanation of the Gini Coefficient</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/swift-icloud-key-value-store/">iCloud Key-Value Storage in Swift 3</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a href="/post/jekyll-github-pages-gulp-babel-directory-structure/">Directory Structure for Jekyll / GitHub Pages with Gulp and Babel</a>
+                </li>
+                
+                
+                
+
+                
+
+                <li>
+                    <a class="active" href="/post/character-language-model-lstm-tensorflow/">An Interactive Character-Level Language Model</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2016</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/visualizing-travel-times-with-multidimensional-scaling/">Visualizing Travel Times with Multidimensional Scaling</a>
+                </li>
+                
+                
+                
+
+                
+                    
+                    </ul>
+                    
+                <h5 class="navigation-year">2015</h5>
+                <ul>
+                
+
+                <li>
+                    <a href="/post/some-facts-i-did-not-know-about-java/">Some facts I did not know about Java</a>
+                </li>
+                
+                
+                </ul>
+
+            </div>
+            <h5><a href="/about/">About</a></h5>
+        </div>
+    </div>
+</nav>
+
+
+<section class="wrapper">
+    <div id="content" class="container-fluid">
+        <div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default panel-post">
+            <div class="panel-heading">
+                <div class="headings">
+                    <h1>An Interactive Character-Level Language Model</h1>
+                    
+                    <h5>
+                        <span><i class="fa fa-calendar-o"></i> 19 February 2017</span>
+                        
+                        <span><i class="fa fa-github"></i> <a href="https://github.com/batzner/tensorlm"> Source Code</a></span>
+                        
+                    </h5>
+                </div>
+            </div>
+            <div class="panel-body post-body">
+                <div><p>I let a neural network read long texts one letter at a time. Its task was to predict the next letter based on those it had seen so far. Over time, it recognized patterns between letters. Find out what it learned by feeding it some letters below. When you click the send button on the right / bottom, it will read your text and auto-complete it.</p>
+<p>You can choose between networks that read a lot of Wikipedia articles, US Congress transcripts etc.</p>
+
+<div class="alert alert-info" role="alert">
+    <p><strong>Update</strong> (1 Mar 2020) : After three years, I finally ran out of free AWS credits and shut down the instance hosting the five text completion networks. Therefore, the generated texts are now cached results from previous queries. If you enter a query that is not in the cache, I will later run it locally and add it to the cache at some point.</p>
+
+    <p>Also, by now there are much better interactive language models available on the web, for example <a href="https://transformer.huggingface.co/">transformer.huggingface.co</a> and <a href="https://talktotransformer.com/">talktotransformer.com</a>.</p>
+</div>
+
+<div class="talk-box">
+    <table class="no-scroll-x">
+        <tr class="talk-box-heading">
+            <td></td>
+            <td class="no-stretch">
+                <div>Generate text from</div>
+                <div class="btn-group" role="group" aria-label="Dataset choice">
+                    <button type="button" value="congress" onclick="selectDataset(this.value)" class="btn btn-default dark">US Congress</button>
+                    <button type="button" value="wiki" onclick="selectDataset(this.value)" class="btn btn-default dark">Wikipedia</button>
+                    <button type="button" value="sherlock" onclick="selectDataset(this.value)" class="btn btn-default dark">Sherlock Holmes</button>
+                    <button type="button" value="southPark" onclick="selectDataset(this.value)" class="btn btn-default dark">South Park</button>
+                    <button type="button" value="goethe" onclick="selectDataset(this.value)" class="btn btn-default dark">Goethe</button>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+        <tr class="talk-box-body">
+            <td></td>
+            <td>
+                <div class="talk-box-input" onclick="focusOnInput()">
+                    <div class="text-input" contenteditable="true" oninput="onInput()"></div>
+                    <div class="text-input-output-bridge">...</div>
+                    <span class="text-output"></span>
+                </div>
+            </td>
+            <td>
+                <button type="button" class="send-button btn btn-default round btn-icon" onclick="completeText()">
+                    <span class="fa fa-paper-plane"></span>
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="talk-box mobile">
+    <div class="talk-box-heading">
+        <div>Generate text from</div>
+        
+        <div id="talk-box-dataset-dropdown" class="btn-group dropdown-full-width">
+            <button type="button" value="congress" class="btn btn-default dropdown-toggle dark" onchange="selectDataset(null)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="choice">US Congress</span> <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dark">
+                <li><a href="#\" data-value="congress">US Congress</a></li>
+                <li><a href="#\" data-value="wiki">Wikipedia</a></li>
+                <li><a href="#\" data-value="sherlock">Sherlock Holmes</a></li>
+                <li><a href="#\" data-value="southPark">South Park</a></li>
+                <li><a href="#\" data-value="goethe">Goethe Poems</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="talk-box-body">
+        <div class="talk-box-input" onclick="focusOnInput()">
+            <div class="text-input" contenteditable="true" oninput="onInput()"></div>
+            <div class="text-input-output-bridge">...</div>
+            <span class="text-output"></span>
+        </div>
+        <button type="button" class="send-button btn btn-default dark" onclick="completeText()">
+            Send
+        </button>
+    </div>
+</div>
+
+<p>Here is the detailed description of what I did: I used a specific type of recurrent neural networks, the <a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank">LSTM (Long Short-Term Memory)</a>, to learn a language model for a given text corpus. Because I fed it only one letter at a time, it learned a language model on a character level. This idea is not new at all. In 2015, Andrej Karpathy wrote a <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/" target="_blank"> blog post</a> about the <i>"Unreasonable Effectiveness of Recurrent Neural Networks"</i>. He also trained character-level networks on Shakespeare, Wikipedia, Linux Source Code etc. The results are amazing.</p>
+
+<p>I decided to try to reproduce his results and make the trained models available via an interactive chat box, so that you can try them out as well.</p>
+
+<h3>Datasets</h3>
+<p>These are the datasets I used:</p>
+<strong>US Congress</strong>
+<ul>
+    <li>488 million characters from transcripts of the United States Senate's congressional record</li>
+    <li>Trained for 2 days</li>
+</ul>
+<strong>Wikipedia</strong>
+<ul>
+    <li>447 million characters from about 140,000 articles (2.5% of the English Wikipedia)</li>
+    <li>Trained for 2 days</li>
+</ul>
+<strong>Sherlock</strong>
+<ul>
+    <li>3.6 million characters (about 650,000 words) from the whole <a href="https://sherlock-holm.es/stories/plain-text/cano.txt" target="_blank">Sherlock Holmes corpus</a> by Sir Arthur Conan Doyle. I removed indentation but kept all line breaks even if their only purpose was formatting.</li>
+    <li>Trained for 3 hours</li>
+</ul>
+<strong>South Park</strong>
+<ul>
+    <li>4.7 million characters from all 277 South Park episodes</li>
+    <li>Trained for 2 hours</li>
+</ul>
+<strong>Goethe</strong>
+<ul>
+    <li>1.5 million characters from all poems by Johann Wolfgang von Goethe</li>
+    <li>Trained for 2 hours</li>
+</ul>
+<p>As training / validation split, I used a 90 / 10 ratio for the three small datasets and a 95 / 5 ratio for the US Congress and the Wikipedia dataset.</p>
+
+<h3>Model</h3>
+<p>I did not do a lot of hyper-parameter tuning. Below are the hyper-parameters that I found to work well for each dataset. For all models, I used 90-dimensional one-hot encodings as input and output of the model. The models were trained by minimizing the cross-entropy / <del>bits</del> nats per character using <a href="http://sebastianruder.com/optimizing-gradient-descent/index.html#rmsprop" target="_blank">RMSprop</a>.</p>
+
+<ul>
+    <li>Number of LSTM layers: 3 (the South Park and the Goethe model only had 2 layers)</li>
+    <li>Number of neurons per layer: 795</li>
+    <li>Batch size: 100</li>
+    <li>Learning rate: 0.001</li>
+    <li>Dropout: 0.5</li>
+    <li>Gradient L2 norm bound: 5</li>
+    <li>A dense softmax layer with 90 units followed the last LSTM layer.</li>
+    <li>At each training step, the error was backpropagated through 160 time steps / characters.</li>
+    <li>I trained all models on an AWS p2.xlarge instance ($0.2 per hour).</li>
+    <li>I used early stopping to prevent the model from overfitting.</li>
+</ul>
+
+<p>The final models that power the text box above run on an AWS instance. As it turns out, five TensorFlow models with 8 to 13 million parameters each can run simultaneously on a single t2.micro instance with only 1 GiB of RAM.</p>
+
+<h3>Resetting the LSTM state</h3>
+<p>I initially trained the LSTM in a stateful manner, meaning that the LSTM's state never gets reset to zero. This allows the model to keep information about the current context beyond the 160 time steps of backpropagation through time. However, I found that this causes the model to generate sentences like this on the Wikipedia dataset:</p>
+<blockquote>The Victorian Artist of the Year 1943) was a student of the University of California...</blockquote>
+<blockquote>The Victorian Army and the United States Congress of the United States) and the Committee of the American...</blockquote>
+
+<p>Sounds good except for that closing bracket in both sentences. I assume that happens because the model only sees a zero hidden state once during training - at the very beginning. After that, the state never gets reset to a zero vector. Thus, the model can safely store information in the hidden state and even attribute information to zeros in the hidden state, such as "I need to close the bracket soon". For validation and sampling, however, the model starts again with a zero state, so it closes a bracket that was never opened. Resetting the hidden state to zero every now and then solves this problem. I reset the LSTM every 20 training steps, i.e. 3,200 time steps.</p>
+
+<h3>Mutual Perplexity</h3>
+
+<p>I also fed every validation dataset to each of the models and measured their average character <a href="https://en.wikipedia.org/wiki/Perplexity">perplexity</a> (with base e instead of 2).  Here is how confused they were:</p>
+
+<table id="perplexity-table" data-transform="color-cells-by-log-value">
+    <tr>
+        <td></td>
+        <td colspan="5" class="table-heading-columns">Trained on</td>
+    </tr>
+    <tr>
+        <td>Evaluated on</td>
+        <th>Sherlock</th>
+        <th>Wikipedia</th>
+        <th>Congress</th>
+        <th>South Park</th>
+        <th>Goethe</th>
+    </tr>
+    <tr>
+        <th>Sherlock</th>
+        <td>3.0</td>
+        <td>4.3</td>
+        <td>5.2</td>
+        <td>6.2</td>
+        <td>182.6</td>
+    </tr>
+    <tr>
+        <th>Wikipedia</th>
+        <td>8.3</td>
+        <td>3.2</td>
+        <td>5.3</td>
+        <td>7.3</td>
+        <td>198.1</td>
+    </tr>
+    <tr>
+        <th>Congress</th>
+        <td>7.4</td>
+        <td>3.8</td>
+        <td>2.2</td>
+        <td>7.7</td>
+        <td>268.8</td>
+    </tr>
+    <tr>
+        <th>South Park</th>
+        <td>7.1</td>
+        <td>4.9</td>
+        <td>6.0</td>
+        <td>3.3</td>
+        <td>206.9</td>
+    </tr>
+    <tr>
+        <th>Goethe</th>
+        <td>66.6</td>
+        <td>14.5</td>
+        <td>35.6</td>
+        <td>49.2</td>
+        <td>5.4</td>
+    </tr>
+</table>
+
+<p>We can see that Goethe was quite confused by the English language.</p>
+
+<h3>Code</h3>
+<p>I published my code on <a href="https://github.com/batzner/tensorlm">GitHub</a> and as a <a href="https://pypi.python.org/pypi/tensorlm">PyPI package</a> that lets you create your own language model in just a few lines of code:</p>
+
+<pre><code class="lang-python">import tensorflow as tf
+from tensorlm import CharLM
+
+with tf.Session() as session:
+
+    # Create a new model. You can also use WordLM
+    model = CharLM(session, "datasets/sherlock/tinytrain.txt", max_vocab_size=96,
+                   neurons_per_layer=100, num_layers=3, num_timesteps=15)
+
+    # Train it
+    model.train(session, max_epochs=10, max_steps=500)
+
+    # Let it generate a text
+    generated = model.sample(session, "The ", num_steps=100)
+    print("The " + generated)</code></pre></div>
+
+                <h3>Like what you read?</h3>
+                <div>
+                    <div class="clearfix">
+                    <div><applause-button url="https://theblog.github.io/char-lm" multiclap="false" color="rgb(10, 18, 79)"></div>
+                    <p>I don't use Google Analytics or Disqus because they require cookies. I would still like to know
+                        which posts are popular, so if you liked this post you can let me know here on the right.</p>
+                    </div>
+                    <p>You can also leave a comment if you have a GitHub account. The "Sign in" button will store the GitHub API token in a cookie.</p>
+                    <script src="https://utteranc.es/client.js" repo="theblog/blog-comments" issue-term="char-lm" theme="github-light" crossorigin="anonymous" async>
+                    </script>
+                </div>
+                <div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</section>
+<footer class="footer">
+    <div>Powered by <a href="https://github.com/jekyll/jekyll" target="_blank">Jekyll</a>.</div>
+    <div style="margin-top: 5px"><a href="https://www.iubenda.com/privacy-policy/63560500/legal" style="color:inherit">Imprint and Privacy Policy</a></div>
+</footer>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+
+<script src="/js/general.js"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+  <script src="/js/post.js"></script>
+  <script src="/js/post-util.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/he/1.1.1/he.min.js"></script>
+  <script src="/js/posts/char-lm/query-cache.js"></script>
+  <script src="/js/posts/char-lm/text-complete.js"></script>
+
+
+</body>
+
+</html>
